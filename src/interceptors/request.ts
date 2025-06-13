@@ -55,7 +55,7 @@ const httpInterceptor = {
 
     // 2. 添加 token 请求头标识
     const userToken = getUserToken()
-    console.log('access_token', userToken?.access_token)
+    console.log('拦截器中的 access_token', userToken?.access_token)
     if (userToken && userToken.access_token && userToken.refresh_token) {
       options.header.AccessToken = `${userToken.access_token}`
       options.header.RefreshToken = `${userToken.refresh_token}`

@@ -1,18 +1,19 @@
 import { onLoad } from '@dcloudio/uni-app'
 import { needLoginPages as _needLoginPages, getNeedLoginPages } from '@/utils'
 import { getUserToken } from '@/store/_base'
-import { getUserProfile } from '@/store/user'
+import { useUserStore } from '@/store/user'
 
 const loginRoute = import.meta.env.VITE_LOGIN_URL
 const isDev = import.meta.env.DEV
+
 export const isLogined = () => {
   const token = getUserToken()
-  const hasProfile = getUserProfile().id > 0
+  const hasProfile = useUserStore().userProfile.id > 0
 
   console.log('登录状态检查:', {
     hasToken: !!(token && token.access_token),
     hasProfile,
-    userProfile: getUserProfile(),
+    userProfile: useUserStore().userProfile,
   })
 
   // 必须同时满足：有 token 且有用户信息

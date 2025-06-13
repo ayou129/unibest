@@ -13,21 +13,6 @@ import { toast } from '@/utils/toast'
 import { IUserProfileVo, IUserTokenVo } from '@/api/login.typings'
 import { setUserToken, removeUserToken, getUserToken } from './_base'
 
-const USER_PROFILE_KEY = 'userProfile'
-
-export const setUserProfile = (profile: IUserProfileVo) => {
-  uni.setStorageSync(USER_PROFILE_KEY, profile)
-}
-
-export const getUserProfile = () => {
-  const userProfile = uni.getStorageSync(USER_PROFILE_KEY)
-  return userProfile as IUserProfileVo
-}
-
-export const removeUserProfile = () => {
-  uni.removeStorageSync(USER_PROFILE_KEY)
-}
-
 // 初始化状态
 const UserProfileState: IUserProfileVo = {
   id: 0,
@@ -58,7 +43,6 @@ export const useUserStore = defineStore(
         val.avatar = 'https://oss.laf.run/ukw0y1-site/avatar.jpg?feige'
       }
       userProfile.value = val
-      setUserProfile(val)
     }
     const setUserAvatar = (avatar: string) => {
       userProfile.value.avatar = avatar
@@ -68,7 +52,6 @@ export const useUserStore = defineStore(
     // 删除用户信息
     const removeUserAllData = () => {
       userProfile.value = { ...UserProfileState }
-      removeUserProfile()
       removeUserToken()
     }
 
@@ -82,7 +65,7 @@ export const useUserStore = defineStore(
     }) => {
       const res = await _userLoginByPhoneSms(data)
       const tokens = res.data as unknown as IUserTokenVo
-      setUserToken(tokens)
+      await setUserToken(tokens)
       await getUserProfile()
       return res
     }
@@ -98,7 +81,7 @@ export const useUserStore = defineStore(
     }) => {
       const res = await _userLoginByPhoneData(data)
       const tokens = res.data as unknown as IUserTokenVo
-      setUserToken(tokens)
+      await setUserToken(tokens)
       await getUserProfile()
       return res
     }
@@ -124,7 +107,7 @@ export const useUserStore = defineStore(
         return false
       }
       const tokens = res.data as unknown as IUserTokenVo
-      setUserToken(tokens)
+      await setUserToken(tokens)
       await getUserProfile()
       return tokens
     }
