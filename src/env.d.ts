@@ -8,6 +8,7 @@ declare module '*.vue' {
   export default component
 }
 declare const __VITE_APP_PROXY__: string
+declare const __UNI_PLATFORM__: string
 interface ImportMetaEnv {
   /** 网站标题，应用名称 */
   readonly VITE_APP_TITLE: string

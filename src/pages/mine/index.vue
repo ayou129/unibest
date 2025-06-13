@@ -92,18 +92,33 @@ import { useToast } from 'wot-design-uni'
 import { useUpload } from '@/utils/uploadFile'
 import { storeToRefs } from 'pinia'
 import { IUploadSuccessInfo } from '@/api/login.typings'
+import { usePageAuth, isLogined } from '@/hooks/usePageAuth' // 导入 isLogined
+import { getUserToken } from '@/store/_base'
+
+// 使用认证 hook
+usePageAuth()
 
 const userStore = useUserStore()
-// 使用storeToRefs解构userProfile
 const { userProfile } = storeToRefs(userStore)
 const toast = useToast()
-const hasLogin = ref(false)
+const hasLogin = ref(isLogined())
 
 onShow((options) => {
-  hasLogin.value = !!userStore.getUserToken()
-  console.log('个人中心onShow', hasLogin.value, options)
+  // 使用 isLogined 函数检查登录状态
+  const token = getUserToken()
+  console.log('1', token?.access_token)
+  const loginStatus = isLogined()
+  hasLogin.value = loginStatus
 
-  hasLogin.value && useUserStore().getUserProfile()
+  console.log('个人中心 onShow，登录状态:', loginStatus)
+
+  if (loginStatus) {
+    // 已登录，获取用户信息
+    userStore.getUserProfile()
+  } else {
+    // 未登录，跳转到登录页
+    uni.navigateTo({ url: '/pages/login/index' })
+  }
 })
 // #ifndef MP-WEIXIN
 // 上传头像

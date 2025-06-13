@@ -14,20 +14,6 @@ const handleRequestQueue = () => {
   requests = []
 }
 
-// 更新请求的 header
-const updateRequestHeader = (options: CustomRequestOptions) => {
-  const userStore = useUserStore()
-  const token = userStore.getUserToken()
-  if (token && token.access_token && token.refresh_token) {
-    options.header = {
-      ...options.header,
-      AccessToken: `${token.access_token}`,
-      RefreshToken: `${token.refresh_token}`,
-    }
-  }
-  return options
-}
-
 export const http = <T>(options: CustomRequestOptions) => {
   // 1. 返回 Promise 对象
   return new Promise<IResData<T>>((resolve, reject) => {
@@ -45,9 +31,8 @@ export const http = <T>(options: CustomRequestOptions) => {
           // 如果正在刷新，将请求加入队列
           if (isRefreshing) {
             requests.push(() => {
-              // 更新请求的 header 并重试
-              const updatedOptions = updateRequestHeader({ ...options })
-              http<T>(updatedOptions).then(resolve).catch(reject)
+              // 重试当前请求
+              http<T>(options).then(resolve).catch(reject)
             })
             return
           }

@@ -1,5 +1,5 @@
 import { CustomRequestOptions } from '@/interceptors/request'
-import { IUserTokenVo } from '@/api/login.typings'
+import { getUserToken } from '@/store/_base'
 
 /**
  * 请求方法: 主要是对 uni.request 的封装，去适配 openapi-ts-request 的 request 方法
@@ -74,9 +74,9 @@ export default function request<T = unknown>(
   }
 
   // 添加token
-  const userToken = uni.getStorageSync('userToken')
-  console.log('userToken', userToken)
-  const token = userToken as IUserTokenVo
+  const token = getUserToken()
+  console.log('request.ts 中的 token:', token?.access_token)
+
   if (token && token.access_token && token.refresh_token) {
     requestOptions.header = {
       ...requestOptions.header,
