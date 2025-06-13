@@ -54,7 +54,7 @@ import { ref } from 'vue'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import { toast } from '@/utils/toast'
-import { updateInfo } from '@/api/login'
+import { updateUserProfile } from '@/api/login'
 
 // 表单引用
 const formRef = ref()
@@ -68,6 +68,10 @@ const formData = ref({
   id: userInfo.value.id,
   name: userInfo.value.name,
   sex: userInfo.value.sex,
+  avatar: userInfo.value.avatar,
+  email: userInfo.value.email,
+  phone: userInfo.value.phone,
+  remark: userInfo.value.remark,
 })
 
 // 提交表单
@@ -75,8 +79,8 @@ const handleSubmit = async () => {
   // 表单验证
   const valid = await formRef.value.validate()
   if (!valid) return
-  const res = await updateInfo(formData.value)
-  await useUserStore().getUserInfo()
+  const res = await updateUserProfile(formData.value)
+  await userStore.getUserProfile()
   toast.success(res.msg)
 }
 </script>

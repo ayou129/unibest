@@ -72,5 +72,15 @@ export default function request<T = unknown>(
     delete requestOptions.headers
   }
 
+  // 添加token
+  const userToken = uni.getStorageSync('userToken')
+  if (userToken && userToken.access_token && userToken.refresh_token) {
+    requestOptions.header = {
+      ...requestOptions.header,
+      AccessToken: `${userToken.access_token}`,
+      RefreshToken: `${userToken.refresh_token}`,
+    }
+  }
+
   return http<T>(requestOptions)
 }

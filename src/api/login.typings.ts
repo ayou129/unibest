@@ -13,14 +13,12 @@ export type IUserProfileVo = {
   createTime: string
   updateTime: string
   remark: string
-  access_token: string
-  refresh_token: string
 }
 
 /**
  * 登录返回的信息
  */
-export type IUserLogin = {
+export type IUserTokenVo = {
   access_token: string
   refresh_token: string
 }
@@ -50,9 +48,12 @@ export type IUploadSuccessInfo = {
  * 更新用户信息
  */
 export type IUpdateInfo = {
-  id: number
   name: string
   sex: string
+  avatar: string
+  email: string
+  phone: string
+  remark: string
 }
 /**
  * 更新用户信息

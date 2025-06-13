@@ -1,18 +1,18 @@
-import { ICaptcha, IUpdateInfo, IUpdatePassword, IUserProfileVo, IUserLogin } from './login.typings'
+import {
+  ICaptcha,
+  IUpdateInfo,
+  IUpdatePassword,
+  IUserProfileVo,
+  IUserTokenVo,
+} from './login.typings'
 import { http } from '@/utils/http'
 import { IApiResponse, ApiPrefix, ApiCommonPrefix } from './api'
-
-/**
- * 微信小程序登录表单
- */
-export interface ILoginForm {
-  code: string
-}
 
 /**
  * 手机号数据登录(微信小程序需要，例如抖音小程序不需要)
  */
 export interface IWxPhoneDataLoginForm {
+  code: string
   open_id: string
   encrypted_data: string
   iv: string
@@ -39,8 +39,8 @@ export const getUserLoginGrapicVerifyCode = () => {
  * 微信小程序用户code登录
  * @param loginForm 登录表单
  */
-export const userLoginByCode2Session = (loginForm: ILoginForm) => {
-  return http.post<IApiResponse<IUserLogin>>(
+export const userLoginByCode2Session = (loginForm: IWxPhoneDataLoginForm) => {
+  return http.post<IApiResponse<IUserTokenVo>>(
     `${ApiPrefix}/user/auth/wx/login/code2Session`,
     loginForm,
   )
@@ -51,35 +51,38 @@ export const userLoginByCode2Session = (loginForm: ILoginForm) => {
  * @param loginForm 登录表单
  */
 export const userLoginByPhoneData = (loginForm: IWxPhoneDataLoginForm) => {
-  return http.post<IApiResponse<IUserLogin>>(`${ApiPrefix}/user/auth/wx/login/phoneData`, loginForm)
+  return http.post<IApiResponse<IUserTokenVo>>(
+    `${ApiPrefix}/user/auth/wx/login/phoneData`,
+    loginForm,
+  )
 }
 
 /**
  * 手机号+sms验证码登录
  */
 export const userLoginByPhoneSms = (loginForm: IPhoneSmsLoginForm) => {
-  return http.post<IApiResponse<IUserLogin>>(`${ApiPrefix}/user/auth/phone/login/sms`, loginForm)
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/auth/phone/login/sms`, loginForm)
 }
 
 /**
  * 获取用户信息
  */
 export const getUserProfile = () => {
-  return http.get<IApiResponse<IUserProfileVo>>(`${ApiPrefix}/user/profile`)
+  return http.get<IApiResponse<IUserProfileVo>>(`${ApiPrefix}/user/auth/profile`)
 }
 
 /**
  * 退出登录
  */
 export const logout = () => {
-  return http.get<IApiResponse<void>>(`${ApiPrefix}/user/logout`)
+  return http.get<IApiResponse<void>>(`${ApiPrefix}/user/auth/logout`)
 }
 
 /**
  * 修改用户信息
  */
-export const updateInfo = (data: IUpdateInfo) => {
-  return http.post<IApiResponse<void>>(`${ApiPrefix}/user/updateInfo`, data)
+export const updateUserProfile = (data: IUpdateInfo) => {
+  return http.put<IApiResponse<void>>(`${ApiPrefix}/user/auth/profile`, data)
 }
 
 /**

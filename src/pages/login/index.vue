@@ -72,12 +72,12 @@
       </view>
       <!-- 登录按钮组 -->
       <view class="login-buttons">
-        <!-- 账号密码登录按钮 -->
+        <!-- 手机号+验证码登录按钮 -->
         <wd-button
           type="primary"
           size="large"
           block
-          @click="handleAccountLogin"
+          @click="handlePhoneSmsLogin"
           class="account-login-btn"
         >
           <wd-icon name="right" size="18px" class="login-icon"></wd-icon>
@@ -95,7 +95,8 @@
           size="large"
           block
           plain
-          @click="handleWechatLogin"
+          open-type="getPhoneNumber"
+          @getphonenumber="handleWechatLogin"
           class="wechat-login-btn"
         >
           微信一键登录
@@ -127,7 +128,12 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/store/user'
 import { isMpWeixin } from '@/utils/platform'
-import { getUserLoginGrapicVerifyCode, IPhoneSmsLoginForm, userLoginByPhoneSms } from '@/api/login'
+import {
+  getUserLoginGrapicVerifyCode,
+  IPhoneSmsLoginForm,
+  IWxPhoneDataLoginForm,
+  userLoginByPhoneSms,
+} from '@/api/login'
 import { toast } from '@/utils/toast'
 import { isTableBar } from '@/utils/index'
 import { ICaptcha } from '@/api/login.typings'
@@ -152,6 +158,13 @@ const loginForm = ref<IPhoneSmsLoginForm>({
   graphic_verify_code: '',
   sms_code: '',
 })
+// 微信手机phoneData表单
+const wxPhoneData = ref<IWxPhoneDataLoginForm>({
+  code: '',
+  open_id: '',
+  encrypted_data: '',
+  iv: '',
+})
 // 隐私协议勾选状态
 const agreePrivacy = ref(true)
 
@@ -165,8 +178,8 @@ onLoad((option) => {
   }
 })
 
-// 账号密码登录
-const handleAccountLogin = async () => {
+// 手机号+验证码登录
+const handlePhoneSmsLogin = async () => {
   if (!agreePrivacy.value) {
     toast.error('请阅读同意协议')
     return
@@ -181,7 +194,7 @@ const handleAccountLogin = async () => {
     return
   }
   // 执行登录
-  const res = await userLoginByPhoneSms(loginForm.value)
+  const res = await userStore.userLoginByPhoneSms(loginForm.value)
   if (res.code === 200) {
     // 跳转到首页或重定向页面
     const targetUrl = redirectRoute.value || '/pages/index/index'
@@ -196,7 +209,7 @@ const handleAccountLogin = async () => {
 }
 
 // 微信登录
-const handleWechatLogin = async () => {
+const handleWechatLogin = async (e) => {
   if (!isMpWeixin) {
     toast.info('请在微信小程序中使用此功能')
     return
@@ -207,14 +220,27 @@ const handleWechatLogin = async () => {
     toast.error('请先阅读并同意用户协议和隐私政策')
     return
   }
-  // 微信登录
-  await userStore.wxLogin()
-  // 跳转到首页或重定向页面
-  const targetUrl = redirectRoute.value || '/pages/index/index'
-  if (isTableBar(targetUrl)) {
-    uni.switchTab({ url: targetUrl })
-  } else {
-    uni.redirectTo({ url: targetUrl })
+
+  console.log('phoneData', e)
+  if (e.code && e.encryptedData && e.iv) {
+    const codeRes = await userStore.wxLogin()
+    wxPhoneData.value.code = codeRes.code
+    wxPhoneData.value.open_id = e.code
+    wxPhoneData.value.encrypted_data = e.encryptedData
+    wxPhoneData.value.iv = e.iv
+
+    const res = await userStore.userLoginByPhoneData(wxPhoneData.value)
+    if (res.code === 200) {
+      // 跳转到首页或重定向页面
+      const targetUrl = redirectRoute.value || '/pages/index/index'
+      if (isTableBar(targetUrl)) {
+        uni.switchTab({ url: targetUrl })
+      } else {
+        uni.redirectTo({ url: targetUrl })
+      }
+    } else {
+      toast.error(res.msg)
+    }
   }
 }
 

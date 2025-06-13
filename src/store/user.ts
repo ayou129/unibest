@@ -1,5 +1,7 @@
 import {
   userLoginByCode2Session as _userLoginByCode2Session,
+  userLoginByPhoneData as _userLoginByPhoneData,
+  userLoginByPhoneSms as _userLoginByPhoneSms,
   getUserProfile as _getUserProfile,
   logout as _logout,
   getWxCode,
@@ -7,7 +9,7 @@ import {
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { toast } from '@/utils/toast'
-import { IUserProfileVo } from '@/api/login.typings'
+import { IUserProfileVo, IUserTokenVo } from '@/api/login.typings'
 
 // 初始化状态
 const userInfoState: IUserProfileVo = {
@@ -22,6 +24,9 @@ const userInfoState: IUserProfileVo = {
   createTime: '',
   updateTime: '',
   remark: '',
+}
+// 初始化 token
+const userTokenState: IUserTokenVo = {
   access_token: '',
   refresh_token: '',
 }
@@ -48,32 +53,47 @@ export const useUserStore = defineStore(
       console.log('userInfo', userInfo.value)
     }
     // 删除用户信息
-    const removeUserInfo = () => {
+    const removeUserAllData = () => {
       userInfo.value = { ...userInfoState }
       uni.removeStorageSync('userInfo')
-      uni.removeStorageSync('token')
+      uni.removeStorageSync('userToken')
     }
+
     /**
-     * 用户登录
-     * @param credentials 登录参数
-     * @returns R<IUserLogin>
+     * 登录方式1：用户手机号登录
      */
-    const login = async (credentials: {
-      username: string
-      password: string
-      code: string
-      uuid: string
+    const userLoginByPhoneSms = async (data: {
+      phone: string
+      graphic_verify_code: string
+      sms_code: string
     }) => {
-      const res = await _userLoginByCode2Session(credentials)
-      console.log('登录信息', res)
-      toast.success(res.msg)
-      await _getUserProfile()
+      const res = await _userLoginByPhoneSms(data)
+      const tokens = res.data as unknown as IUserTokenVo
+      uni.setStorageSync('userToken', tokens)
+      await getUserProfile()
       return res
     }
+
+    /**
+     * 登录方式2：用户phoneData登录
+     */
+    const userLoginByPhoneData = async (data: {
+      code: string
+      open_id: string
+      encrypted_data: string
+      iv: string
+    }) => {
+      const res = await _userLoginByPhoneData(data)
+      const tokens = res.data as unknown as IUserTokenVo
+      uni.setStorageSync('userToken', tokens)
+      await getUserProfile()
+      return res
+    }
+
     /**
      * 获取用户信息
      */
-    const getUserInfo = async () => {
+    const getUserProfile = async () => {
       const res = await _getUserProfile()
       const userInfo = res.data as unknown as IUserProfileVo
       setUserInfo(userInfo)
@@ -86,25 +106,27 @@ export const useUserStore = defineStore(
      */
     const logout = async () => {
       _logout()
-      removeUserInfo()
+      removeUserAllData()
     }
+
     /**
      * 微信登录
      */
     const wxLogin = async () => {
-      // 获取微信小程序登录的code
       const data = await getWxCode()
-      console.log('微信登录code', data)
-      const res = await _userLoginByCode2Session({ code: data.code })
-      await _getUserProfile()
-      return res
+      if (data.code) {
+        return data
+      }
+      toast.error('获取微信登录code失败')
+      return null
     }
 
     return {
       userInfo,
-      login,
+      userLoginByPhoneData,
+      userLoginByPhoneSms,
       wxLogin,
-      getUserInfo,
+      getUserProfile,
       setUserAvatar,
       logout,
     }
