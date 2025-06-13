@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import qs from 'qs'
-import { useUserStore } from '@/store'
 import { platform } from '@/utils/platform'
 import { getEnvBaseUrl } from '@/utils'
 import { IUserTokenVo } from '@/api/login.typings'
@@ -51,18 +50,20 @@ const httpInterceptor = {
       platform, // 可选，与 uniapp 定义的平台一致，告诉后台来源
       ...options.header,
     }
+
     // 3. 添加 token 请求头标识
-    const userStore = useUserStore()
-    const token = userStore.getUserToken()
-    if (token && token.access_token && token.refresh_token) {
-      options.header.AccessToken = `${token.access_token}`
-      options.header.RefreshToken = `${token.refresh_token}`
+    const userToken = uni.getStorageSync('userToken') as IUserTokenVo
+    console.log('userToken', userToken)
+    if (userToken && userToken.access_token && userToken.refresh_token) {
+      options.header.AccessToken = `${userToken.access_token}`
+      options.header.RefreshToken = `${userToken.refresh_token}`
     }
   },
 }
 
 export const requestInterceptor = {
   install() {
+    console.log('安装请求拦截器')
     // 拦截 request 请求
     uni.addInterceptor('request', httpInterceptor)
     // 拦截 uploadFile 文件上传

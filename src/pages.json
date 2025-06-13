@@ -80,6 +80,7 @@
     {
       "path": "pages/mine/about/index",
       "type": "page",
+      "needLogin": true,
       "style": {
         "navigationBarTitleText": "关于我们"
       }
@@ -95,6 +96,7 @@
     {
       "path": "pages/mine/password/index",
       "type": "page",
+      "needLogin": true,
       "style": {
         "navigationBarTitleText": "修改密码"
       }

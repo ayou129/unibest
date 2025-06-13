@@ -3,6 +3,7 @@ import {
   userLoginByPhoneData as _userLoginByPhoneData,
   userLoginByPhoneSms as _userLoginByPhoneSms,
   getUserProfile as _getUserProfile,
+  refreshToken as _refreshToken,
   logout as _logout,
   getWxCode,
 } from '@/api/login'
@@ -12,7 +13,7 @@ import { toast } from '@/utils/toast'
 import { IUserProfileVo, IUserTokenVo } from '@/api/login.typings'
 
 // 初始化状态
-const userInfoState: IUserProfileVo = {
+const UserProfileState: IUserProfileVo = {
   id: 0,
   username: '',
   avatar: '/static/images/default-avatar.png',
@@ -35,27 +36,28 @@ export const useUserStore = defineStore(
   'user',
   () => {
     // 定义用户信息
-    const userInfo = ref<IUserProfileVo>({ ...userInfoState })
+    const userProfile = ref<IUserProfileVo>({ ...UserProfileState })
     // 设置用户信息
-    const setUserInfo = (val: IUserProfileVo) => {
+    const setUserProfile = (val: IUserProfileVo) => {
       console.log('设置用户信息', val)
       // 若头像为空 则使用默认头像
       if (!val.avatar) {
-        val.avatar = userInfoState.avatar
+        val.avatar = UserProfileState.avatar
       } else {
         val.avatar = 'https://oss.laf.run/ukw0y1-site/avatar.jpg?feige'
       }
-      userInfo.value = val
+      userProfile.value = val
     }
     const setUserAvatar = (avatar: string) => {
-      userInfo.value.avatar = avatar
+      userProfile.value.avatar = avatar
       console.log('设置用户头像', avatar)
-      console.log('userInfo', userInfo.value)
+      console.log('UserProfile', userProfile.value)
     }
+
     // 删除用户信息
     const removeUserAllData = () => {
-      userInfo.value = { ...userInfoState }
-      uni.removeStorageSync('userInfo')
+      userProfile.value = { ...UserProfileState }
+      uni.removeStorageSync('UserProfile')
       uni.removeStorageSync('userToken')
     }
 
@@ -95,9 +97,9 @@ export const useUserStore = defineStore(
      */
     const getUserProfile = async () => {
       const res = await _getUserProfile()
-      const userInfo = res.data as unknown as IUserProfileVo
-      setUserInfo(userInfo)
-      uni.setStorageSync('userInfo', userInfo)
+      const UserProfile = res.data as unknown as IUserProfileVo
+      setUserProfile(UserProfile)
+      uni.setStorageSync('UserProfile', UserProfile)
       // TODO 这里可以增加获取用户路由的方法 根据用户的角色动态生成路由
       return res
     }
@@ -111,10 +113,24 @@ export const useUserStore = defineStore(
     }
 
     /**
+     * 刷新token
+     */
+    const refreshToken = async () => {
+      const res = await _refreshToken()
+      if (res.code !== 200) {
+        toast.error('刷新token失败')
+        return false
+      }
+      const tokens = res.data as unknown as IUserTokenVo
+      uni.setStorageSync('userToken', tokens)
+      await getUserProfile()
+      return tokens
+    }
+
+    /**
      * 退出登录 并 删除用户信息
      */
     const logout = async () => {
-      _logout()
       removeUserAllData()
     }
 
@@ -131,13 +147,14 @@ export const useUserStore = defineStore(
     }
 
     return {
-      userInfo,
+      userProfile,
       userLoginByPhoneData,
       userLoginByPhoneSms,
       wxLogin,
       getUserProfile,
       getUserToken,
       setUserAvatar,
+      refreshToken,
       logout,
     }
   },

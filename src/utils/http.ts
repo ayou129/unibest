@@ -1,4 +1,32 @@
 import { CustomRequestOptions } from '@/interceptors/request'
+import { REFRESH_TOKEN_CODE } from '@/api/api'
+import { useUserStore } from '@/store'
+
+// 添加一个刷新token的锁，防止多个请求同时刷新
+let isRefreshing = false
+// 存储等待刷新完成的请求队列
+type RequestCallback = () => void
+let requests: RequestCallback[] = []
+
+// 处理请求队列
+const handleRequestQueue = () => {
+  requests.forEach((callback) => callback())
+  requests = []
+}
+
+// 更新请求的 header
+const updateRequestHeader = (options: CustomRequestOptions) => {
+  const userStore = useUserStore()
+  const token = userStore.getUserToken()
+  if (token && token.access_token && token.refresh_token) {
+    options.header = {
+      ...options.header,
+      AccessToken: `${token.access_token}`,
+      RefreshToken: `${token.refresh_token}`,
+    }
+  }
+  return options
+}
 
 export const http = <T>(options: CustomRequestOptions) => {
   // 1. 返回 Promise 对象
@@ -11,6 +39,41 @@ export const http = <T>(options: CustomRequestOptions) => {
       // #endif
       // 响应成功
       success(res) {
+        console.log('res', res)
+        // 检查是否需要刷新token
+        if ((res.data as IResData<T>).code === REFRESH_TOKEN_CODE) {
+          // 如果正在刷新，将请求加入队列
+          if (isRefreshing) {
+            requests.push(() => {
+              // 更新请求的 header 并重试
+              const updatedOptions = updateRequestHeader({ ...options })
+              http<T>(updatedOptions).then(resolve).catch(reject)
+            })
+            return
+          }
+
+          isRefreshing = true
+          // 刷新token
+          useUserStore()
+            .refreshToken()
+            .then(() => {
+              // 处理等待的请求队列
+              handleRequestQueue()
+              // 重试当前请求
+              http<T>(options).then(resolve).catch(reject)
+            })
+            .catch((error) => {
+              // 刷新失败，清除用户信息并跳转登录页
+              useUserStore().logout()
+              uni.navigateTo({ url: '/pages/login/index' })
+              reject(error)
+            })
+            .finally(() => {
+              isRefreshing = false
+            })
+          return
+        }
+
         // 状态码 2xx，参考 axios 的设计
         if (res.statusCode >= 200 && res.statusCode < 300) {
           // 2.1 提取核心数据 res.data

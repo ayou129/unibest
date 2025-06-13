@@ -62,17 +62,17 @@ const formRef = ref()
 
 // 用户信息
 const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
+const { userProfile } = storeToRefs(userStore)
 
 // 表单数据
 const formData = ref({
-  id: userInfo.value.id,
-  name: userInfo.value.name,
-  sex: userInfo.value.sex,
-  avatar: userInfo.value.avatar,
-  email: userInfo.value.email,
-  phone: userInfo.value.phone,
-  remark: userInfo.value.remark,
+  id: userProfile.value.id,
+  name: userProfile.value.name,
+  sex: userProfile.value.sex,
+  avatar: userProfile.value.avatar,
+  email: userProfile.value.email,
+  phone: userProfile.value.phone,
+  remark: userProfile.value.remark,
 })
 
 // 提交表单

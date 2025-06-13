@@ -1,5 +1,6 @@
 <route lang="json5">
 {
+  needLogin: true,
   style: {
     navigationBarTitleText: '修改密码',
   },
@@ -66,18 +67,18 @@ import { ref } from 'vue'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import { toast } from '@/utils/toast'
-import { updateInfo, updateUserPassword } from '@/api/login'
+import { updateUserPassword } from '@/api/login'
 
 // 表单引用
 const formRef = ref()
 
 // 用户信息
 const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
+const { userProfile } = storeToRefs(userStore)
 
 // 表单数据
 const formData = ref({
-  id: userInfo.value.id,
+  id: userProfile.value.id,
   oldPassword: '',
   newPassword: '',
   confirmPassword: '',

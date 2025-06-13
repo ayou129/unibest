@@ -72,6 +72,13 @@ export const getUserProfile = () => {
 }
 
 /**
+ * 刷新token
+ */
+export const refreshToken = () => {
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/auth/wx/token/refresh`)
+}
+
+/**
  * 退出登录
  */
 export const logout = () => {

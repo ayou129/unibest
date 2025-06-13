@@ -1,5 +1,6 @@
 <route lang="json5">
 {
+  needLogin: true,
   style: {
     navigationBarTitleText: '关于我们',
   },

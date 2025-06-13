@@ -6,7 +6,7 @@ const loginRoute = import.meta.env.VITE_LOGIN_URL
 const isDev = import.meta.env.DEV
 const isLogined = () => {
   const userStore = useUserStore()
-  return !!userStore.userInfo.id
+  return userStore.userProfile.id > 0
 }
 // 检查当前页面是否需要登录
 export function usePageAuth() {
@@ -25,12 +25,15 @@ export function usePageAuth() {
     }
 
     // 检查当前页面是否需要登录
+    console.log('needLoginPages', needLoginPages)
     const isNeedLogin = needLoginPages.includes(currentPath)
     if (!isNeedLogin) {
+      console.log('似乎不需要登录', currentPath)
       return
     }
 
     const hasLogin = isLogined()
+    console.log('hasLogin', hasLogin)
     if (hasLogin) {
       return true
     }
@@ -44,6 +47,7 @@ export function usePageAuth() {
     const redirectRoute = `${loginRoute}?redirect=${encodeURIComponent(currentFullPath)}`
 
     // 重定向到登录页
+    console.log('重定向到登录页', redirectRoute)
     uni.redirectTo({ url: redirectRoute })
   })
 }

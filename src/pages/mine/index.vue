@@ -9,17 +9,17 @@
 
 <template>
   <view class="profile-container">
-    {{ JSON.stringify(userInfo) }}
+    {{ JSON.stringify(userProfile) }}
     <!-- 用户信息区域 -->
     <view class="user-info-section">
       <!-- #ifdef MP-WEIXIN -->
       <button class="avatar-button" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-        <wd-img :src="userInfo.avatar" width="80px" height="80px" radius="50%"></wd-img>
+        <wd-img :src="userProfile.avatar" width="80px" height="80px" radius="50%"></wd-img>
       </button>
       <!-- #endif -->
       <!-- #ifndef MP-WEIXIN -->
       <view class="avatar-wrapper" @click="run">
-        <wd-img :src="userInfo.avatar" width="100%" height="100%" radius="50%"></wd-img>
+        <wd-img :src="userProfile.avatar" width="100%" height="100%" radius="50%"></wd-img>
       </view>
       <!-- #endif -->
       <view class="user-details">
@@ -28,13 +28,13 @@
           type="nickname"
           class="weui-input"
           placeholder="请输入昵称"
-          v-model="userInfo.username"
+          v-model="userProfile.username"
         />
         <!-- #endif -->
         <!-- #ifndef MP-WEIXIN -->
-        <view class="username">{{ userInfo.username }}</view>
+        <view class="username">{{ userProfile.username }}</view>
         <!-- #endif -->
-        <view class="user-id">ID: {{ userInfo.id }}</view>
+        <view class="user-id">ID: {{ userProfile.id }}</view>
       </view>
     </view>
 
@@ -94,8 +94,8 @@ import { storeToRefs } from 'pinia'
 import { IUploadSuccessInfo } from '@/api/login.typings'
 
 const userStore = useUserStore()
-// 使用storeToRefs解构userInfo
-const { userInfo } = storeToRefs(userStore)
+// 使用storeToRefs解构userProfile
+const { userProfile } = storeToRefs(userStore)
 const toast = useToast()
 const hasLogin = ref(false)
 
@@ -121,15 +121,8 @@ const { run } = useUpload<IUploadSuccessInfo>(
 
 // 微信小程序下登录
 const handleLogin = async () => {
-  // #ifdef MP-WEIXIN
-
-  // 微信登录
-  await userStore.wxLogin()
-  hasLogin.value = true
-  // #endif
-  // #ifndef MP-WEIXIN
+  // 跳转到登录页
   uni.navigateTo({ url: '/pages/login/index' })
-  // #endif
 }
 
 // #ifdef MP-WEIXIN
@@ -154,7 +147,7 @@ const onChooseAvatar = (e: any) => {
 // #endif
 // #ifdef MP-WEIXIN
 // 微信小程序下设置用户名
-const getUserInfo = (e: any) => {
+const getUserProfile = (e: any) => {
   console.log(e.detail)
 }
 // #endif

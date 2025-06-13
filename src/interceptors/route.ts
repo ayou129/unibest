@@ -12,7 +12,7 @@ const loginRoute = import.meta.env.VITE_LOGIN_URL
 
 const isLogined = () => {
   const userStore = useUserStore()
-  return !!userStore.userInfo.id
+  return userStore.userProfile.id > 0
 }
 
 const isDev = import.meta.env.DEV
@@ -42,13 +42,17 @@ const navigateToInterceptor = {
     }
     const isNeedLogin = needLoginPages.includes(path)
     if (!isNeedLogin) {
+      console.log('似乎不需要登录1', path)
       return true
     }
     const hasLogin = isLogined()
+    console.log('hasLogin1', hasLogin)
     if (hasLogin) {
       return true
     }
     const redirectRoute = `${loginRoute}?redirect=${encodeURIComponent(url)}`
+    console.log('重定向到登录页1', redirectRoute)
+
     uni.navigateTo({ url: redirectRoute })
     return false
   },
