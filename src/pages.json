@@ -72,6 +72,7 @@
     {
       "path": "pages/mine/index",
       "type": "page",
+      "needLogin": true,
       "style": {
         "navigationBarTitleText": "我的"
       }
@@ -86,6 +87,7 @@
     {
       "path": "pages/mine/info/index",
       "type": "page",
+      "needLogin": true,
       "style": {
         "navigationBarTitleText": "个人资料"
       }

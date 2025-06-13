@@ -3,6 +3,7 @@ import qs from 'qs'
 import { useUserStore } from '@/store'
 import { platform } from '@/utils/platform'
 import { getEnvBaseUrl } from '@/utils'
+import { IUserTokenVo } from '@/api/login.typings'
 
 export type CustomRequestOptions = UniApp.RequestOptions & {
   query?: Record<string, any>
@@ -52,9 +53,10 @@ const httpInterceptor = {
     }
     // 3. 添加 token 请求头标识
     const userStore = useUserStore()
-    const { token } = userStore.userInfo as unknown as IUserInfo
-    if (token) {
-      options.header.Authorization = `Bearer ${token}`
+    const token = userStore.getUserToken()
+    if (token && token.access_token && token.refresh_token) {
+      options.header.AccessToken = `${token.access_token}`
+      options.header.RefreshToken = `${token.refresh_token}`
     }
   },
 }

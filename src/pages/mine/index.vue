@@ -1,5 +1,6 @@
 <route lang="json5">
 {
+  needLogin: true,
   style: {
     navigationBarTitleText: '我的',
   },
@@ -99,10 +100,10 @@ const toast = useToast()
 const hasLogin = ref(false)
 
 onShow((options) => {
-  hasLogin.value = !!uni.getStorageSync('token')
+  hasLogin.value = !!userStore.getUserToken()
   console.log('个人中心onShow', hasLogin.value, options)
 
-  hasLogin.value && useUserStore().getUserInfo()
+  hasLogin.value && useUserStore().getUserProfile()
 })
 // #ifndef MP-WEIXIN
 // 上传头像

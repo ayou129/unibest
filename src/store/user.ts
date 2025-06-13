@@ -101,6 +101,15 @@ export const useUserStore = defineStore(
       // TODO 这里可以增加获取用户路由的方法 根据用户的角色动态生成路由
       return res
     }
+
+    /**
+     * 获取用户token
+     */
+    const getUserToken = () => {
+      const userToken = uni.getStorageSync('userToken')
+      return userToken as IUserTokenVo
+    }
+
     /**
      * 退出登录 并 删除用户信息
      */
@@ -127,6 +136,7 @@ export const useUserStore = defineStore(
       userLoginByPhoneSms,
       wxLogin,
       getUserProfile,
+      getUserToken,
       setUserAvatar,
       logout,
     }

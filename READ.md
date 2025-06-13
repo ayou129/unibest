@@ -13,4 +13,11 @@ npx @dcloudio/uvm@latest
 # 启动
 yarn run dev:mp-weixin
 
+# 页面限制必须登录才能访问，需要在页面vue中增加
+<route lang="json5">
+{
+  needLogin: true, // 这行
+}
+
+
 ```
