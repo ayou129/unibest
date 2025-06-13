@@ -23,9 +23,9 @@
       <view class="login-input-group">
         <view class="input-wrapper">
           <wd-input
-            v-model="loginForm.username"
+            v-model="loginForm.phone"
             prefix-icon="user"
-            placeholder="请输入用户名"
+            placeholder="请输入手机号"
             clearable
             class="login-input"
             :border="false"
@@ -35,9 +35,9 @@
         </view>
         <view class="input-wrapper">
           <wd-input
-            v-model="loginForm.password"
+            v-model="loginForm.sms_code"
             prefix-icon="lock-on"
-            placeholder="请输入密码"
+            placeholder="请输入手机验证码"
             clearable
             show-password
             class="login-input"
@@ -50,9 +50,9 @@
         <view class="input-wrapper captcha-wrapper">
           <wd-input
             v-if="captcha.captchaEnabled"
-            v-model="loginForm.code"
+            v-model="loginForm.graphic_verify_code"
             prefix-icon="secured"
-            placeholder="请输入验证码"
+            placeholder="请输入图形验证码"
             clearable
             class="login-input captcha-input"
             :border="false"
@@ -127,14 +127,14 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/store/user'
 import { isMpWeixin } from '@/utils/platform'
-import { getCode, ILoginForm } from '@/api/login'
+import { getUserLoginGrapicVerifyCode, IPhoneSmsLoginForm, userLoginByPhoneSms } from '@/api/login'
 import { toast } from '@/utils/toast'
 import { isTableBar } from '@/utils/index'
 import { ICaptcha } from '@/api/login.typings'
 const redirectRoute = ref('')
 
 // 获取环境变量
-const appTitle = ref(import.meta.env.VITE_APP_TITLE || 'Unibest Login')
+const appTitle = ref(import.meta.env.VITE_APP_TITLE || 'Login')
 const appLogo = ref(import.meta.env.VITE_APP_LOGO || '/static/logo.svg')
 
 // 初始化store
@@ -147,11 +147,10 @@ const captcha = ref<ICaptcha>({
   image: '',
 })
 // 登录表单数据
-const loginForm = ref<ILoginForm>({
-  username: 'admin',
-  password: '123456',
-  code: '',
-  uuid: '',
+const loginForm = ref<IPhoneSmsLoginForm>({
+  phone: '',
+  graphic_verify_code: '',
+  sms_code: '',
 })
 // 隐私协议勾选状态
 const agreePrivacy = ref(true)
@@ -173,26 +172,26 @@ const handleAccountLogin = async () => {
     return
   }
   // 表单验证
-  if (!loginForm.value.username) {
-    toast.error('请输入用户名')
+  if (!loginForm.value.phone) {
+    toast.error('请输入手机号')
     return
   }
-  if (!loginForm.value.password) {
-    toast.error('请输入密码')
-    return
-  }
-  if (captcha.value.captchaEnabled && !loginForm.value.code) {
+  if (captcha.value.captchaEnabled && !loginForm.value.graphic_verify_code) {
     toast.error('请输入验证码')
     return
   }
   // 执行登录
-  await userStore.login(loginForm.value)
-  // 跳转到首页或重定向页面
-  const targetUrl = redirectRoute.value || '/pages/index/index'
-  if (isTableBar(targetUrl)) {
-    uni.switchTab({ url: targetUrl })
+  const res = await userLoginByPhoneSms(loginForm.value)
+  if (res.code === 200) {
+    // 跳转到首页或重定向页面
+    const targetUrl = redirectRoute.value || '/pages/index/index'
+    if (isTableBar(targetUrl)) {
+      uni.switchTab({ url: targetUrl })
+    } else {
+      uni.redirectTo({ url: targetUrl })
+    }
   } else {
-    uni.redirectTo({ url: targetUrl })
+    toast.error(res.msg)
   }
 }
 
@@ -222,10 +221,9 @@ const handleWechatLogin = async () => {
 // 刷新验证码
 const refreshCaptcha = () => {
   // 获取验证码
-  getCode().then((res) => {
+  getUserLoginGrapicVerifyCode().then((res) => {
     const { data } = res
-    loginForm.value.uuid = data.uuid
-    captcha.value = data
+    captcha.value = data as unknown as ICaptcha
   })
 }
 

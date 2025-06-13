@@ -1,20 +1,28 @@
 /**
  * 用户信息
  */
-export type IUserInfoVo = {
+export type IUserProfileVo = {
   id: number
   username: string
   avatar: string
-  token: string
+  name: string
+  sex: string
+  phone: string
+  email: string
+  status: number
+  createTime: string
+  updateTime: string
+  remark: string
+  access_token: string
+  refresh_token: string
 }
 
 /**
  * 登录返回的信息
  */
 export type IUserLogin = {
-  id: string
-  username: string
-  token: string
+  access_token: string
+  refresh_token: string
 }
 
 /**

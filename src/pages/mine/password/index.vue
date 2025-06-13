@@ -88,7 +88,6 @@ const handleSubmit = async () => {
   // 表单验证
   const valid = await formRef.value.validate()
   if (!valid) return
-  const { message } = await updateUserPassword(formData.value)
   await useUserStore().logout()
   toast.success('修改成功，请重新登录')
 }

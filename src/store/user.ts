@@ -1,30 +1,38 @@
 import {
-  login as _login,
-  getUserInfo as _getUserInfo,
-  wxLogin as _wxLogin,
+  userLoginByCode2Session as _userLoginByCode2Session,
+  getUserProfile as _getUserProfile,
   logout as _logout,
   getWxCode,
 } from '@/api/login'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { toast } from '@/utils/toast'
-import { IUserInfoVo } from '@/api/login.typings'
+import { IUserProfileVo } from '@/api/login.typings'
 
 // 初始化状态
-const userInfoState: IUserInfoVo = {
+const userInfoState: IUserProfileVo = {
   id: 0,
   username: '',
   avatar: '/static/images/default-avatar.png',
-  token: '',
+  name: '',
+  sex: '',
+  phone: '',
+  email: '',
+  status: 0,
+  createTime: '',
+  updateTime: '',
+  remark: '',
+  access_token: '',
+  refresh_token: '',
 }
 
 export const useUserStore = defineStore(
   'user',
   () => {
     // 定义用户信息
-    const userInfo = ref<IUserInfoVo>({ ...userInfoState })
+    const userInfo = ref<IUserProfileVo>({ ...userInfoState })
     // 设置用户信息
-    const setUserInfo = (val: IUserInfoVo) => {
+    const setUserInfo = (val: IUserProfileVo) => {
       console.log('设置用户信息', val)
       // 若头像为空 则使用默认头像
       if (!val.avatar) {
@@ -56,21 +64,20 @@ export const useUserStore = defineStore(
       code: string
       uuid: string
     }) => {
-      const res = await _login(credentials)
+      const res = await _userLoginByCode2Session(credentials)
       console.log('登录信息', res)
-      toast.success('登录成功')
-      getUserInfo()
+      toast.success(res.msg)
+      await _getUserProfile()
       return res
     }
     /**
      * 获取用户信息
      */
     const getUserInfo = async () => {
-      const res = await _getUserInfo()
-      const userInfo = res.data
+      const res = await _getUserProfile()
+      const userInfo = res.data as unknown as IUserProfileVo
       setUserInfo(userInfo)
       uni.setStorageSync('userInfo', userInfo)
-      uni.setStorageSync('token', userInfo.token)
       // TODO 这里可以增加获取用户路由的方法 根据用户的角色动态生成路由
       return res
     }
@@ -88,9 +95,8 @@ export const useUserStore = defineStore(
       // 获取微信小程序登录的code
       const data = await getWxCode()
       console.log('微信登录code', data)
-
-      const res = await _wxLogin(data)
-      getUserInfo()
+      const res = await _userLoginByCode2Session({ code: data.code })
+      await _getUserProfile()
       return res
     }
 

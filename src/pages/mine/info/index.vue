@@ -75,9 +75,9 @@ const handleSubmit = async () => {
   // 表单验证
   const valid = await formRef.value.validate()
   if (!valid) return
-  const { message } = await updateInfo(formData.value)
+  const res = await updateInfo(formData.value)
   await useUserStore().getUserInfo()
-  toast.success(message)
+  toast.success(res.msg)
 }
 </script>
 

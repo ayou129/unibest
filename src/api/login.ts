@@ -1,58 +1,92 @@
-import { ICaptcha, IUpdateInfo, IUpdatePassword, IUserInfoVo, IUserLogin } from './login.typings'
+import { ICaptcha, IUpdateInfo, IUpdatePassword, IUserProfileVo, IUserLogin } from './login.typings'
 import { http } from '@/utils/http'
+import { IApiResponse, ApiPrefix, ApiCommonPrefix } from './api'
 
 /**
- * 登录表单
+ * 微信小程序登录表单
  */
 export interface ILoginForm {
-  username: string
-  password: string
   code: string
-  uuid: string
+}
+
+/**
+ * 手机号数据登录(微信小程序需要，例如抖音小程序不需要)
+ */
+export interface IWxPhoneDataLoginForm {
+  open_id: string
+  encrypted_data: string
+  iv: string
+}
+
+/**
+ * 手机号+sms验证码登录
+ */
+export interface IPhoneSmsLoginForm {
+  phone: string
+  graphic_verify_code: string
+  sms_code: string
 }
 
 /**
  * 获取验证码
  * @returns ICaptcha 验证码
  */
-export const getCode = () => {
-  return http.get<ICaptcha>('/user/getCode')
+export const getUserLoginGrapicVerifyCode = () => {
+  return http.get<IApiResponse<ICaptcha>>(`${ApiCommonPrefix}/grapic_verify_code/user_login`)
 }
 
 /**
- * 用户登录
+ * 微信小程序用户code登录
  * @param loginForm 登录表单
  */
-export const login = (loginForm: ILoginForm) => {
-  return http.post<IUserLogin>('/user/login', loginForm)
+export const userLoginByCode2Session = (loginForm: ILoginForm) => {
+  return http.post<IApiResponse<IUserLogin>>(
+    `${ApiPrefix}/user/auth/wx/login/code2Session`,
+    loginForm,
+  )
+}
+
+/**
+ * 微信小程序手机数据登录（实际登录），后端会生成真正的用户id，并且返回token
+ * @param loginForm 登录表单
+ */
+export const userLoginByPhoneData = (loginForm: IWxPhoneDataLoginForm) => {
+  return http.post<IApiResponse<IUserLogin>>(`${ApiPrefix}/user/auth/wx/login/phoneData`, loginForm)
+}
+
+/**
+ * 手机号+sms验证码登录
+ */
+export const userLoginByPhoneSms = (loginForm: IPhoneSmsLoginForm) => {
+  return http.post<IApiResponse<IUserLogin>>(`${ApiPrefix}/user/auth/phone/login/sms`, loginForm)
 }
 
 /**
  * 获取用户信息
  */
-export const getUserInfo = () => {
-  return http.get<IUserInfoVo>('/user/info')
+export const getUserProfile = () => {
+  return http.get<IApiResponse<IUserProfileVo>>(`${ApiPrefix}/user/profile`)
 }
 
 /**
  * 退出登录
  */
 export const logout = () => {
-  return http.get<void>('/user/logout')
+  return http.get<IApiResponse<void>>(`${ApiPrefix}/user/logout`)
 }
 
 /**
  * 修改用户信息
  */
 export const updateInfo = (data: IUpdateInfo) => {
-  return http.post('/user/updateInfo', data)
+  return http.post<IApiResponse<void>>(`${ApiPrefix}/user/updateInfo`, data)
 }
 
 /**
  * 修改用户密码
  */
 export const updateUserPassword = (data: IUpdatePassword) => {
-  return http.post('/user/updatePassword', data)
+  return http.post<IApiResponse<void>>(`${ApiPrefix}/user/updatePassword`, data)
 }
 
 /**
@@ -67,17 +101,4 @@ export const getWxCode = () => {
       fail: (err) => reject(new Error(err)),
     })
   })
-}
-
-/**
- * 微信登录参数
- */
-
-/**
- * 微信登录
- * @param params 微信登录参数，包含code
- * @returns Promise 包含登录结果
- */
-export const wxLogin = (data: { code: string }) => {
-  return http.post<IUserLogin>('/user/wxLogin', data)
 }
