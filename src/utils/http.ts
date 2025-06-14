@@ -25,13 +25,13 @@ export const http = <T>(options: CustomRequestOptions) => {
       // #endif
       // 响应成功
       success(res) {
-        console.log('res', res)
+        console.log('res', res.data)
         // 检查是否需要刷新token
         if ((res.data as IResData<T>).code === REFRESH_TOKEN_CODE) {
+          console.log('需要刷新token')
           // 如果正在刷新，将请求加入队列
           if (isRefreshing) {
             requests.push(() => {
-              // 重试当前请求
               http<T>(options).then(resolve).catch(reject)
             })
             return
@@ -44,8 +44,14 @@ export const http = <T>(options: CustomRequestOptions) => {
             .then(() => {
               // 处理等待的请求队列
               handleRequestQueue()
+              // 清除旧token，让拦截器重新添加新token
+              const retryOptions = { ...options }
+              if (retryOptions.header) {
+                delete retryOptions.header.AccessToken
+                delete retryOptions.header.RefreshToken
+              }
               // 重试当前请求
-              http<T>(options).then(resolve).catch(reject)
+              http<T>(retryOptions).then(resolve).catch(reject)
             })
             .catch((error) => {
               // 刷新失败，清除用户信息并跳转登录页
@@ -63,11 +69,6 @@ export const http = <T>(options: CustomRequestOptions) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           // 2.1 提取核心数据 res.data
           resolve(res.data as IResData<T>)
-        } else if (res.statusCode === 401) {
-          // 401错误  -> 清理用户信息，跳转到登录页
-          // userStore.clearUserInfo()
-          // uni.navigateTo({ url: '/pages/login/login' })
-          reject(res)
         } else {
           // 其他错误 -> 根据后端错误信息轻提示
           !options.hideErrorToast &&

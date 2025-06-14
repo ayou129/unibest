@@ -2,7 +2,7 @@
 import qs from 'qs'
 import { platform } from '@/utils/platform'
 import { getEnvBaseUrl } from '@/utils'
-import { getUserToken } from '@/store/_base'
+import { useTokenStore } from '@/store/token'
 
 export type CustomRequestOptions = UniApp.RequestOptions & {
   query?: Record<string, any>
@@ -53,12 +53,13 @@ const httpInterceptor = {
     // 1. 请求超时
     options.timeout = 10000 // 10s
 
-    // 2. 添加 token 请求头标识
-    const userToken = getUserToken()
-    console.log('拦截器中的 access_token', userToken?.access_token)
-    if (userToken && userToken.access_token && userToken.refresh_token) {
-      options.header.AccessToken = `${userToken.access_token}`
-      options.header.RefreshToken = `${userToken.refresh_token}`
+    // 2. 从存储获取token
+    const tokenStore = useTokenStore()
+    const userToken = tokenStore.getUserToken()
+    console.log('request 拦截器 设置token', userToken)
+    if (userToken) {
+      options.header['AccessToken'] = `${userToken.access_token}`
+      options.header['RefreshToken'] = `${userToken.refresh_token}`
     }
 
     // 3. 添加平台标识和其他 header

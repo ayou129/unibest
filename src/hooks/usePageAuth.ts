@@ -1,13 +1,13 @@
 import { onLoad } from '@dcloudio/uni-app'
 import { needLoginPages as _needLoginPages, getNeedLoginPages } from '@/utils'
-import { getUserToken } from '@/store/_base'
 import { useUserStore } from '@/store/user'
+import { useTokenStore } from '@/store/token'
 
 const loginRoute = import.meta.env.VITE_LOGIN_URL
 const isDev = import.meta.env.DEV
 
 export const isLogined = () => {
-  const token = getUserToken()
+  const token = useTokenStore().getUserToken()
   const hasProfile = useUserStore().userProfile.id > 0
 
   console.log('登录状态检查:', {

@@ -93,8 +93,7 @@ import { useUpload } from '@/utils/uploadFile'
 import { storeToRefs } from 'pinia'
 import { IUploadSuccessInfo } from '@/api/login.typings'
 import { usePageAuth, isLogined } from '@/hooks/usePageAuth' // 导入 isLogined
-import { getUserToken } from '@/store/_base'
-
+import { useTokenStore } from '@/store/token'
 // 使用认证 hook
 usePageAuth()
 
@@ -105,20 +104,24 @@ const hasLogin = ref(isLogined())
 
 onShow((options) => {
   // 使用 isLogined 函数检查登录状态
-  const token = getUserToken()
+  const token = useTokenStore().getUserToken()
   console.log('1', token?.access_token)
+
+  // const profile = userStore.getUserProfile()
+  // console.log('2', profile)
+
   const loginStatus = isLogined()
   hasLogin.value = loginStatus
 
   console.log('个人中心 onShow，登录状态:', loginStatus)
 
-  if (loginStatus) {
-    // 已登录，获取用户信息
-    userStore.getUserProfile()
-  } else {
-    // 未登录，跳转到登录页
-    uni.navigateTo({ url: '/pages/login/index' })
-  }
+  // if (loginStatus) {
+  //   // 已登录，获取用户信息
+  userStore.getUserProfile()
+  // } else {
+  //   // 未登录，跳转到登录页
+  //   uni.navigateTo({ url: '/pages/login/index' })
+  // }
 })
 // #ifndef MP-WEIXIN
 // 上传头像

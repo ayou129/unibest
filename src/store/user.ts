@@ -11,7 +11,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { toast } from '@/utils/toast'
 import { IUserProfileVo, IUserTokenVo } from '@/api/login.typings'
-import { setUserToken, removeUserToken, getUserToken } from './_base'
+import { useTokenStore } from './token'
 
 // 初始化状态
 const UserProfileState: IUserProfileVo = {
@@ -33,8 +33,12 @@ export const useUserStore = defineStore(
   () => {
     // 定义用户信息
     const userProfile = ref<IUserProfileVo>({ ...UserProfileState })
+
     // 设置用户信息
     const setUserProfile = (val: IUserProfileVo) => {
+      if (!val.id) {
+        return
+      }
       console.log('设置用户信息', val)
       // 若头像为空 则使用默认头像
       if (!val.avatar) {
@@ -44,15 +48,16 @@ export const useUserStore = defineStore(
       }
       userProfile.value = val
     }
+
     const setUserAvatar = (avatar: string) => {
       userProfile.value.avatar = avatar
       console.log('userProfile', userProfile.value)
     }
 
-    // 删除用户信息
+    // 删除用户信息和token
     const removeUserAllData = () => {
       userProfile.value = { ...UserProfileState }
-      removeUserToken()
+      useTokenStore().deleteUserToken()
     }
 
     /**
@@ -65,7 +70,7 @@ export const useUserStore = defineStore(
     }) => {
       const res = await _userLoginByPhoneSms(data)
       const tokens = res.data as unknown as IUserTokenVo
-      await setUserToken(tokens)
+      await useTokenStore().setUserToken(tokens)
       await getUserProfile()
       return res
     }
@@ -81,7 +86,7 @@ export const useUserStore = defineStore(
     }) => {
       const res = await _userLoginByPhoneData(data)
       const tokens = res.data as unknown as IUserTokenVo
-      await setUserToken(tokens)
+      await useTokenStore().setUserToken(tokens)
       await getUserProfile()
       return res
     }
@@ -107,7 +112,7 @@ export const useUserStore = defineStore(
         return false
       }
       const tokens = res.data as unknown as IUserTokenVo
-      await setUserToken(tokens)
+      await useTokenStore().setUserToken(tokens)
       await getUserProfile()
       return tokens
     }

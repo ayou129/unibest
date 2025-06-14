@@ -1,5 +1,4 @@
 import { CustomRequestOptions } from '@/interceptors/request'
-import { getUserToken } from '@/store/_base'
 
 /**
  * 请求方法: 主要是对 uni.request 的封装，去适配 openapi-ts-request 的 request 方法
@@ -71,18 +70,6 @@ export default function request<T = unknown>(
   if (options.headers) {
     requestOptions.header = options.headers
     delete requestOptions.headers
-  }
-
-  // 添加token
-  const token = getUserToken()
-  console.log('request.ts 中的 token:', token?.access_token)
-
-  if (token && token.access_token && token.refresh_token) {
-    requestOptions.header = {
-      ...requestOptions.header,
-      AccessToken: `${token.access_token}`,
-      RefreshToken: `${token.refresh_token}`,
-    }
   }
 
   return http<T>(requestOptions)
