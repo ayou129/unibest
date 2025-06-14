@@ -106,15 +106,21 @@ export const useUserStore = defineStore(
      * 刷新token
      */
     const refreshToken = async () => {
-      const res = await _refreshToken()
-      if (res.code !== 200) {
-        toast.error('刷新token失败')
+      try {
+        const res = await _refreshToken()
+        const tokens = res.data as unknown as IUserTokenVo
+        if (tokens.access_token && tokens.refresh_token) {
+          useTokenStore().setUserToken(tokens)
+          console.log('✅ token刷新成功')
+        } else {
+          removeUserAllData()
+          console.log('❌ token刷新失败')
+        }
+        return tokens
+      } catch (error) {
+        console.error('刷新token异常:', error)
         return false
       }
-      const tokens = res.data as unknown as IUserTokenVo
-      await useTokenStore().setUserToken(tokens)
-      await getUserProfile()
-      return tokens
     }
 
     /**

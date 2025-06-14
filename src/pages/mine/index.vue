@@ -115,13 +115,13 @@ onShow((options) => {
 
   console.log('个人中心 onShow，登录状态:', loginStatus)
 
-  // if (loginStatus) {
-  //   // 已登录，获取用户信息
-  userStore.getUserProfile()
-  // } else {
-  //   // 未登录，跳转到登录页
-  //   uni.navigateTo({ url: '/pages/login/index' })
-  // }
+  if (loginStatus) {
+    // 已登录，获取用户信息
+    userStore.getUserProfile()
+  } else {
+    // 未登录，跳转到登录页
+    uni.navigateTo({ url: '/pages/login/index' })
+  }
 })
 // #ifndef MP-WEIXIN
 // 上传头像

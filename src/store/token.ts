@@ -19,23 +19,8 @@ export const useTokenStore = defineStore(
         return
       }
       console.log('✅ Pinia设置新token:', token.access_token)
+
       userToken.value = token
-
-      // 立即手动同步到存储，确保拦截器能获取到最新token
-      try {
-        const currentData = uni.getStorageSync('user') || {}
-        const updatedData = {
-          ...currentData,
-          userToken: token,
-        }
-        uni.setStorageSync('user', updatedData)
-        console.log('🔄 手动同步token到存储完成')
-
-        // 添加一个小延迟确保存储操作完全完成
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      } catch (error) {
-        console.warn('手动同步token失败:', error)
-      }
     }
 
     // 获取token

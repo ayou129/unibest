@@ -8,12 +8,13 @@ const isDev = import.meta.env.DEV
 
 export const isLogined = () => {
   const token = useTokenStore().getUserToken()
-  const hasProfile = useUserStore().userProfile.id > 0
+  const profile = useUserStore().userProfile
+  const hasProfile = profile.id > 0
 
   console.log('登录状态检查:', {
     hasToken: !!(token && token.access_token),
     hasProfile,
-    userProfile: useUserStore().userProfile,
+    userProfile: profile,
   })
 
   // 必须同时满足：有 token 且有用户信息

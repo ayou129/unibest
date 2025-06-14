@@ -1,93 +1,118 @@
 import { CustomRequestOptions } from '@/interceptors/request'
 import { REFRESH_TOKEN_CODE } from '@/api/api'
 import { useUserStore } from '@/store'
+import { useTokenStore } from '@/store/token'
 
-// 添加一个刷新token的锁，防止多个请求同时刷新
+// 刷新token的API路径
+const REFRESH_TOKEN_API = '/user/auth/wx/token/refresh'
+
+// 添加一个刷新token的锁
 let isRefreshing = false
-// 存储等待刷新完成的请求队列
-type RequestCallback = () => void
-let requests: RequestCallback[] = []
+let refreshPromise: Promise<any> | null = null
 
-// 处理请求队列
-const handleRequestQueue = () => {
-  requests.forEach((callback) => callback())
-  requests = []
+// 处理token刷新的函数
+const handleTokenRefresh = (): Promise<void> => {
+  if (isRefreshing && refreshPromise) {
+    // 如果正在刷新，返回同一个Promise
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = useUserStore()
+    .refreshToken()
+    .then((result) => {
+      if (!result) {
+        throw new Error('token刷新失败')
+      }
+      return result
+    })
+    .finally(() => {
+      isRefreshing = false
+      refreshPromise = null
+    })
+
+  return refreshPromise
 }
 
 export const http = <T>(options: CustomRequestOptions) => {
-  // 1. 返回 Promise 对象
   return new Promise<IResData<T>>((resolve, reject) => {
-    uni.request({
-      ...options,
-      dataType: 'json',
-      // #ifndef MP-WEIXIN
-      responseType: 'json',
-      // #endif
-      // 响应成功
-      success(res) {
-        console.log('res', res.data)
-        // 检查是否需要刷新token
-        if ((res.data as IResData<T>).code === REFRESH_TOKEN_CODE) {
-          console.log('需要刷新token')
-          // 如果正在刷新，将请求加入队列
-          if (isRefreshing) {
-            requests.push(() => {
-              http<T>(options).then(resolve).catch(reject)
-            })
+    // 🔥 关键：每次请求都重新获取最新token
+    const executeRequest = () => {
+      const tokenStore = useTokenStore()
+      const currentToken = tokenStore.getUserToken()
+
+      // 克隆options避免修改原对象
+      const requestOptions = { ...options }
+      if (!requestOptions.header) {
+        requestOptions.header = {}
+      }
+
+      // 设置最新token
+      if (currentToken && currentToken.access_token) {
+        requestOptions.header['AccessToken'] = currentToken.access_token
+        requestOptions.header['RefreshToken'] = currentToken.refresh_token
+        console.log('🔑 请求设置token:', currentToken.access_token)
+      }
+
+      uni.request({
+        ...requestOptions,
+        dataType: 'json',
+        success(res) {
+          console.log('📡 请求响应:', res.data)
+
+          // 检查是否需要刷新token
+          if ((res.data as IResData<T>).code === REFRESH_TOKEN_CODE) {
+            console.log('🔄 检测到token过期')
+
+            // 如果是refresh API本身失败，直接登出
+            if (options.url?.includes(REFRESH_TOKEN_API)) {
+              console.log('❌ refresh API失败，直接登出')
+              // useUserStore().logout()
+              // uni.navigateTo({ url: '/pages/login/index' })
+              reject(res)
+              return
+            }
+
+            // 处理token刷新
+            handleTokenRefresh()
+              .then(() => {
+                // 刷新成功后重试
+                console.log('🔄 token刷新成功，重试请求')
+                executeRequest() // 递归调用，会重新获取最新token
+              })
+              .catch((error) => {
+                console.log('❌ token刷新失败')
+                useUserStore().logout()
+                uni.navigateTo({ url: '/pages/login/index' })
+                reject(error)
+              })
             return
           }
 
-          isRefreshing = true
-          // 刷新token
-          useUserStore()
-            .refreshToken()
-            .then(() => {
-              // 处理等待的请求队列
-              handleRequestQueue()
-              // 清除旧token，让拦截器重新添加新token
-              const retryOptions = { ...options }
-              if (retryOptions.header) {
-                delete retryOptions.header.AccessToken
-                delete retryOptions.header.RefreshToken
-              }
-              // 重试当前请求
-              http<T>(retryOptions).then(resolve).catch(reject)
-            })
-            .catch((error) => {
-              // 刷新失败，清除用户信息并跳转登录页
-              useUserStore().logout()
-              uni.navigateTo({ url: '/pages/login/index' })
-              reject(error)
-            })
-            .finally(() => {
-              isRefreshing = false
-            })
-          return
-        }
+          // 正常响应处理
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(res.data as IResData<T>)
+          } else {
+            !options.hideErrorToast &&
+              uni.showToast({
+                icon: 'none',
+                title: (res.data as IResData<T>).msg || '请求错误',
+              })
+            reject(res)
+          }
+        },
+        fail(err) {
+          uni.showToast({
+            icon: 'none',
+            title: '网络错误，换个网络试试',
+          })
+          reject(err)
+        },
+      })
+    }
 
-        // 状态码 2xx，参考 axios 的设计
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          // 2.1 提取核心数据 res.data
-          resolve(res.data as IResData<T>)
-        } else {
-          // 其他错误 -> 根据后端错误信息轻提示
-          !options.hideErrorToast &&
-            uni.showToast({
-              icon: 'none',
-              title: (res.data as IResData<T>).msg || '请求错误',
-            })
-          reject(res)
-        }
-      },
-      // 响应失败
-      fail(err) {
-        uni.showToast({
-          icon: 'none',
-          title: '网络错误，换个网络试试',
-        })
-        reject(err)
-      },
-    })
+    // 开始执行请求
+    executeRequest()
   })
 }
 
