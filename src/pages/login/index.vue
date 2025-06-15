@@ -230,9 +230,10 @@ const handleWechatLogin = async (e) => {
     wxPhoneData.value.iv = e.iv
 
     const res = await userStore.userLoginByPhoneData(wxPhoneData.value)
-    if (res.code === 200) {
+    if (res.code >= 0) {
       // 跳转到首页或重定向页面
       const targetUrl = redirectRoute.value || '/pages/index/index'
+      console.log('targetUrl', targetUrl)
       if (isTableBar(targetUrl)) {
         uni.switchTab({ url: targetUrl })
       } else {
