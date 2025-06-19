@@ -58,4 +58,12 @@ image {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
+
+.page-container {
+  min-height: 100vh;
+  // background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+  background-color: #ffffff;
+  // background-color: #f4f4f4;
+  padding-top: 40rpx;
+}
 </style>

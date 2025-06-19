@@ -1,6 +1,7 @@
 <!-- 使用 type="home" 属性设置首页，其他页面不需要设置，默认为page；推荐使用json5，更强大，且允许注释 -->
 <route lang="json5" type="home">
 {
+  enablePullDownRefresh: true,
   style: {
     navigationStyle: 'custom',
     navigationBarTitleText: '首页',
@@ -8,7 +9,7 @@
 }
 </route>
 <template>
-  <view class="home-container">
+  <view class="page-container">
     <!-- Banner区域 -->
     <view class="banner-section" :style="{ paddingTop: safeAreaInsets?.top + 'px' }">
       <view class="banner-content">
@@ -195,15 +196,17 @@ const handleGameSelect = (game: any) => {
 onLoad(() => {
   console.log('陪玩首页加载完成')
 })
+
+onPullDownRefresh(() => {
+  console.log('下拉刷新')
+})
+
+onReachBottom(() => {
+  console.log('上拉加载')
+})
 </script>
 
 <style lang="scss" scoped>
-.home-container {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
-  padding-top: 40rpx;
-}
-
 // Banner样式
 .banner-section {
   padding: 0 20rpx 40rpx;
