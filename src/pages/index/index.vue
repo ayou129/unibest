@@ -1,9 +1,10 @@
 <!-- 使用 type="home" 属性设置首页，其他页面不需要设置，默认为page；推荐使用json5，更强大，且允许注释 -->
 <route lang="json5" type="home">
 {
-  enablePullDownRefresh: true,
   style: {
+    enablePullDownRefresh: true,
     navigationStyle: 'custom',
+    // onReachBottomDistance: 10,
     navigationBarTitleText: '首页',
   },
 }
@@ -118,13 +119,13 @@ defineOptions({
 let safeAreaInsets
 // #ifdef MP-WEIXIN
 // 微信小程序使用新的API
-const systemInfo = wx.getWindowInfo()
-safeAreaInsets = systemInfo.safeArea
+const wxSystemInfo = (wx as any).getWindowInfo()
+safeAreaInsets = wxSystemInfo.safeArea
   ? {
-      top: systemInfo.safeArea.top,
-      right: systemInfo.windowWidth - systemInfo.safeArea.right,
-      bottom: systemInfo.windowHeight - systemInfo.safeArea.bottom,
-      left: systemInfo.safeArea.left,
+      top: wxSystemInfo.safeArea.top,
+      right: wxSystemInfo.windowWidth - wxSystemInfo.safeArea.right,
+      bottom: wxSystemInfo.windowHeight - wxSystemInfo.safeArea.bottom,
+      left: wxSystemInfo.safeArea.left,
     }
   : null
 // #endif
@@ -199,6 +200,10 @@ onLoad(() => {
 
 onPullDownRefresh(() => {
   console.log('下拉刷新')
+  // 刷新逻辑
+  setTimeout(() => {
+    uni.stopPullDownRefresh()
+  }, 1000)
 })
 
 onReachBottom(() => {

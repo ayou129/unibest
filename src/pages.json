@@ -48,8 +48,8 @@
     {
       "path": "pages/index/index",
       "type": "home",
-      "enablePullDownRefresh": true,
       "style": {
+        "enablePullDownRefresh": true,
         "navigationStyle": "custom",
         "navigationBarTitleText": "首页"
       }
