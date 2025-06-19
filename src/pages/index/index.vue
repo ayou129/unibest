@@ -12,7 +12,7 @@
 <template>
   <view class="page-container">
     <!-- Banner区域 -->
-    <view class="banner-section" :style="{ paddingTop: safeAreaInsets?.top + 'px' }">
+    <view class="banner-section">
       <view class="banner-content">
         <view class="banner-bg">
           <view class="banner-left">

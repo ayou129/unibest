@@ -2,14 +2,15 @@
 {
   needLogin: true,
   style: {
+    enablePullDownRefresh: true,
+    navigationStyle: 'custom',
     navigationBarTitleText: '我的',
   },
 }
 </route>
 
 <template>
-  <view class="profile-container">
-    {{ JSON.stringify(userProfile) }}
+  <view class="page-container">
     <!-- 用户信息区域 -->
     <view class="user-info-section">
       <!-- #ifdef MP-WEIXIN -->
@@ -272,18 +273,12 @@ const handleLogout = () => {
 </script>
 
 <style lang="scss" scoped>
-/* 基础样式 */
-.profile-container {
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  background-color: #f7f8fa;
-}
 /* 用户信息区域 */
 .user-info-section {
   display: flex;
   align-items: center;
-  padding: 40rpx;
-  margin: 30rpx 30rpx 20rpx;
+  padding: 0 40rpx 40rpx;
+  margin: 0 30rpx 20rpx;
   background-color: #fff;
   border-radius: 24rpx;
   box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);

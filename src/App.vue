@@ -64,6 +64,7 @@ image {
   // background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
   background-color: #ffffff;
   // background-color: #f4f4f4;
-  padding-top: 40rpx;
+  padding-top: 170rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
 }
 </style>

@@ -75,6 +75,8 @@
       "type": "page",
       "needLogin": true,
       "style": {
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom",
         "navigationBarTitleText": "我的"
       }
     },
