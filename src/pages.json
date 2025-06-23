@@ -64,6 +64,14 @@
       }
     },
     {
+      "path": "pages/address/edit",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "编辑地址"
+      }
+    },
+    {
       "path": "pages/address/list",
       "type": "page",
       "needLogin": true,

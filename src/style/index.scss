@@ -314,3 +314,17 @@ page {
   padding-top: $page-top-padding;
   background-color: $page-bg-color;
 }
+
+.bottom-panel {
+  position: fixed;
+  bottom: 0rpx;
+  left: 0;
+  right: 0;
+  padding: 12rpx 32rpx 30rpx 36rpx;
+  background-color: $mall-bg-card;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}

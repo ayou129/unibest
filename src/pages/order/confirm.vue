@@ -82,7 +82,7 @@
     </view>
 
     <!-- 底部支付栏 -->
-    <view class="bottom-payment">
+    <view class="bottom-panel">
       <view class="total-price">
         <text class="currency-symbol">￥</text>
         <text class="price-amount">{{ orderInfo.total }}</text>
@@ -96,7 +96,8 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
+import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
+import { getDefaultAddress, type AddressInfo } from '@/utils/addressStorage'
 
 defineOptions({
   name: 'OrderConfirm',
@@ -106,7 +107,20 @@ defineOptions({
 const selectedAddress = ref({
   text: '点击添加收货地址',
   hasAddress: false,
+  data: null as AddressInfo | null,
 })
+
+// 加载默认地址
+const loadDefaultAddress = () => {
+  const defaultAddress = getDefaultAddress()
+  if (defaultAddress) {
+    selectedAddress.value = {
+      text: `${defaultAddress.name} ${defaultAddress.phone}\n${defaultAddress.fullAddress}`,
+      hasAddress: true,
+      data: defaultAddress,
+    }
+  }
+}
 
 // 可用优惠券数量
 const availableCoupons = ref(3)
@@ -139,7 +153,7 @@ const selectAddress = () => {
       } else {
         // 跳转到添加地址页面
         uni.navigateTo({
-          url: '/pages/address/add',
+          url: '/pages/address/edit',
         })
       }
     },
@@ -209,6 +223,9 @@ const handlePayment = () => {
 onLoad((options) => {
   console.log('确认订单页面加载完成', options)
 
+  // 加载默认地址
+  loadDefaultAddress()
+
   // 如果从商品详情页传递了商品信息，在这里接收并更新
   if (options?.productId) {
     // 根据商品ID获取商品信息
@@ -222,6 +239,20 @@ onLoad((options) => {
     orderInfo.value.subtotal = subtotal.toFixed(1)
     orderInfo.value.total = (subtotal - parseFloat(orderInfo.value.couponDiscount)).toFixed(1)
   }
+
+  // 监听地址选择事件
+  uni.$on('selectAddress', (address: AddressInfo) => {
+    selectedAddress.value = {
+      text: `${address.name} ${address.phone}\n${address.fullAddress}`,
+      hasAddress: true,
+      data: address,
+    }
+  })
+})
+
+onShow(() => {
+  // 页面显示时重新加载默认地址（可能从地址编辑页面返回）
+  loadDefaultAddress()
 })
 
 onPullDownRefresh(() => {
@@ -458,20 +489,6 @@ onPullDownRefresh(() => {
 .payment-icon {
   width: 24rpx;
   height: 24rpx;
-}
-
-.bottom-payment {
-  position: fixed;
-  bottom: 0rpx;
-  left: 0;
-  right: 0;
-  padding: 12rpx 32rpx 30rpx 36rpx;
-  background-color: $mall-bg-card;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
-  z-index: 100;
 }
 
 .total-price {

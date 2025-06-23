@@ -89,50 +89,27 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
+import {
+  getAddressList,
+  deleteAddress as deleteAddressFromStorage,
+  setDefaultAddress,
+  type AddressInfo,
+} from '@/utils/addressStorage'
 
 defineOptions({
   name: 'AddressList',
 })
 
 // 地址列表数据
-const addressList = ref([
-  {
-    id: '1',
-    name: '张三',
-    phone: '138****5678',
-    province: '北京市',
-    city: '朝阳区',
-    district: '建国门街道',
-    detail: '建国门外大街1号国贸大厦A座1001室',
-    fullAddress: '北京市朝阳区建国门街道建国门外大街1号国贸大厦A座1001室',
-    isDefault: true,
-  },
-  {
-    id: '2',
-    name: '李四',
-    phone: '139****8765',
-    province: '上海市',
-    city: '浦东新区',
-    district: '陆家嘴街道',
-    detail: '世纪大道88号金茂大厦88层',
-    fullAddress: '上海市浦东新区陆家嘴街道世纪大道88号金茂大厦88层',
-    isDefault: false,
-  },
-  {
-    id: '3',
-    name: '王五',
-    phone: '137****2468',
-    province: '广东省',
-    city: '深圳市',
-    district: '南山区',
-    detail: '科技园南区深南大道9999号',
-    fullAddress: '广东省深圳市南山区科技园南区深南大道9999号',
-    isDefault: false,
-  },
-])
+const addressList = ref<AddressInfo[]>([])
+
+// 加载地址列表
+const loadAddressList = () => {
+  addressList.value = getAddressList()
+}
 
 // 选择地址（用于确认订单页面）
-const selectAddress = (address: any) => {
+const selectAddress = (address: AddressInfo) => {
   console.log('选择地址:', address)
 
   // 获取页面参数，判断是否是选择地址模式
@@ -159,7 +136,7 @@ const selectAddress = (address: any) => {
 }
 
 // 编辑地址
-const editAddress = (address: any) => {
+const editAddress = (address: AddressInfo) => {
   console.log('编辑地址:', address)
   uni.navigateTo({
     url: `/pages/address/edit?id=${address.id}`,
@@ -167,7 +144,7 @@ const editAddress = (address: any) => {
 }
 
 // 删除地址
-const deleteAddress = (address: any) => {
+const deleteAddress = (address: AddressInfo) => {
   console.log('删除地址:', address)
   uni.showModal({
     title: '确认删除',
@@ -175,12 +152,17 @@ const deleteAddress = (address: any) => {
     success: (res) => {
       if (res.confirm) {
         // 执行删除操作
-        const index = addressList.value.findIndex((item) => item.id === address.id)
-        if (index > -1) {
-          addressList.value.splice(index, 1)
+        const success = deleteAddressFromStorage(address.id)
+        if (success) {
+          loadAddressList() // 重新加载列表
           uni.showToast({
             title: '删除成功',
             icon: 'success',
+          })
+        } else {
+          uni.showToast({
+            title: '删除失败',
+            icon: 'error',
           })
         }
       }
@@ -189,52 +171,54 @@ const deleteAddress = (address: any) => {
 }
 
 // 设为默认地址
-const setDefault = (address: any) => {
+const setDefault = (address: AddressInfo) => {
   console.log('设为默认:', address)
 
-  // 取消其他地址的默认状态
-  addressList.value.forEach((item) => {
-    item.isDefault = false
-  })
-
-  // 设置当前地址为默认
-  address.isDefault = true
-
-  uni.showToast({
-    title: '设置成功',
-    icon: 'success',
-  })
+  const success = setDefaultAddress(address.id)
+  if (success) {
+    loadAddressList() // 重新加载列表
+    uni.showToast({
+      title: '设置成功',
+      icon: 'success',
+    })
+  } else {
+    uni.showToast({
+      title: '设置失败',
+      icon: 'error',
+    })
+  }
 }
 
 // 添加新地址
 const addAddress = () => {
   console.log('添加新地址')
   uni.navigateTo({
-    url: '/pages/address/add',
+    url: '/pages/address/edit',
   })
 }
 
 // 生命周期
 onLoad((options) => {
   console.log('地址列表页面加载完成', options)
+  loadAddressList()
 })
 
 onShow(() => {
   // 页面显示时刷新地址列表（从编辑页面返回时）
   console.log('地址列表页面显示')
-  // 这里可以重新加载地址数据
+  loadAddressList()
 })
 
 onPullDownRefresh(() => {
   console.log('下拉刷新地址列表')
-  // 模拟刷新数据
+  loadAddressList()
   setTimeout(() => {
     uni.stopPullDownRefresh()
     uni.showToast({
       title: '刷新成功',
       icon: 'success',
     })
-  }, 1000)
+  }, 500)
 })
 </script>
 
