@@ -1,5 +1,5 @@
 {
-  "entryPagePath": "pages/mine/index",
+  "entryPagePath": "pages/order/index",
   "globalStyle": {
     "navigationStyle": "default",
     "navigationBarTitleText": "unibest",
@@ -87,6 +87,16 @@
         "enablePullDownRefresh": true,
         "navigationStyle": "custom",
         "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/order/index",
+      "type": "page",
+      "needLogin": true,
+      "style": {
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "我的订单"
       }
     },
     {

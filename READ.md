@@ -36,6 +36,8 @@ yarn run dev:mp-weixin
 - 全局样式 src/style/index.scss 中 书写公共的样式，例如 .page-container 等样式
   - 默认还有一个 page 的 background-color: $page-bg-color; 属性，设定了页面的全局背景色
 - 实现具体页面的时候遵循的思路
+  - 不需要额外修改 pages.json 的配置，因为vue文件中写了 json5 的内容即可自动添加，会自动覆盖内容
+  - 如果实现的时候 给出的事 vue 参考文件，则不应该将设计图纸中的 类似 手机信号、电量、wifi等设计工具自带的组件 放在页面中
   - 优先实现 全局主题样式变量
   - 全局样式
   - 看是否需要提炼成公共组件(如果没有则创建，有则使用)
@@ -81,9 +83,11 @@ onPullDownRefresh(() => {
 
 <style lang="scss" scoped>
 .page-context {
-  padding-top: 170rpx; // 这里的170rpx，提炼出来放到变量中，由变量文件统一修改
-  background-color: $mall-bg-primary;
-  width: 100%;
+  // width: 100%;
+  // padding-top: $page-top-padding;
+  // background-color: $page-bg-color;
+  // 上面三个属性已经由 index.scss 文件书写，如果需要拓展，就在这个基础上增加
+  // 并且额外的属性中不允许有 关 padding-bottom 的样式
 }
 
 ...

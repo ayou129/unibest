@@ -168,14 +168,14 @@ const handleAuth = () => {
 const viewAllOrders = () => {
   console.log('查看全部订单')
   uni.navigateTo({
-    url: '/pages/orders/list',
+    url: '/pages/order/index',
   })
 }
 
 const navigateToOrders = (type: string) => {
   console.log('查看订单:', type)
   uni.navigateTo({
-    url: `/pages/orders/list?status=${type}`,
+    url: `/pages/order/index?status=${type}`,
   })
 }
 
