@@ -132,11 +132,10 @@ const selectAddress = () => {
     itemList: ['选择已有地址', '添加新地址'],
     success: (res) => {
       if (res.tapIndex === 0) {
-        // 模拟选择已有地址
-        selectedAddress.value = {
-          text: '张三 138****5678\n北京市朝阳区xxx街道xxx小区xxx号楼xxx室',
-          hasAddress: true,
-        }
+        // 跳转到地址列表页面选择地址
+        uni.navigateTo({
+          url: '/pages/address/list?mode=select',
+        })
       } else {
         // 跳转到添加地址页面
         uni.navigateTo({

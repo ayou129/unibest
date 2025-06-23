@@ -64,6 +64,16 @@
       }
     },
     {
+      "path": "pages/address/list",
+      "type": "page",
+      "needLogin": true,
+      "style": {
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "收货地址"
+      }
+    },
+    {
       "path": "pages/login/index",
       "type": "page",
       "style": {
