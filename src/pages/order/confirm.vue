@@ -65,7 +65,9 @@
           <view class="cost-item coupon-item" @click="showCouponPicker">
             <text class="cost-label">优惠券</text>
             <view class="coupon-info">
-              <text v-if="selectedCoupon" class="coupon-text">-￥{{ selectedCoupon.amount }}</text>
+              <text v-if="selectedCoupon" class="coupon-discount">
+                -￥{{ selectedCoupon.amount }}
+              </text>
               <text v-else class="coupon-text">{{ availableCouponCount }}张可用</text>
               <image class="arrow-icon" src="/static/icons/arrow-right.png" />
             </view>
@@ -330,6 +332,7 @@ onLoad((options) => {
 .arrow-icon {
   width: 32rpx;
   height: 32rpx;
+  flex-shrink: 0;
 }
 
 // 商品信息部分
@@ -434,12 +437,26 @@ onLoad((options) => {
 .coupon-info {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  width: 400rpx;
+  text-align: right;
 }
 
 .coupon-text {
   font-size: 28rpx;
   color: $mall-text-secondary;
   margin-right: 8rpx;
+  flex-shrink: 1;
+  text-align: right;
+}
+
+.coupon-discount {
+  font-size: 28rpx;
+  color: $mall-color-danger;
+  font-weight: 600;
+  margin-right: 8rpx;
+  flex-shrink: 1;
+  text-align: right;
 }
 
 .cost-total {
@@ -457,9 +474,9 @@ onLoad((options) => {
 }
 
 .total-price {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #f54949;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: $mall-color-danger;
   margin-left: 8rpx;
 }
 
