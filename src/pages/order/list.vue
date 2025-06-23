@@ -51,11 +51,15 @@
             <view
               v-for="(action, actionIndex) in order.actions"
               :key="actionIndex"
-              class="action-button"
-              :class="action.type"
+              class="mall-btn-sm action-button"
+              :class="
+                action.type === 'pay' || action.type === 'confirm' || action.type === 'rebuy'
+                  ? 'mall-btn-primary'
+                  : 'mall-btn-secondary'
+              "
               @click="handleAction(action.type, order)"
             >
-              <text class="action-text">{{ action.text }}</text>
+              <text class="mall-btn-text">{{ action.text }}</text>
             </view>
           </view>
         </view>
@@ -398,45 +402,12 @@ page {
 }
 
 .action-button {
-  border-radius: 10rpx; // 按原设计
   width: 168rpx; // 按原设计固定宽度
-  height: 48rpx; // 按原设计固定高度
-  display: inline-block; // 改为行内块，类似原设计
-  text-align: center; // 文字居中
-  border: 2rpx solid $mall-border-light;
   margin-left: 10rpx; // 按原设计 ml-5 = 10rpx
-  padding-top: 6rpx;
 
   &:first-child {
     margin-left: 0; // 第一个按钮不需要左边距
   }
-
-  &.pay,
-  &.confirm,
-  &.rebuy {
-    background-color: $mall-color-primary;
-    border-color: $mall-color-primary;
-
-    .action-text {
-      color: $mall-text-white;
-      font-weight: 500;
-    }
-  }
-
-  &.cancel,
-  &.contact,
-  &.review {
-    background-color: transparent;
-    border-color: $mall-border-medium;
-
-    .action-text {
-      color: $mall-text-primary;
-    }
-  }
-}
-
-.action-text {
-  font-size: $mall-font-sm;
 }
 
 // 空状态样式

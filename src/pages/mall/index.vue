@@ -36,8 +36,8 @@
             <text class="product-description">控油防脱两不误 细腻丰富泡沫</text>
           </view>
           <text class="product-price">￥298</text>
-          <view class="buy-button" @click.stop="handleBuyClick">
-            <text class="buy-text">直接购买</text>
+          <view class="mall-btn-md mall-btn-primary buy-button" @click.stop="handleBuyClick">
+            <text class="mall-btn-text">直接购买</text>
           </view>
         </view>
       </view>
@@ -66,9 +66,9 @@ const navigateToDetail = () => {
 
 const handleBuyClick = () => {
   console.log('点击购买')
-  uni.showToast({
-    title: '直接购买',
-    icon: 'success',
+  // 跳转到确认订单页面
+  uni.navigateTo({
+    url: '/pages/order/confirm?quantity=1&productId=1',
   })
 }
 
@@ -188,22 +188,9 @@ onPullDownRefresh(() => {
 }
 
 .buy-button {
-  padding: 24rpx 0;
-  background-color: $mall-color-primary;
-  border-radius: 20rpx;
   width: 192rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: absolute;
   right: 36rpx;
   top: 164rpx;
-}
-
-.buy-text {
-  color: #ffffff;
-  font-size: 30rpx;
-  font-family: HarmonyOSSansSC;
-  line-height: 28.08rpx;
 }
 </style>

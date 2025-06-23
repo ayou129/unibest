@@ -1,5 +1,5 @@
 {
-  "entryPagePath": "pages/order/index",
+  "entryPagePath": "pages/order/confirm",
   "globalStyle": {
     "navigationStyle": "default",
     "navigationBarTitleText": "unibest",
@@ -90,7 +90,17 @@
       }
     },
     {
-      "path": "pages/order/index",
+      "path": "pages/order/confirm",
+      "type": "page",
+      "needLogin": true,
+      "style": {
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "确认订单"
+      }
+    },
+    {
+      "path": "pages/order/list",
       "type": "page",
       "needLogin": true,
       "style": {

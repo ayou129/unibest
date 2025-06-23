@@ -155,31 +155,136 @@ page {
   justify-content: flex-end;
 }
 
-/* 商城按钮样式 */
-.mall-btn {
-  height: $mall-button-height;
-  border-radius: $mall-radius-base;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: $mall-font-base;
-  font-weight: 500;
+/* ================ 商城按钮样式系统 ================ */
 
-  &.mall-btn-primary {
-    background-color: $mall-color-primary;
+/* 基础按钮样式 - 所有按钮的共同样式 */
+.mall-btn-base {
+  display: inline-flex; // 改为 inline-flex 以支持 flex 布局
+  align-items: center; // 垂直居中
+  justify-content: center; // 水平居中
+  border: 2rpx solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+
+  /* 按钮文字样式 */
+  .mall-btn-text {
+    font-family: PingFang, HarmonyOSSansSC, sans-serif;
+    line-height: 1; // 设置行高为1，避免文字上下留白
+  }
+}
+
+/* 小型按钮 - 用于订单操作等 */
+.mall-btn-sm {
+  @extend .mall-btn-base;
+  height: 48rpx;
+  border-radius: 10rpx;
+  padding: 0 24rpx;
+
+  .mall-btn-text {
+    font-size: $mall-font-sm;
+    font-weight: 500;
+  }
+}
+
+/* 中等按钮 - 常规使用 */
+.mall-btn-md {
+  @extend .mall-btn-base;
+  height: 64rpx;
+  border-radius: 16rpx;
+  padding: 0 32rpx;
+
+  .mall-btn-text {
+    font-size: $mall-font-base;
+    font-weight: 600;
+  }
+}
+
+/* 大型按钮 - 主要操作按钮 */
+.mall-btn-lg {
+  @extend .mall-btn-base;
+  height: 76rpx;
+  border-radius: 16rpx;
+  padding: 0 48rpx;
+
+  .mall-btn-text {
+    font-size: 32rpx;
+    font-weight: 700;
+    line-height: 29.92rpx;
+  }
+}
+
+/* 按钮颜色主题 */
+.mall-btn-primary {
+  background-color: $mall-color-primary;
+  border-color: $mall-color-primary;
+
+  .mall-btn-text {
     color: $mall-text-white;
   }
 
-  &.mall-btn-secondary {
-    background-color: $mall-color-secondary;
-    color: $mall-text-white;
+  &:active {
+    background-color: $mall-color-primary-dark;
+    border-color: $mall-color-primary-dark;
+  }
+}
+
+.mall-btn-secondary {
+  background-color: transparent;
+  border-color: $mall-border-medium;
+
+  .mall-btn-text {
+    color: $mall-text-primary;
   }
 
-  &.mall-btn-outline {
-    background-color: transparent;
-    border: 2rpx solid $mall-color-primary;
+  &:active {
+    background-color: $mall-bg-primary;
+  }
+}
+
+.mall-btn-outline {
+  background-color: transparent;
+  border-color: $mall-color-primary;
+
+  .mall-btn-text {
     color: $mall-color-primary;
   }
+
+  &:active {
+    background-color: rgba($mall-color-primary, 0.1);
+  }
+}
+
+.mall-btn-danger {
+  background-color: $mall-color-danger;
+  border-color: $mall-color-danger;
+
+  .mall-btn-text {
+    color: $mall-text-white;
+  }
+
+  &:active {
+    background-color: darken($mall-color-danger, 10%);
+    border-color: darken($mall-color-danger, 10%);
+  }
+}
+
+/* 按钮禁用状态 */
+.mall-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  &:active {
+    // 禁用状态下不响应点击效果
+    background-color: inherit !important;
+    border-color: inherit !important;
+  }
+}
+
+/* 块级按钮 - 占满容器宽度 */
+.mall-btn-block {
+  width: 100%;
+  display: flex; // 改为 flex 以保持居中特性
 }
 
 /* 商城输入框样式 */

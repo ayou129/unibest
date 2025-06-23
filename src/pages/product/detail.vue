@@ -81,8 +81,8 @@
         src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cf187a2b852540069ad88487afaaebec.png"
       />
 
-      <view class="buy-button" @click="handleBuyNow">
-        <text class="buy-text">立即购买</text>
+      <view class="mall-btn-lg mall-btn-primary buy-button" @click="handleBuyNow">
+        <text class="mall-btn-text">立即购买</text>
       </view>
 
       <view class="quantity-control">
@@ -169,9 +169,9 @@ const previewImage = () => {
 
 const handleBuyNow = () => {
   console.log('立即购买', { quantity: quantity.value })
-  uni.showToast({
-    title: `购买 ${quantity.value} 件商品`,
-    icon: 'success',
+  // 跳转到确认订单页面
+  uni.navigateTo({
+    url: `/pages/order/confirm?quantity=${quantity.value}&productId=1`,
   })
 }
 
@@ -376,20 +376,6 @@ const onLoad = (options: any) => {
 
 .buy-button {
   flex: 1;
-  background-color: $mall-color-primary;
-  border-radius: 16rpx;
-  height: 76rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.buy-text {
-  color: #ffffff;
-  font-size: 32rpx;
-  font-family: PingFang;
-  font-weight: 700;
-  line-height: 29.92rpx;
 }
 
 .quantity-control {
