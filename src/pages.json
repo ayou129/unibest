@@ -74,7 +74,6 @@
     {
       "path": "pages/address/list",
       "type": "page",
-      "needLogin": true,
       "style": {
         "enablePullDownRefresh": true,
         "navigationStyle": "custom",
@@ -120,7 +119,6 @@
     {
       "path": "pages/order/list",
       "type": "page",
-      "needLogin": true,
       "style": {
         "enablePullDownRefresh": true,
         "navigationStyle": "custom",

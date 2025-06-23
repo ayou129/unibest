@@ -10,7 +10,7 @@
 
 <template>
   <view class="page-container">
-    <view class="page-context">
+    <view class="page-content">
       <!-- 顶部用户信息区域 -->
       <view class="header-section">
         <!-- 用户信息 -->
@@ -246,7 +246,7 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-context {
+.page-content {
   // 将背景图设置在核心内容区域，覆盖整个可视区域包括padding-top
   background-image: url('https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=7dc6d93c6d8dc7f3b79183da245fcfd8.png');
   background-repeat: no-repeat;
@@ -256,7 +256,7 @@ onPullDownRefresh(() => {
 
 .header-section {
   padding-bottom: 154rpx;
-  // 移除背景图设置，现在由.page-context统一管理
+  // 移除背景图设置，现在由.page-content统一管理
 }
 
 .user-info {

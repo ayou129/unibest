@@ -1,6 +1,6 @@
 <route lang="json5" type="page">
 {
-  needLogin: true,
+  // needLogin: true,
   style: {
     enablePullDownRefresh: true,
     navigationStyle: 'custom',
@@ -11,7 +11,7 @@
 
 <template>
   <view class="page-container">
-    <view class="page-context">
+    <view class="page-content">
       <!-- 订单状态筛选区域 -->
       <view class="filter-section">
         <view
@@ -260,7 +260,7 @@ onPullDownRefresh(() => {
 page {
   //   background-color: white;
 }
-.page-context {
+.page-content {
   // 全局样式已设置基础属性，这里添加页面特有样式
   background-color: white;
   display: flex;

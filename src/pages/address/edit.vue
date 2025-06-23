@@ -10,7 +10,7 @@
 
 <template>
   <view class="page-container">
-    <view class="page-context">
+    <view class="page-content">
       <!-- 表单内容 -->
       <view class="form-container">
         <!-- 联系人信息 -->
@@ -285,7 +285,7 @@ const saveAddress = () => {
 </script>
 
 <style lang="scss" scoped>
-.page-context {
+.page-content {
 }
 
 .form-container {

@@ -11,293 +11,320 @@
 
 <template>
   <view class="page-container">
-    <view class="page-context">
-      <!-- 收货地址区域 -->
-      <view class="address-section" @click="selectAddress">
-        <view class="address-content">
-          <image
-            class="location-icon"
-            src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
-          />
-          <text class="address-text">{{ selectedAddress.text }}</text>
+    <view class="page-content">
+      <!-- 收货地址 -->
+      <view class="address-section">
+        <view class="address-item" @click="selectAddress">
+          <view class="address-info">
+            <image
+              class="address-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
+            />
+            <view v-if="selectedAddress" class="address-content">
+              <view class="address-header">
+                <text class="address-name">{{ selectedAddress.name }}</text>
+                <text class="address-phone">{{ selectedAddress.phone }}</text>
+              </view>
+              <text class="address-detail">
+                {{ selectedAddress.province }} {{ selectedAddress.city }}
+                {{ selectedAddress.district }} {{ selectedAddress.detail }}
+              </text>
+            </view>
+            <view v-else class="address-content">
+              <text class="address-placeholder">点击添加收货地址</text>
+            </view>
+          </view>
+          <image class="arrow-icon" src="/static/icons/arrow-right.png" />
         </view>
-        <image
-          class="arrow-icon"
-          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=75da3c789292876c85e845d429ae5166.png"
-        />
       </view>
 
-      <!-- 商品信息区域 -->
-      <view class="product-section">
-        <view class="product-content">
-          <image class="product-image" :src="orderInfo.productImage" />
-          <view class="product-details">
-            <text class="product-name">{{ orderInfo.productName }}</text>
-            <text class="product-desc">{{ orderInfo.productDesc }}</text>
-            <text class="product-price">{{ orderInfo.price }}</text>
+      <!-- 商品信息 -->
+      <view class="goods-section">
+        <view v-for="item in orderItems" :key="item.id" class="goods-item">
+          <image class="goods-image" :src="item.image" />
+          <view class="goods-info">
+            <text class="goods-name">{{ item.name }}</text>
+            <text class="goods-desc">{{ item.description }}</text>
+            <text class="goods-price">￥{{ item.price }}</text>
           </view>
-          <text class="product-quantity">×{{ orderInfo.quantity }}</text>
+          <text class="goods-quantity">×{{ item.quantity }}</text>
         </view>
 
         <!-- 费用明细 -->
-        <view class="cost-details">
+        <view class="cost-detail">
           <view class="cost-item">
             <text class="cost-label">运费</text>
-            <text class="cost-value">￥{{ orderInfo.shipping }}</text>
+            <text class="cost-value">￥{{ shippingFee }}</text>
           </view>
           <view class="cost-item">
             <text class="cost-label">商品小计</text>
-            <text class="cost-value">￥{{ orderInfo.subtotal }}</text>
+            <text class="cost-value">￥{{ goodsTotal }}</text>
           </view>
-          <view class="coupon-section">
-            <view class="coupon-row">
-              <text class="cost-label">优惠券</text>
-              <view class="coupon-selector" @click="selectCoupon">
-                <text class="coupon-text">{{ availableCoupons }}张可用</text>
-                <image
-                  class="arrow-icon-small"
-                  src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
-                />
-              </view>
+
+          <!-- 优惠券选择 -->
+          <view class="cost-item coupon-item" @click="showCouponPicker">
+            <text class="cost-label">优惠券</text>
+            <view class="coupon-info">
+              <text v-if="selectedCoupon" class="coupon-text">-￥{{ selectedCoupon.amount }}</text>
+              <text v-else class="coupon-text">{{ availableCouponCount }}张可用</text>
+              <image class="arrow-icon" src="/static/icons/arrow-right.png" />
             </view>
-            <view class="total-row">
-              <text class="total-label">合计：</text>
-              <text class="total-amount">￥{{ orderInfo.total }}</text>
-            </view>
+          </view>
+
+          <!-- 合计 -->
+          <view class="cost-total">
+            <text class="total-label">合计：</text>
+            <text class="total-price">￥{{ finalTotal }}</text>
           </view>
         </view>
       </view>
 
-      <!-- 支付方式区域 -->
+      <!-- 支付方式 -->
       <view class="payment-section">
-        <text class="payment-label">支付方式</text>
-        <view class="payment-method" @click="selectPaymentMethod">
-          <text class="payment-text">微信支付</text>
-          <image
-            class="payment-icon"
-            src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=0f7af92b6cadfda7a004a21c2e7e3082.png"
-          />
+        <view class="payment-item">
+          <text class="payment-label">支付方式</text>
+          <view class="payment-info">
+            <text class="payment-method">微信支付</text>
+            <image class="arrow-icon" src="/static/icons/arrow-right.png" />
+          </view>
         </view>
       </view>
     </view>
 
     <!-- 底部支付栏 -->
     <view class="bottom-panel">
-      <view class="total-price">
-        <text class="currency-symbol">￥</text>
-        <text class="price-amount">{{ orderInfo.total }}</text>
+      <view class="price-info">
+        <text class="price-symbol">￥</text>
+        <text class="price-value">{{ finalTotal }}</text>
       </view>
-      <view class="mall-btn-lg mall-btn-primary pay-button" @click="handlePayment">
-        <text class="mall-btn-text">立即购买</text>
+      <view class="mall-btn-lg mall-btn-primary pay-button" @click="submitOrder">
+        <text class="pay-text">立即支付</text>
       </view>
     </view>
+
+    <!-- 优惠券选择器 -->
+    <CouponPicker
+      ref="couponPickerRef"
+      :coupons="coupons"
+      :order-amount="goodsTotal"
+      v-model="selectedCoupon"
+      @change="onCouponChange"
+    />
   </view>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
-import { getDefaultAddress, type AddressInfo } from '@/utils/addressStorage'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
+import CouponPicker from '@/components/CouponPicker.vue'
 
 defineOptions({
   name: 'OrderConfirm',
 })
 
-// 选中的收货地址
-const selectedAddress = ref({
-  text: '点击添加收货地址',
-  hasAddress: false,
-  data: null as AddressInfo | null,
+// 优惠券选择器引用
+const couponPickerRef = ref()
+
+// 收货地址
+const selectedAddress = ref(null)
+
+// 选中的优惠券
+const selectedCoupon = ref(null)
+
+// 订单商品
+const orderItems = ref([
+  {
+    id: '1',
+    name: '敬修堂防脱滋养育发洗发露',
+    description: '控油防脱两不误 细腻丰富泡沫',
+    price: 199.9,
+    quantity: 1,
+    image:
+      'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+  },
+])
+
+// 优惠券列表
+const coupons = ref([
+  {
+    id: '1',
+    name: '新用户专享券',
+    description: '限新用户首次购买使用',
+    amount: 20,
+    minAmount: 100,
+    expireTime: '2024-12-31',
+    status: 2,
+  },
+  {
+    id: '2',
+    name: '满减优惠券',
+    description: '全场通用，满减优惠',
+    amount: 50,
+    minAmount: 200,
+    expireTime: '2024-12-31',
+    status: 2,
+  },
+  {
+    id: '3',
+    name: '品类优惠券',
+    description: '洗护用品专用',
+    amount: 30,
+    minAmount: 150,
+    expireTime: '2024-12-31',
+    status: 2,
+  },
+  {
+    id: '4',
+    name: '过期优惠券',
+    description: '已过期的优惠券',
+    amount: 100,
+    minAmount: 50,
+    expireTime: '2024-01-01',
+    status: 3,
+  },
+])
+
+// 运费
+const shippingFee = ref(0)
+
+// 商品总价
+const goodsTotal = computed(() => {
+  return orderItems.value.reduce((total, item) => total + item.price * item.quantity, 0)
 })
 
-// 加载默认地址
-const loadDefaultAddress = () => {
-  const defaultAddress = getDefaultAddress()
-  if (defaultAddress) {
-    selectedAddress.value = {
-      text: `${defaultAddress.name} ${defaultAddress.phone}\n${defaultAddress.fullAddress}`,
-      hasAddress: true,
-      data: defaultAddress,
-    }
-  }
-}
-
 // 可用优惠券数量
-const availableCoupons = ref(3)
+const availableCouponCount = computed(() => {
+  return coupons.value.filter(
+    (coupon) => coupon.status === 2 && goodsTotal.value >= coupon.minAmount,
+  ).length
+})
 
-// 订单信息
-const orderInfo = ref({
-  productName: '敬修堂防脱滋养育发洗发露',
-  productDesc: '控油防脱两不误 细腻丰富泡沫',
-  price: '199.9',
-  quantity: 1,
-  shipping: '0.0',
-  subtotal: '199.9',
-  couponDiscount: '0.9',
-  total: '199.0',
-  productImage:
-    'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+// 最终总价
+const finalTotal = computed(() => {
+  let total = goodsTotal.value + shippingFee.value
+  if (selectedCoupon.value) {
+    total -= selectedCoupon.value.amount
+  }
+  return Math.max(total, 0).toFixed(1)
 })
 
 // 选择收货地址
 const selectAddress = () => {
-  console.log('选择收货地址')
-  uni.showActionSheet({
-    itemList: ['选择已有地址', '添加新地址'],
-    success: (res) => {
-      if (res.tapIndex === 0) {
-        // 跳转到地址列表页面选择地址
-        uni.navigateTo({
-          url: '/pages/address/list?mode=select',
-        })
-      } else {
-        // 跳转到添加地址页面
-        uni.navigateTo({
-          url: '/pages/address/edit',
-        })
-      }
-    },
-  })
-}
-
-// 选择优惠券
-const selectCoupon = () => {
-  console.log('选择优惠券')
   uni.navigateTo({
-    url: '/pages/coupon/list',
+    url: '/pages/address/list',
   })
 }
 
-// 选择支付方式
-const selectPaymentMethod = () => {
-  console.log('选择支付方式')
-  uni.showActionSheet({
-    itemList: ['微信支付', '支付宝', '银行卡'],
-    success: (res) => {
-      console.log('选择支付方式:', res.tapIndex)
-    },
-  })
+// 显示优惠券选择器
+const showCouponPicker = () => {
+  if (couponPickerRef.value) {
+    couponPickerRef.value.showPicker()
+  }
 }
 
-// 处理支付
-const handlePayment = () => {
-  if (!selectedAddress.value.hasAddress) {
+// 优惠券选择变化
+const onCouponChange = (coupon) => {
+  console.log('选择的优惠券:', coupon)
+}
+
+// 提交订单
+const submitOrder = () => {
+  if (!selectedAddress.value) {
     uni.showToast({
-      title: '请先选择收货地址',
+      title: '请选择收货地址',
       icon: 'none',
     })
     return
   }
 
-  console.log('开始支付')
-  uni.showModal({
-    title: '确认支付',
-    content: `确认支付 ￥${orderInfo.value.total} 吗？`,
-    success: (res) => {
-      if (res.confirm) {
-        // 模拟支付成功
-        uni.showLoading({
-          title: '支付中...',
-        })
-
-        setTimeout(() => {
-          uni.hideLoading()
-          uni.showToast({
-            title: '支付成功',
-            icon: 'success',
-          })
-
-          // 跳转到订单详情或订单列表
-          setTimeout(() => {
-            uni.redirectTo({
-              url: '/pages/order/index?status=paid',
-            })
-          }, 1500)
-        }, 2000)
-      }
-    },
+  uni.showLoading({
+    title: '提交中...',
   })
+
+  // 模拟提交订单
+  setTimeout(() => {
+    uni.hideLoading()
+    uni.showToast({
+      title: '订单提交成功',
+      icon: 'success',
+    })
+
+    // 跳转到支付页面或订单详情
+    setTimeout(() => {
+      uni.redirectTo({
+        url: '/pages/order/detail?id=123',
+      })
+    }, 1500)
+  }, 2000)
 }
 
-// 生命周期
+// 页面加载
 onLoad((options) => {
-  console.log('确认订单页面加载完成', options)
-
-  // 加载默认地址
-  loadDefaultAddress()
-
-  // 如果从商品详情页传递了商品信息，在这里接收并更新
-  if (options?.productId) {
-    // 根据商品ID获取商品信息
-    console.log('商品ID:', options.productId)
-  }
-
-  if (options?.quantity) {
-    orderInfo.value.quantity = parseInt(options.quantity)
-    // 重新计算总价
-    const subtotal = parseFloat(orderInfo.value.price) * orderInfo.value.quantity
-    orderInfo.value.subtotal = subtotal.toFixed(1)
-    orderInfo.value.total = (subtotal - parseFloat(orderInfo.value.couponDiscount)).toFixed(1)
-  }
-
-  // 监听地址选择事件
-  uni.$on('selectAddress', (address: AddressInfo) => {
-    selectedAddress.value = {
-      text: `${address.name} ${address.phone}\n${address.fullAddress}`,
-      hasAddress: true,
-      data: address,
-    }
-  })
-})
-
-onShow(() => {
-  // 页面显示时重新加载默认地址（可能从地址编辑页面返回）
-  loadDefaultAddress()
-})
-
-onPullDownRefresh(() => {
-  console.log('下拉刷新')
-  setTimeout(() => {
-    uni.stopPullDownRefresh()
-  }, 1000)
+  // 可以从参数中获取商品信息
+  console.log('订单确认页面参数:', options)
 })
 </script>
 
 <style lang="scss" scoped>
-.page-context {
-}
-
+// 收货地址部分
 .address-section {
-  margin-top: 24rpx;
-  padding: 48rpx 24rpx;
-  background-color: $mall-bg-card;
-  border-radius: $mall-radius-lg;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 24rpx 32rpx 0;
+  margin-bottom: 24rpx;
 }
 
-.address-content {
+.address-item {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.address-info {
   display: flex;
   align-items: center;
   flex: 1;
 }
 
-.location-icon {
+.address-icon {
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
-  margin-right: 26rpx;
+  margin-right: 24rpx;
 }
 
-.address-text {
-  font-size: $mall-font-md;
-  font-family: PingFang;
-  font-weight: 700;
-  color: $mall-text-primary;
-  line-height: 28.24rpx;
+.address-content {
   flex: 1;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.address-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $mall-text-primary;
+  margin-right: 16rpx;
+}
+
+.address-phone {
+  font-size: 28rpx;
+  color: $mall-text-secondary;
+}
+
+.address-detail {
+  font-size: 26rpx;
+  color: $mall-text-secondary;
+  line-height: 1.4;
+}
+
+.address-placeholder {
+  font-size: 30rpx;
+  color: $mall-text-primary;
+  font-weight: 600;
 }
 
 .arrow-icon {
@@ -305,215 +332,201 @@ onPullDownRefresh(() => {
   height: 32rpx;
 }
 
-.product-section {
-  margin: 24rpx 32rpx 0;
-  padding: 24rpx 16rpx 40rpx 24rpx;
-  background-color: $mall-bg-card;
-  border-radius: $mall-radius-lg;
+// 商品信息部分
+.goods-section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
 }
 
-.product-content {
+.goods-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 56rpx;
-}
+  margin-bottom: 32rpx;
 
-.product-image {
-  width: 180rpx;
-  height: 180rpx;
-  border-radius: $mall-radius-sm;
-  flex-shrink: 0;
-}
-
-.product-details {
-  margin-left: 16rpx;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.product-name {
-  font-size: $mall-font-md;
-  width: 100%;
-  font-weight: 700;
-  color: $mall-text-primary;
-  line-height: 32rpx;
-  margin-bottom: 12rpx;
-  margin-top: 12rpx;
-}
-
-.product-desc {
-  margin-top: 12rpx;
-  color: $mall-text-secondary;
-  font-size: $mall-font-sm;
-  line-height: 32rpx;
-  width: 330rpx;
-  margin-bottom: 40rpx;
-}
-
-.product-price {
-  margin-left: 4rpx;
-  color: $mall-text-primary;
-  font-size: 32rpx;
-  font-family: HarmonyOSSansSC;
-  line-height: 24.22rpx;
-
-  &::before {
-    content: '￥';
-    font-size: $mall-font-base;
-    margin-right: 4rpx;
+  &:last-child {
+    margin-bottom: 0;
   }
 }
 
-.product-quantity {
-  margin: 80rpx 12rpx 0 20rpx;
-  color: $mall-text-secondary;
-  font-size: $mall-font-base;
-  font-family: HarmonyOSSansSC;
-  line-height: 20.52rpx;
+.goods-image {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 12rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
 }
 
-.cost-details {
-  display: flex;
-  flex-direction: column;
-  gap: 46rpx;
+.goods-info {
+  flex: 1;
+  padding-top: 8rpx;
+}
+
+.goods-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $mall-text-primary;
+  line-height: 1.4;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.goods-desc {
+  font-size: 26rpx;
+  color: $mall-text-secondary;
+  line-height: 1.4;
+  margin-bottom: 24rpx;
+  display: block;
+}
+
+.goods-price {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $mall-text-primary;
+  display: block;
+}
+
+.goods-quantity {
+  font-size: 28rpx;
+  color: $mall-text-secondary;
+  margin-top: 8rpx;
+  margin-left: 24rpx;
+  flex-shrink: 0;
+}
+
+// 费用明细
+.cost-detail {
+  border-top: 2rpx solid #f7f7f7;
+  padding-top: 32rpx;
+  margin-top: 32rpx;
 }
 
 .cost-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .cost-label {
-  font-size: $mall-font-base;
-  font-family: PingFang;
+  font-size: 28rpx;
   color: $mall-text-secondary;
-  line-height: 26.12rpx;
 }
 
 .cost-value {
-  font-size: $mall-font-base;
-  font-family: HarmonyOSSansSC;
-  color: $mall-text-secondary;
-  line-height: 21.2rpx;
+  font-size: 28rpx;
+  color: $mall-text-primary;
 }
 
-.coupon-section {
-  display: flex;
-  flex-direction: column;
+.coupon-item {
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
-.coupon-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 40rpx;
-  border-bottom: 2rpx solid $mall-bg-primary;
-}
-
-.coupon-selector {
+.coupon-info {
   display: flex;
   align-items: center;
-  margin-right: 8rpx;
 }
 
 .coupon-text {
+  font-size: 28rpx;
   color: $mall-text-secondary;
-  font-size: $mall-font-base;
-  font-family: HarmonyOSSansSC;
-  line-height: 25.68rpx;
   margin-right: 8rpx;
 }
 
-.arrow-icon-small {
-  width: 24rpx;
-  height: 24rpx;
-}
-
-.total-row {
+.cost-total {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  padding-top: 36rpx;
+  justify-content: flex-end;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #f7f7f7;
+  margin-top: 24rpx;
 }
 
 .total-label {
-  font-size: $mall-font-sm;
-  font-family: PingFang;
+  font-size: 26rpx;
   color: $mall-text-secondary;
-  line-height: 24.1rpx;
-  margin-right: 8rpx;
-}
-
-.total-amount {
-  color: $mall-color-danger;
-  font-size: 32rpx;
-  font-family: HarmonyOSSansSC;
-  line-height: 24.22rpx;
-}
-
-.payment-section {
-  margin: 24rpx 32rpx 0;
-  padding: 40rpx 24rpx;
-  background-color: $mall-bg-card;
-  border-radius: $mall-radius-lg;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.payment-label {
-  font-size: $mall-font-base;
-  font-family: PingFang;
-  color: $mall-text-secondary;
-  line-height: 26.26rpx;
-}
-
-.payment-method {
-  display: flex;
-  align-items: center;
-}
-
-.payment-text {
-  font-size: $mall-font-base;
-  font-family: PingFang;
-  font-weight: 700;
-  color: $mall-text-primary;
-  line-height: 26.4rpx;
-  margin-right: 8rpx;
-}
-
-.payment-icon {
-  width: 24rpx;
-  height: 24rpx;
 }
 
 .total-price {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #f54949;
+  margin-left: 8rpx;
+}
+
+// 支付方式部分
+.payment-section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 24rpx;
+}
+
+.payment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.payment-label {
+  font-size: 28rpx;
+  color: $mall-text-secondary;
+}
+
+.payment-info {
+  display: flex;
+  align-items: center;
+}
+
+.payment-method {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $mall-text-primary;
+  margin-right: 8rpx;
+}
+
+.price-info {
   display: flex;
   align-items: baseline;
-  line-height: 36.34rpx;
-  height: 36.34rpx;
 }
 
-.currency-symbol {
+.price-symbol {
+  font-size: 26rpx;
   color: $mall-text-primary;
-  font-size: $mall-font-sm;
-  font-family: HarmonyOSSansSC;
-  line-height: 19.04rpx;
-  margin-right: 4rpx;
+  font-weight: 600;
 }
 
-.price-amount {
-  color: $mall-text-primary;
+.price-value {
   font-size: 48rpx;
-  font-family: HarmonyOSSansSC;
-  line-height: 36.34rpx;
+  font-weight: 700;
+  color: $mall-text-primary;
 }
 
 .pay-button {
-  width: 294rpx;
+  background: $mall-color-primary;
+  border-radius: 25rpx;
+  padding: 24rpx 0;
+  width: 300rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background: darken($mall-color-primary, 10%);
+  }
+}
+
+.pay-text {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
 }
 </style>

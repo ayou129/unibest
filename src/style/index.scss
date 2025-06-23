@@ -309,9 +309,11 @@ page {
 }
 
 /* 页面内容区域样式 */
-.page-context {
-  width: 100%;
+.page-content {
+  padding: 20rpx 16rpx;
   padding-top: $page-top-padding;
+  width: 750rpx - 32rpx; // 减去左右padding
+
   background-color: $page-bg-color;
 }
 

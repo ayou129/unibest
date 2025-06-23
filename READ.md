@@ -57,7 +57,7 @@ yarn run dev:mp-weixin
 
 <template>
   <view class="page-container[这里默认，由公共样式实现]">
-    <view class="page-context[这里每个页面都强制使用这个类名，只不过由本页面去实现具体的样式]">
+    <view class="page-content[这里每个页面都强制使用这个类名，只不过由本页面去实现具体的样式]">
       这里是每个页面的具体内容
     </view>
 
@@ -82,7 +82,7 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-context {
+.page-content {
   // width: 100%;
   // padding-top: $page-top-padding;
   // background-color: $page-bg-color;
@@ -93,3 +93,6 @@ onPullDownRefresh(() => {
 ...
 </style>
 ```
+
+- 地址区域数据源 <https://xiangyuecn.github.io/AreaCity-JsSpider-StatsGov/>
+  - 选择 json数组 使用即可

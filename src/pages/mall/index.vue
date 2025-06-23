@@ -11,7 +11,7 @@
 <template>
   <view class="page-container">
     <!-- 商城主容器 -->
-    <view class="page-context">
+    <view class="page-content">
       <!-- 欢迎区域 -->
       <view class="welcome-section">
         <view class="welcome-text">
@@ -86,7 +86,7 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-context {
+.page-content {
   padding-top: 170rpx;
   background-color: $mall-bg-primary;
   width: 100%;

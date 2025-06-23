@@ -1,6 +1,6 @@
 <route lang="json5" type="page">
 {
-  needLogin: true,
+  // needLogin: true,
   style: {
     enablePullDownRefresh: true,
     navigationStyle: 'custom',
@@ -11,7 +11,7 @@
 
 <template>
   <view class="page-container">
-    <view class="page-context">
+    <view class="page-content">
       <!-- 地址列表 -->
       <view class="address-list">
         <view
@@ -223,7 +223,7 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-context {
+.page-content {
   padding-bottom: 120rpx; // 为底部按钮留出空间
 }
 
