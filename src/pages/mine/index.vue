@@ -1,6 +1,5 @@
-<route lang="json5">
+<route lang="json5" type="page">
 {
-  needLogin: true,
   style: {
     enablePullDownRefresh: true,
     navigationStyle: 'custom',
@@ -11,371 +10,462 @@
 
 <template>
   <view class="page-container">
-    <!-- 用户信息区域 -->
-    <view class="user-info-section">
-      <!-- #ifdef MP-WEIXIN -->
-      <button class="avatar-button" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-        <wd-img :src="userProfile.avatar" width="80px" height="80px" radius="50%"></wd-img>
-      </button>
-      <!-- #endif -->
-      <!-- #ifndef MP-WEIXIN -->
-      <view class="avatar-wrapper" @click="run">
-        <wd-img :src="userProfile.avatar" width="100%" height="100%" radius="50%"></wd-img>
+    <view class="page-context">
+      <!-- 顶部用户信息区域 -->
+      <view class="header-section">
+        <!-- 用户信息 -->
+        <view class="user-info">
+          <view class="user-details">
+            <image class="avatar" :src="userInfo.avatar" />
+            <view class="user-text">
+              <text class="username">{{ userInfo.nickname }}</text>
+              <text class="auth-status">{{ userInfo.authStatus }}</text>
+            </view>
+          </view>
+          <view class="auth-button" @click="handleAuth">
+            <text class="auth-text">去认证</text>
+          </view>
+        </view>
       </view>
-      <!-- #endif -->
-      <view class="user-details">
-        <!-- #ifdef MP-WEIXIN -->
-        <input
-          type="nickname"
-          class="weui-input"
-          placeholder="请输入昵称"
-          v-model="userProfile.username"
-        />
-        <!-- #endif -->
-        <!-- #ifndef MP-WEIXIN -->
-        <view class="username">{{ userProfile.username }}</view>
-        <!-- #endif -->
-        <view class="user-id">ID: {{ userProfile.id }}</view>
+
+      <!-- 主要内容区域 -->
+      <view class="content-section">
+        <!-- 我的订单 -->
+        <view class="order-section">
+          <view class="section-header">
+            <text class="section-title">我的订单</text>
+            <view class="view-all" @click="viewAllOrders">
+              <text class="view-all-text">全部</text>
+              <image
+                class="arrow-icon"
+                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
+              />
+            </view>
+          </view>
+
+          <view class="order-status-grid">
+            <view
+              v-for="(status, index) in orderStatuses"
+              :key="index"
+              class="status-item"
+              @click="navigateToOrders(status.type)"
+            >
+              <image class="status-icon" :src="status.icon" />
+              <text class="status-text">{{ status.name }}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 分享推广 -->
+        <view class="share-section">
+          <text class="share-title">分享小程序给好友优惠券</text>
+          <view class="share-button" @click="handleShare">
+            <text class="share-text">立即分享</text>
+          </view>
+        </view>
+
+        <!-- 设置菜单 -->
+        <view class="settings-section">
+          <view class="menu-item" @click="navigateToSettings">
+            <view class="menu-left">
+              <image
+                class="menu-icon"
+                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=84f8c4181ebe063f6c1fde4df4f5ddfd.png"
+              />
+              <text class="menu-text">基本设置</text>
+            </view>
+            <image
+              class="arrow-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
+            />
+          </view>
+
+          <view class="menu-item" @click="navigateToCoupons">
+            <view class="menu-left">
+              <image
+                class="menu-icon"
+                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=33915e4282968100c1cc2e5fecbe4b20.png"
+              />
+              <text class="menu-text">优惠券</text>
+            </view>
+            <image
+              class="arrow-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
+            />
+          </view>
+
+          <view class="menu-item" @click="contactService">
+            <view class="menu-left">
+              <image
+                class="menu-icon"
+                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=fa66353d43746c18cce7c73797fcd11b.png"
+              />
+              <text class="menu-text">联系客服</text>
+            </view>
+            <image
+              class="arrow-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
+            />
+          </view>
+        </view>
       </view>
     </view>
 
-    <!-- 功能区块 -->
-    <view class="function-section">
-      <view class="cell-group">
-        <view class="group-title">账号管理</view>
-        <wd-cell title="个人资料" is-link @click="handleProfileInfo">
-          <template #icon>
-            <wd-icon name="user" size="20px"></wd-icon>
-          </template>
-        </wd-cell>
-        <wd-cell title="账号安全" is-link @click="handlePassword">
-          <template #icon>
-            <wd-icon name="lock-on" size="20px"></wd-icon>
-          </template>
-        </wd-cell>
-      </view>
-
-      <view class="cell-group">
-        <view class="group-title">通用设置</view>
-        <wd-cell title="消息通知" is-link @click="handleInform">
-          <template #icon>
-            <wd-icon name="notification" size="20px"></wd-icon>
-          </template>
-        </wd-cell>
-        <wd-cell title="清理缓存" is-link @click="handleClearCache">
-          <template #icon>
-            <wd-icon name="clear" size="20px"></wd-icon>
-          </template>
-        </wd-cell>
-        <wd-cell title="应用更新" is-link @click="handleAppUpdate">
-          <template #icon>
-            <wd-icon name="refresh1" size="20px"></wd-icon>
-          </template>
-        </wd-cell>
-        <wd-cell title="关于我们" is-link @click="handleAbout">
-          <template #icon>
-            <wd-icon name="info-circle" size="20px"></wd-icon>
-          </template>
-        </wd-cell>
-      </view>
-
-      <view class="logout-button-wrapper">
-        <wd-button type="error" v-if="hasLogin" block @click="handleLogout">退出登录</wd-button>
-        <wd-button type="primary" v-else block @click="handleLogin">登录</wd-button>
-      </view>
-    </view>
+    <!-- 底部导航 -->
+    <BottomSection />
   </view>
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from '@/store'
-import { useToast } from 'wot-design-uni'
-import { useUpload } from '@/utils/uploadFile'
-import { storeToRefs } from 'pinia'
-import { IUploadSuccessInfo } from '@/api/login.typings'
-import { usePageAuth, isLogined } from '@/hooks/usePageAuth' // 导入 isLogined
-import { useTokenStore } from '@/store/token'
-// 使用认证 hook
-usePageAuth()
+import { ref } from 'vue'
+import BottomSection from '@/components/bottom-section/bottom-section.vue'
 
-const userStore = useUserStore()
-const { userProfile } = storeToRefs(userStore)
-const toast = useToast()
-const hasLogin = ref(isLogined())
-
-onShow((options) => {
-  // 使用 isLogined 函数检查登录状态
-  const token = useTokenStore().getUserToken()
-  console.log('1', token?.access_token)
-
-  // const profile = userStore.getUserProfile()
-  // console.log('2', profile)
-
-  const loginStatus = isLogined()
-  hasLogin.value = loginStatus
-
-  console.log('个人中心 onShow，登录状态:', loginStatus)
-
-  if (loginStatus) {
-    // 已登录，获取用户信息
-    userStore.getUserProfile()
-  } else {
-    // 未登录，跳转到登录页
-    uni.navigateTo({ url: '/pages/login/index' })
-  }
+defineOptions({
+  name: 'MinePage',
 })
-// #ifndef MP-WEIXIN
-// 上传头像
-const { run } = useUpload<IUploadSuccessInfo>(
-  import.meta.env.VITE_UPLOAD_BASEURL,
-  {},
+
+// 用户信息
+const userInfo = ref({
+  nickname: '薛定谔的猫',
+  authStatus: '未认证身份',
+  avatar:
+    'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=ee06fa1d4e484fa77188818ebfb741ac.png',
+})
+
+// 订单状态
+const orderStatuses = ref([
   {
-    onSuccess: (res) => {
-      console.log('h5头像上传成功', res)
-      useUserStore().setUserAvatar(res.url)
-    },
+    name: '待支付',
+    type: 'pending',
+    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=9df1b88cc1a7ea3bf174665965d041d5.png',
   },
-)
-// #endif
+  {
+    name: '待发货',
+    type: 'paid',
+    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cfa65065bf76db2dd56a8ba8cdcae0ab.png',
+  },
+  {
+    name: '待收货',
+    type: 'shipped',
+    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=3c7349736cc5bc5b9193ef985ad022fb.png',
+  },
+  {
+    name: '退款/售后',
+    type: 'refund',
+    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=1cdbba553fd61f86a6d93229236fdc9d.png',
+  },
+])
 
-// 微信小程序下登录
-const handleLogin = async () => {
-  // 跳转到登录页
-  uni.navigateTo({ url: '/pages/login/index' })
+// 方法
+const handleAuth = () => {
+  console.log('去认证')
+  uni.showToast({
+    title: '跳转认证页面',
+    icon: 'none',
+  })
 }
 
-// #ifdef MP-WEIXIN
+const viewAllOrders = () => {
+  console.log('查看全部订单')
+  uni.navigateTo({
+    url: '/pages/orders/list',
+  })
+}
 
-// 微信小程序下选择头像事件
-const onChooseAvatar = (e: any) => {
-  console.log('选择头像', e.detail)
-  const { avatarUrl } = e.detail
-  const { run } = useUpload<IUploadSuccessInfo>(
-    import.meta.env.VITE_UPLOAD_BASEURL,
-    {},
-    {
-      onSuccess: (res) => {
-        console.log('wx头像上传成功', res)
-        useUserStore().setUserAvatar(res.url)
-      },
+const navigateToOrders = (type: string) => {
+  console.log('查看订单:', type)
+  uni.navigateTo({
+    url: `/pages/orders/list?status=${type}`,
+  })
+}
+
+const handleShare = () => {
+  console.log('分享小程序')
+  uni.share({
+    provider: 'weixin',
+    scene: 'WXSceneSession',
+    type: 5,
+    imageUrl: '',
+    title: '密语商店',
+    miniProgram: {
+      id: '',
+      path: '/pages/mall/index',
+      type: 0,
+      webUrl: '',
     },
-    avatarUrl,
-  )
-  run()
+    success: () => {
+      uni.showToast({
+        title: '分享成功',
+        icon: 'success',
+      })
+    },
+  })
 }
-// #endif
-// #ifdef MP-WEIXIN
-// 微信小程序下设置用户名
-const getUserProfile = (e: any) => {
-  console.log(e.detail)
-}
-// #endif
 
-// 个人资料
-const handleProfileInfo = () => {
-  uni.navigateTo({ url: `/pages/mine/info/index` })
-}
-// 账号安全
-const handlePassword = () => {
-  uni.navigateTo({ url: `/pages/mine/password/index` })
-}
-// 消息通知
-const handleInform = () => {
-  // uni.navigateTo({ url: `/pages/mine/inform/index` })
-  toast.show('功能开发中')
-}
-// 应用更新
-const handleAppUpdate = () => {
-  // #ifdef MP
-  // #ifndef MP-HARMONY
-  const updateManager = uni.getUpdateManager()
-  updateManager.onCheckForUpdate(function (res) {
-    // 请求完新版本信息的回调
-    // console.log(res.hasUpdate)
-    if (res.hasUpdate) {
-      toast.show('检测到新版本，正在下载中...')
-    } else {
-      toast.show('已是最新版本')
-    }
+const navigateToSettings = () => {
+  console.log('基本设置')
+  uni.navigateTo({
+    url: '/pages/settings/index',
   })
-  updateManager.onUpdateReady(function (res) {
-    uni.showModal({
-      title: '更新提示',
-      content: '新版本已经准备好，是否重启应用？',
-      success(res) {
-        if (res.confirm) {
-          // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-          updateManager.applyUpdate()
-        }
-      },
-    })
-  })
-  updateManager.onUpdateFailed(function (res) {
-    // 新的版本下载失败
-    toast.error('新版本下载失败')
-  })
-  // #endif
-  // #endif
+}
 
-  // #ifndef MP
-  toast.show('功能开发中')
-  // #endif
+const navigateToCoupons = () => {
+  console.log('优惠券')
+  uni.navigateTo({
+    url: '/pages/coupons/index',
+  })
 }
-// 关于我们
-const handleAbout = () => {
-  uni.navigateTo({ url: `/pages/mine/about/index` })
-}
-// 清除缓存
-const handleClearCache = () => {
+
+const contactService = () => {
+  console.log('联系客服')
   uni.showModal({
-    title: '清除缓存',
-    content: '确定要清除所有缓存吗？\n清除后需要重新登录',
+    title: '联系客服',
+    content: '是否拨打客服电话？',
     success: (res) => {
       if (res.confirm) {
-        try {
-          // 清除所有缓存
-          uni.clearStorageSync()
-          // 清除用户信息并跳转到登录页
-          useUserStore().logout()
-          toast.show('清除缓存成功')
-        } catch (err) {
-          console.error('清除缓存失败:', err)
-          toast.error('清除缓存失败')
-        }
+        uni.makePhoneCall({
+          phoneNumber: '400-123-4567',
+        })
       }
     },
   })
 }
-// 退出登录
-const handleLogout = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
-    success: (res) => {
-      if (res.confirm) {
-        // 清空用户信息
-        useUserStore().logout()
-        hasLogin.value = false
-        // 执行退出登录逻辑
-        toast.show('退出登录成功')
-        // #ifdef MP-WEIXIN
-        // 微信小程序，去首页
-        // uni.reLaunch({ url: '/pages/index/index' })
-        // #endif
-        // #ifndef MP-WEIXIN
-        // 非微信小程序，去登录页
-        // uni.reLaunch({ url: '/pages/login/index' })
-        // #endif
-      }
-    },
-  })
-}
+
+// 生命周期
+onLoad(() => {
+  console.log('个人中心页面加载完成')
+})
+
+onPullDownRefresh(() => {
+  console.log('下拉刷新')
+  // 刷新用户信息
+  setTimeout(() => {
+    uni.stopPullDownRefresh()
+  }, 1000)
+})
 </script>
 
 <style lang="scss" scoped>
-/* 用户信息区域 */
-.user-info-section {
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx 40rpx;
-  margin: 0 30rpx 20rpx;
-  background-color: #fff;
-  border-radius: 24rpx;
-  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+.page-context {
+  // 将背景图设置在核心内容区域，覆盖整个可视区域包括padding-top
+  background-image: url('https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=7dc6d93c6d8dc7f3b79183da245fcfd8.png');
+  background-repeat: no-repeat;
+  background-position: 0 0; // 从最顶部开始
+  background-size: 100% 600rpx; // 设置合适的高度，覆盖头部区域
 }
 
-.avatar-wrapper {
-  width: 160rpx;
-  height: 160rpx;
-  margin-right: 40rpx;
-  overflow: hidden;
-  border: 4rpx solid #f5f5f5;
-  border-radius: 50%;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+.header-section {
+  padding-bottom: 154rpx;
+  // 移除背景图设置，现在由.page-context统一管理
 }
-.avatar-button {
-  height: 160rpx;
-  padding: 0;
-  margin-right: 40rpx;
-  overflow: hidden;
-  border: 4rpx solid #f5f5f5;
-  border-radius: 50%;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+
+.user-info {
+  margin-top: 32rpx;
+  padding: 0 48rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
 .user-details {
-  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  border-radius: 50%;
+  width: 108rpx;
+  height: 108rpx;
+}
+
+.user-text {
+  margin-left: 26rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .username {
-  margin-bottom: 12rpx;
-  font-size: 38rpx;
-  font-weight: 600;
-  color: #333;
-  letter-spacing: 0.5rpx;
-}
-
-.user-id {
-  font-size: 28rpx;
-  color: #666;
-}
-
-.user-created {
-  margin-top: 8rpx;
-  font-size: 24rpx;
-  color: #999;
-}
-/* 功能区块 */
-.function-section {
-  padding: 0 20rpx;
-  margin-top: 20rpx;
-}
-
-.cell-group {
-  margin-bottom: 20rpx;
-  overflow: hidden;
-  background-color: #fff;
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-}
-
-.group-title {
-  padding: 24rpx 30rpx 16rpx;
-  font-size: 30rpx;
-  font-weight: 500;
-  color: #999;
-  background-color: #fafafa;
-}
-
-:deep(.wd-cell) {
-  border-bottom: 1rpx solid #f5f5f5;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .wd-cell__title {
-    margin-left: 5px;
-    font-size: 32rpx;
-    color: #333;
-  }
-
-  .cell-icon {
-    margin-right: 20rpx;
-    font-size: 36rpx;
-  }
-}
-/* 退出登录按钮 */
-.logout-button-wrapper {
-  padding: 40rpx 30rpx;
-}
-
-:deep(.wd-button--danger) {
-  height: 88rpx;
+  color: #000000;
   font-size: 32rpx;
-  line-height: 88rpx;
-  color: #fff;
-  background-color: #f53f3f;
-  border-radius: 44rpx;
+  font-family: PingFang;
+  font-weight: 700;
+  line-height: 29.88rpx;
+}
+
+.auth-status {
+  color: rgba(0, 0, 0, 0.2);
+  font-size: 24rpx;
+  font-family: PingFang;
+  line-height: 22.36rpx;
+  margin-top: 18rpx;
+}
+
+.auth-button {
+  padding: 16rpx 0;
+  background-color: $mall-color-primary;
+  border-radius: 30rpx 30rpx 30rpx 4rpx;
+  width: 132rpx;
+  height: 56rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-text {
+  color: #fffcfc;
+  font-size: 26rpx;
+  font-family: PingFang;
+  font-weight: 700;
+  line-height: 24.2rpx;
+}
+
+.content-section {
+  margin-top: -106rpx;
+  padding: 0 32rpx;
+}
+
+.order-section {
+  padding: 40rpx 24rpx 44rpx;
+  background-color: #ffffff;
+  border-radius: 20rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-family: PingFang;
+  font-weight: 700;
+  line-height: 28.2rpx;
+  color: #1a1a1a;
+}
+
+.view-all {
+  display: flex;
+  align-items: center;
+}
+
+.view-all-text {
+  color: #999999;
+  font-size: 26rpx;
+  font-family: PingFang;
+  line-height: 24.24rpx;
+}
+
+.arrow-icon {
+  width: 24rpx;
+  height: 24rpx;
+  margin-left: 8rpx;
+}
+
+.order-status-grid {
+  margin-top: 40rpx;
+  display: flex;
+  justify-content: space-between;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  flex: 1;
+}
+
+.status-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.status-text {
+  margin-top: 20rpx;
+  font-size: $mall-font-sm;
+  font-family: PingFang;
+  line-height: 22.4rpx;
+  color: #1a1a1a;
+}
+
+.share-section {
+  margin-top: 24rpx;
+  padding: 40rpx 32rpx 28rpx;
+  background-image: url('https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=8457a337cde39979da63f8d50051f33f.png');
+  background-position: 0% 0%;
+  background-size: 686rpx 180rpx;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.share-title {
+  font-size: 30rpx;
+  font-family: PingFang;
+  font-weight: 700;
+  line-height: 28.26rpx;
+  color: #1a1a1a;
+}
+
+.share-button {
+  margin-top: 28rpx;
+  padding: 12rpx 0;
+  background-color: #ffffff;
+  border-radius: 60rpx;
+  width: 164rpx;
+  border: 2rpx solid #333333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.share-text {
+  font-size: 26rpx;
+  font-family: PingFang;
+  line-height: 24.08rpx;
+  color: #1a1a1a;
+}
+
+.settings-section {
+  margin-top: 24rpx;
+  padding: 40rpx 24rpx;
+  background-color: #ffffff;
+  border-radius: 20rpx;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &:not(:first-child) {
+    margin-top: 50rpx;
+  }
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon {
+  width: 32rpx;
+  height: 32rpx;
+
+  &:first-child {
+    width: 28rpx;
+    height: 28rpx;
+  }
+}
+
+.menu-text {
+  margin-left: 12rpx;
+  font-size: 28rpx;
+  font-family: PingFang;
+  line-height: 26rpx;
+  color: #1a1a1a;
 }
 </style>

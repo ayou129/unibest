@@ -12,7 +12,7 @@
   padding: 20rpx;
   margin-top: 60rpx;
   margin-bottom: 40rpx;
-  background-color: transparent;
+  background-color: $page-bg-color;
 }
 
 .bottom-text {
@@ -20,7 +20,7 @@
   color: #999999;
   opacity: 0.8;
   position: relative;
-
+  font-weight: 400;
   &::before,
   &::after {
     content: '';
@@ -28,7 +28,7 @@
     top: 50%;
     width: 60rpx;
     height: 1rpx;
-    background-color: #e0e0e0;
+    background-color: $page-bg-color;
   }
 
   &::before {

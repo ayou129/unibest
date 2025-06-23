@@ -29,6 +29,8 @@ docs/.vitepress/cache
 
 types
 
+code-商城小程序-20250623122508/
+
 # lock 文件还是不要了，我主要的版本写死就好了
 # pnpm-lock.yaml
 # package-lock.json

@@ -1,12 +1,13 @@
 import { defineUniPages } from '@uni-helper/vite-plugin-uni-pages'
 
 export default defineUniPages({
+  entryPagePath: 'pages/mine/index',
   globalStyle: {
     navigationStyle: 'default',
     navigationBarTitleText: 'unibest',
-    navigationBarBackgroundColor: '#f8f8f8',
+    navigationBarBackgroundColor: '#f7f7f7',
     navigationBarTextStyle: 'black',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#f7f7f7',
   },
   easycom: {
     autoscan: true,

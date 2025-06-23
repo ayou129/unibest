@@ -15,4 +15,197 @@ page {
 
   // 修改按钮背景色
   // --wot-button-primary-bg-color: green;
+
+  // 修改页面背景色
+  background-color: $page-bg-color;
+}
+
+/* ================ 商城全局样式类 ================ */
+
+/* 商城主题背景 */
+.bg-mall-primary {
+  background-color: $mall-color-primary;
+}
+.bg-mall-secondary {
+  background-color: $mall-color-secondary;
+}
+.bg-mall-card {
+  background-color: $mall-bg-card;
+}
+.bg-mall-section {
+  background-color: $mall-bg-section;
+}
+
+/* 商城文字颜色 */
+.text-mall-primary {
+  color: $mall-text-primary;
+}
+.text-mall-secondary {
+  color: $mall-text-secondary;
+}
+.text-mall-white {
+  color: $mall-text-white;
+}
+.text-mall-price {
+  color: $mall-text-price;
+}
+.text-mall-title {
+  color: $mall-text-title;
+}
+
+/* 商城字体大小 */
+.text-mall-xs {
+  font-size: $mall-font-xs;
+}
+.text-mall-sm {
+  font-size: $mall-font-sm;
+}
+.text-mall-base {
+  font-size: $mall-font-base;
+}
+.text-mall-md {
+  font-size: $mall-font-md;
+}
+.text-mall-lg {
+  font-size: $mall-font-lg;
+}
+.text-mall-xl {
+  font-size: $mall-font-xl;
+}
+.text-mall-xxl {
+  font-size: $mall-font-xxl;
+}
+
+/* 商城圆角 */
+.rounded-mall-xs {
+  border-radius: $mall-radius-xs;
+}
+.rounded-mall-sm {
+  border-radius: $mall-radius-sm;
+}
+.rounded-mall-base {
+  border-radius: $mall-radius-base;
+}
+.rounded-mall-md {
+  border-radius: $mall-radius-md;
+}
+.rounded-mall-lg {
+  border-radius: $mall-radius-lg;
+}
+.rounded-mall-xl {
+  border-radius: $mall-radius-xl;
+}
+.rounded-mall-full {
+  border-radius: $mall-radius-round;
+}
+
+/* 商城阴影 */
+.shadow-mall-sm {
+  box-shadow: $mall-shadow-sm;
+}
+.shadow-mall-base {
+  box-shadow: $mall-shadow-base;
+}
+.shadow-mall-lg {
+  box-shadow: $mall-shadow-lg;
+}
+
+/* 商城容器样式 */
+.mall-container {
+  background-color: $mall-bg-primary;
+  min-height: 100vh;
+}
+
+.mall-section {
+  background-color: $mall-bg-section;
+  padding: $mall-spacing-base;
+  margin-bottom: $mall-spacing-sm;
+}
+
+.mall-card {
+  background-color: $mall-bg-card;
+  border-radius: $mall-radius-base;
+  box-shadow: $mall-shadow-sm;
+  padding: $mall-spacing-base;
+  margin-bottom: $mall-spacing-sm;
+}
+
+/* 商城布局工具类 */
+.mall-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mall-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mall-flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.mall-flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* 商城按钮样式 */
+.mall-btn {
+  height: $mall-button-height;
+  border-radius: $mall-radius-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $mall-font-base;
+  font-weight: 500;
+
+  &.mall-btn-primary {
+    background-color: $mall-color-primary;
+    color: $mall-text-white;
+  }
+
+  &.mall-btn-secondary {
+    background-color: $mall-color-secondary;
+    color: $mall-text-white;
+  }
+
+  &.mall-btn-outline {
+    background-color: transparent;
+    border: 2rpx solid $mall-color-primary;
+    color: $mall-color-primary;
+  }
+}
+
+/* 商城输入框样式 */
+.mall-input {
+  height: $mall-search-height;
+  background-color: $mall-bg-section;
+  border-radius: $mall-radius-base;
+  padding: 0 $mall-spacing-base;
+  font-size: $mall-font-base;
+  color: $mall-text-primary;
+
+  &::placeholder {
+    color: $mall-text-placeholder;
+  }
+}
+
+/* 页面容器样式 */
+.page-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  position: relative;
+  background-color: $page-bg-color;
+}
+
+/* 页面内容区域样式 */
+.page-context {
+  width: 100%;
+  padding-top: $page-top-padding;
+  background-color: $page-bg-color;
 }

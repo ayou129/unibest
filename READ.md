@@ -25,61 +25,67 @@ yarn run dev:mp-weixin
 }
 ```
 
-## 项目开发遵循要求
+## 项目说明
 
-- 小程序 下拉或者上拉 看到的隐藏部分的 bgcolor 要和 页面统一样式 bgcolor 一致
-- 小程序主题
-  - 统一样式
-    - bgcolor #ffffff 小程序默认也是它，所以其他地方不需要更改
-  - panel
-    - 标题样式 32rpx #333333
-    - 内容
-      - 标题样式 38rpx #ff6b9d
-      - 标题解释文字 24rpx #666666
-      - 醒目一点的weight 700
-- 问题
-  - 编辑器找不到名称“wx” 是 typescript 环境的问题。参考 @types/global.d.ts
+- 修改 pages.json、manifest.json 被覆盖问题
+  - 本项目引入了 @uni-helper/vite-plugin-uni-pages，pages.json 文件将会自动生成，手动修改 pages.json 将会被覆盖。
+  - 全局的东西请在 pages.config.ts 里面配置，页面的东西请在 vue 文件的 route-block 配置。
+- 全局主题样式变量 应该修改的是 src/uni.scss
+  - 对于本文件修改，他其实是针对每一个项目的，所以如果是主题样式变量，应该有限修改 额外增加的，其次让 $uni-开头的变量 继承他，但是 $uni- 开头的变量只能修改不能增加和删除
+  - 然后子组件使用它即可
+- 全局样式 src/style/index.scss 中 书写公共的样式，例如 .page-container 等样式
+  - 默认还有一个 page 的 background-color: $page-bg-color; 属性，设定了页面的全局背景色
+- 实现具体页面的时候遵循的思路
+  - 优先实现 全局主题样式变量
+  - 全局样式
+  - 看是否需要提炼成公共组件(如果没有则创建，有则使用)
+  - 最后书写页面的整体内容
+- 页面布局模板如下
 
-## 其他说明
+```vue
+<route lang="json5" type="page">
+{
+  style: {
+    enablePullDownRefresh: true,
+    navigationStyle: 'custom',
+    navigationBarTitleText: 'xxxx',
+  },
+}
+</route>
 
-### 陪玩功能设计说明
+<template>
+  <view class="page-container[这里默认，由公共样式实现]">
+    <view class="page-context[这里每个页面都强制使用这个类名，只不过由本页面去实现具体的样式]">
+      这里是每个页面的具体内容
+    </view>
 
-表相关
+    <!-- 底部导航,不需要每个页面为其考虑间距，底部导航组件自己实现与每个页面的间距 -->
+    <BottomSection />
+  </view>
+</template>
 
-- 俱乐部表
-  - 管理员表
-    - type
-      - 创始人
-      - 管理员
-- 俱乐部项目表(游戏等)
-- 俱乐部礼物表
-- 俱乐部商品
-  - 游戏
-  - 哄睡
-  - ...
-- 俱乐部订单
-- 俱乐部订单详情表
-- 统计
-  - 排行
-    - 日、周、月
-    - 分类
-      - 接单
-      - 礼物
-      - 冠名
-    - 项目
-      - 流水
-      - 收益
-  - 统计三方
-    - 陪玩(个人)统计
-    - 俱乐部(团队)统计
-    - 超管(所有)统计
-- 直属概念
-  - boss 表
-  - boss直属 表
-  - 三方
-    - 接单人
-    - 直属
-    - 俱乐部
-  - 收益分成
-    - 根据礼物 设置 三方分成比例
-    - 根据特定人群 设置 三方分成比例
+<script lang="ts" setup>
+// 生命周期
+onLoad(() => {
+  console.log('个人中心页面加载完成')
+})
+
+onPullDownRefresh(() => {
+  console.log('下拉刷新')
+  setTimeout(() => {
+    uni.stopPullDownRefresh()
+  }, 1000)
+})
+...
+</script>
+
+<style lang="scss" scoped>
+.page-context {
+  padding-top: 170rpx; // 这里的170rpx，提炼出来放到变量中，由变量文件统一修改
+  background-color: $mall-bg-primary;
+  width: 100%;
+}
+
+...
+</style>
+```

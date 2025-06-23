@@ -1,0 +1,209 @@
+<route lang="json5" type="page">
+{
+  style: {
+    enablePullDownRefresh: true,
+    navigationStyle: 'custom',
+    navigationBarTitleText: '商城首页',
+  },
+}
+</route>
+
+<template>
+  <view class="page-container">
+    <!-- 商城主容器 -->
+    <view class="page-context">
+      <!-- 欢迎区域 -->
+      <view class="welcome-section">
+        <view class="welcome-text">
+          <text class="welcome-title">Hey！friend</text>
+          <text class="welcome-subtitle">欢迎来到密语商店</text>
+        </view>
+        <image
+          class="avatar-image"
+          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=a376530fc392f56eba1b70da0b8c764c.png"
+        />
+      </view>
+
+      <!-- 商品卡片 -->
+      <view class="product-section" @click="navigateToDetail">
+        <image
+          class="product-image"
+          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=9d47699edc59f6f85e8a9d0d4ce22b02.png"
+        />
+        <view class="product-info">
+          <view class="product-text">
+            <text class="product-title">敬修堂防脱滋养育发洗发露</text>
+            <text class="product-description">控油防脱两不误 细腻丰富泡沫</text>
+          </view>
+          <text class="product-price">￥298</text>
+          <view class="buy-button" @click.stop="handleBuyClick">
+            <text class="buy-text">直接购买</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部导航 -->
+    <BottomSection />
+  </view>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import BottomSection from '@/components/bottom-section/bottom-section.vue'
+
+defineOptions({
+  name: 'MallHome',
+})
+
+// 方法
+const navigateToDetail = () => {
+  console.log('跳转到产品详情')
+  uni.navigateTo({
+    url: '/pages/product/detail',
+  })
+}
+
+const handleBuyClick = () => {
+  console.log('点击购买')
+  uni.showToast({
+    title: '直接购买',
+    icon: 'success',
+  })
+}
+
+// 生命周期
+onLoad(() => {
+  console.log('商城首页加载完成')
+})
+
+onPullDownRefresh(() => {
+  console.log('下拉刷新')
+  setTimeout(() => {
+    uni.stopPullDownRefresh()
+  }, 1000)
+})
+</script>
+
+<style lang="scss" scoped>
+.page-context {
+  padding-top: 170rpx;
+  background-color: $mall-bg-primary;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.welcome-section {
+  margin-top: 20rpx;
+  padding: 0 48rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.welcome-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.welcome-title {
+  color: #000000;
+  font-size: 52rpx;
+  font-family: Archivo;
+  line-height: 48.36rpx;
+  font-style: italic;
+}
+
+.welcome-subtitle {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 30rpx;
+  font-family: PingFang;
+  line-height: 28.32rpx;
+  margin-top: 18rpx;
+}
+
+.avatar-image {
+  border-radius: 50%;
+  width: 76rpx;
+  height: 76rpx;
+}
+
+.product-section {
+  margin-top: 40rpx;
+  padding: 0 24rpx;
+  height: 1174rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-image {
+  width: 93.6vw;
+  height: 136.2667vw;
+  flex-shrink: 0;
+}
+
+.product-info {
+  margin-top: -120rpx;
+  padding: 48rpx 44rpx 52rpx;
+  background-color: $mall-color-secondary;
+  border-radius: 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+
+.product-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.product-title {
+  color: #ffffff;
+  font-size: 34rpx;
+  font-family: PingFang;
+  font-weight: 700;
+  line-height: 32.14rpx;
+}
+
+.product-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 26rpx;
+  font-family: PingFang;
+  line-height: 32rpx;
+  width: 330rpx;
+  margin-top: 16rpx;
+}
+
+.product-price {
+  margin-left: 12rpx;
+  margin-top: 48rpx;
+  color: #ffffff;
+  font-size: 56rpx;
+  font-family: HarmonyOSSansSC;
+  line-height: 42.34rpx;
+}
+
+.buy-button {
+  padding: 24rpx 0;
+  background-color: $mall-color-primary;
+  border-radius: 20rpx;
+  width: 192rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 36rpx;
+  top: 164rpx;
+}
+
+.buy-text {
+  color: #ffffff;
+  font-size: 30rpx;
+  font-family: HarmonyOSSansSC;
+  line-height: 28.08rpx;
+}
+</style>

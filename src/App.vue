@@ -58,12 +58,4 @@ image {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
-
-.page-container {
-  // background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
-  background-color: #ffffff;
-  // background-color: #f4f4f4;
-  padding-top: 170rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-}
 </style>
