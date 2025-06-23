@@ -60,7 +60,6 @@ image {
 }
 
 .page-container {
-  min-height: 100vh;
   // background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
   background-color: #ffffff;
   // background-color: #f4f4f4;

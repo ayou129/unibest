@@ -4,7 +4,6 @@
   style: {
     enablePullDownRefresh: true,
     navigationStyle: 'custom',
-    // onReachBottomDistance: 10,
     navigationBarTitleText: '首页',
   },
 }
@@ -17,13 +16,13 @@
         <view class="banner-bg">
           <view class="banner-left">
             <view class="banner-text">
-              <text class="banner-title">Hi，欢迎来到陪玩平台</text>
+              <text class="banner-title">Hi，欢迎来到XX陪玩平台</text>
               <text class="banner-subtitle">专业陪玩，让游戏更精彩</text>
             </view>
           </view>
           <view class="banner-right">
             <view class="ip-container">
-              <image src="/static/images/ip.png" class="ip-image" mode="aspectFit" />
+              <image src="/static/images/ip3.png" class="ip-image" mode="aspectFit" />
               <view class="ip-glow"></view>
             </view>
           </view>
@@ -105,11 +104,14 @@
         </view>
       </view>
     </view>
+
+    <BottomSection />
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import BottomSection from '@/components/bottom-section/bottom-section.vue'
 
 defineOptions({
   name: 'Home',
@@ -275,8 +277,8 @@ onReachBottom(() => {
 
 .ip-container {
   position: relative;
-  width: 160rpx;
-  height: 160rpx;
+  width: 220rpx;
+  height: 220rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -427,7 +429,7 @@ onReachBottom(() => {
 
 // 游戏分类样式
 .game-section {
-  padding: 0 20rpx 40rpx;
+  padding: 0 20rpx 0;
 }
 
 .section-header {
