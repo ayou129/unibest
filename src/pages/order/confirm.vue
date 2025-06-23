@@ -16,10 +16,7 @@
       <view class="address-section">
         <view class="address-item" @click="selectAddress">
           <view class="address-info">
-            <image
-              class="address-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
-            />
+            <image class="address-icon" src="/static/icons/location.png" />
             <view v-if="selectedAddress" class="address-content">
               <view class="address-header">
                 <text class="address-name">{{ selectedAddress.name }}</text>
@@ -69,7 +66,7 @@
                 -￥{{ selectedCoupon.amount }}
               </text>
               <text v-else class="coupon-text">{{ availableCouponCount }}张可用</text>
-              <image class="arrow-icon" src="/static/icons/arrow-right.png" />
+              <image class="arrow-icon2" src="/static/icons/arrow-right.png" />
             </view>
           </view>
 
@@ -332,6 +329,12 @@ onLoad((options) => {
 .arrow-icon {
   width: 32rpx;
   height: 32rpx;
+  flex-shrink: 0;
+}
+
+.arrow-icon2 {
+  width: 28rpx;
+  height: 28rpx;
   flex-shrink: 0;
 }
 
