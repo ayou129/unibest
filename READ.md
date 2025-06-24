@@ -27,9 +27,9 @@ yarn run dev:mp-weixin
 
 ## 项目说明
 
-- 修改 pages.json、manifest.json 被覆盖问题
+- 修改 pages.json、manifest.json 文件 被覆盖问题
   - 本项目引入了 @uni-helper/vite-plugin-uni-pages，pages.json 文件将会自动生成，手动修改 pages.json 将会被覆盖。
-  - 全局的东西请在 pages.config.ts 里面配置，页面的东西请在 vue 文件的 route-block 配置。
+  - 全局的东西请在 `pages.config.ts` 里面配置，页面的东西请在 vue 文件的 route-block 配置。
 - 全局主题样式变量 应该修改的是 src/uni.scss
   - 对于本文件修改，他其实是针对每一个项目的，所以如果是主题样式变量，应该有限修改 额外增加的，其次让 $uni-开头的变量 继承他，但是 $uni- 开头的变量只能修改不能增加和删除
   - 然后子组件使用它即可

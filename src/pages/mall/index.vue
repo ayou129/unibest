@@ -1,7 +1,7 @@
 <route lang="json5" type="page">
 {
   style: {
-    enablePullDownRefresh: true,
+    enablePullDownRefresh: false,
     navigationStyle: 'custom',
     navigationBarTitleText: '商城首页',
   },
@@ -43,14 +43,14 @@
       </view>
 
       <!-- 底部导航 -->
-      <BottomSection />
+      <!-- <BottomSection /> -->
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import BottomSection from '@/components/bottom-section/bottom-section.vue'
+// import BottomSection from '@/components/bottom-section/bottom-section.vue'
 
 defineOptions({
   name: 'MallHome',
@@ -86,17 +86,8 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
-page {
-  // 修改页面背景色
-  background-color: $mall-bg-primary;
-}
-
 .page-content {
-  // padding-top: 170rpx;
-  // background-color: $mall-bg-primary;
-  // width: 718rpx;
-  // overflow-y: auto;
-  // overflow-x: hidden;
+  background-color: $mall-bg-primary;
 }
 
 .welcome-section {

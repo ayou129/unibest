@@ -16,10 +16,11 @@
     }
   },
   "tabBar": {
-    "color": "#999999",
+    "color": "#666666",
     "selectedColor": "#018d71",
     "backgroundColor": "#F8F8F8",
     "borderStyle": "black",
+    "blurEffect": "none",
     "height": "50px",
     "fontSize": "10px",
     "iconWidth": "24px",
@@ -27,19 +28,13 @@
     "list": [
       {
         "iconPath": "static/tabbar/home.png",
-        "selectedIconPath": "static/tabbar/homeHL.png",
-        "pagePath": "pages/index/index",
+        "selectedIconPath": "static/tabbar/home-active.png",
+        "pagePath": "pages/mall/index",
         "text": "首页"
       },
       {
-        "iconPath": "static/tabbar/example.png",
-        "selectedIconPath": "static/tabbar/exampleHL.png",
-        "pagePath": "pages/about/about",
-        "text": "关于"
-      },
-      {
-        "iconPath": "static/tabbar/personal.png",
-        "selectedIconPath": "static/tabbar/personalHL.png",
+        "iconPath": "static/tabbar/user.png",
+        "selectedIconPath": "static/tabbar/user-active.png",
         "pagePath": "pages/mine/index",
         "text": "我的"
       }
@@ -94,7 +89,7 @@
       "path": "pages/mall/index",
       "type": "page",
       "style": {
-        "enablePullDownRefresh": true,
+        "enablePullDownRefresh": false,
         "navigationStyle": "custom",
         "navigationBarTitleText": "商城首页"
       }
