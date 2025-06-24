@@ -1,5 +1,5 @@
 {
-  "entryPagePath": "pages/order/confirm",
+  "entryPagePath": "pages/mall/index",
   "globalStyle": {
     "navigationStyle": "default",
     "navigationBarTitleText": "unibest",
@@ -153,7 +153,6 @@
     {
       "path": "pages/mine/password/index",
       "type": "page",
-      "needLogin": true,
       "style": {
         "navigationBarTitleText": "修改密码"
       }

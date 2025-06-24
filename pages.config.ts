@@ -1,7 +1,7 @@
 import { defineUniPages } from '@uni-helper/vite-plugin-uni-pages'
 
 export default defineUniPages({
-  entryPagePath: 'pages/order/confirm',
+  entryPagePath: 'pages/mall/index',
   globalStyle: {
     navigationStyle: 'default',
     navigationBarTitleText: 'unibest',

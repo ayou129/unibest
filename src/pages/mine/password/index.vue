@@ -1,6 +1,6 @@
 <route lang="json5">
 {
-  needLogin: true,
+  // needLogin: true,
   style: {
     navigationBarTitleText: '修改密码',
   },

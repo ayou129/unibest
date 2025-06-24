@@ -7,120 +7,126 @@
 }
 </route>
 <template>
-  <view class="login-container">
-    <!-- 背景装饰元素 -->
-    <view class="bg-decoration bg-circle-1"></view>
-    <view class="bg-decoration bg-circle-2"></view>
-    <view class="bg-decoration bg-circle-3"></view>
+  <view>
+    <!-- 添加导航栏 -->
+    <fg-navbar>登录</fg-navbar>
+    <view class="login-container">
+      <!-- 背景装饰元素 -->
+      <view class="bg-decoration bg-circle-1"></view>
+      <view class="bg-decoration bg-circle-2"></view>
+      <view class="bg-decoration bg-circle-3"></view>
 
-    <view class="login-header">
-      <image class="login-logo" :src="appLogo" mode="aspectFit"></image>
-      <view class="login-title">{{ appTitle }}</view>
-    </view>
-    <view class="login-form">
-      <view class="welcome-text">欢迎登录</view>
-      <view class="login-desc">请输入您的账号和密码</view>
-      <view class="login-input-group">
-        <view class="input-wrapper">
-          <wd-input
-            v-model="loginForm.phone"
-            prefix-icon="user"
-            placeholder="请输入手机号"
-            clearable
-            class="login-input"
-            :border="false"
-            required
-          ></wd-input>
-          <view class="input-bottom-line"></view>
+      <view class="login-header">
+        <image class="login-logo" :src="appLogo" mode="aspectFit"></image>
+        <view class="login-title">{{ appTitle }}</view>
+      </view>
+      <view class="login-form">
+        <view class="welcome-text">欢迎登录</view>
+        <view class="login-desc">请输入您的账号和密码</view>
+        <view class="login-input-group">
+          <view class="input-wrapper">
+            <wd-input
+              v-model="loginForm.phone"
+              prefix-icon="user"
+              placeholder="请输入手机号"
+              clearable
+              class="login-input"
+              :border="false"
+              required
+            ></wd-input>
+            <view class="input-bottom-line"></view>
+          </view>
+          <view class="input-wrapper">
+            <wd-input
+              v-model="loginForm.sms_code"
+              prefix-icon="lock-on"
+              placeholder="请输入手机验证码"
+              clearable
+              show-password
+              class="login-input"
+              :border="false"
+              required
+            ></wd-input>
+            <view class="input-bottom-line"></view>
+          </view>
+          <!-- 验证码区域 -->
+          <view class="input-wrapper captcha-wrapper">
+            <wd-input
+              v-if="captcha.captchaEnabled"
+              v-model="loginForm.graphic_verify_code"
+              prefix-icon="secured"
+              placeholder="请输入图形验证码"
+              clearable
+              class="login-input captcha-input"
+              :border="false"
+              required
+            >
+              <template #suffix>
+                <image
+                  class="captcha-image"
+                  :src="'data:image/gif;base64,' + captcha.image"
+                  mode="aspectFit"
+                  @click="refreshCaptcha"
+                ></image>
+              </template>
+            </wd-input>
+            <view class="input-bottom-line"></view>
+          </view>
         </view>
-        <view class="input-wrapper">
-          <wd-input
-            v-model="loginForm.sms_code"
-            prefix-icon="lock-on"
-            placeholder="请输入手机验证码"
-            clearable
-            show-password
-            class="login-input"
-            :border="false"
-            required
-          ></wd-input>
-          <view class="input-bottom-line"></view>
-        </view>
-        <!-- 验证码区域 -->
-        <view class="input-wrapper captcha-wrapper">
-          <wd-input
-            v-if="captcha.captchaEnabled"
-            v-model="loginForm.graphic_verify_code"
-            prefix-icon="secured"
-            placeholder="请输入图形验证码"
-            clearable
-            class="login-input captcha-input"
-            :border="false"
-            required
+        <!-- 登录按钮组 -->
+        <view class="login-buttons">
+          <!-- 手机号+验证码登录按钮 -->
+          <wd-button
+            type="primary"
+            size="large"
+            block
+            @click="handlePhoneSmsLogin"
+            class="account-login-btn"
           >
-            <template #suffix>
-              <image
-                class="captcha-image"
-                :src="'data:image/gif;base64,' + captcha.image"
-                mode="aspectFit"
-                @click="refreshCaptcha"
-              ></image>
-            </template>
-          </wd-input>
-          <view class="input-bottom-line"></view>
+            <wd-icon name="right" size="18px" class="login-icon"></wd-icon>
+            登录
+          </wd-button>
+          <!-- 微信小程序一键登录按钮 -->
+          <!-- #ifdef MP-WEIXIN -->
+          <view class="divider">
+            <view class="divider-line"></view>
+            <view class="divider-text">或</view>
+            <view class="divider-line"></view>
+          </view>
+          <wd-button
+            type="info"
+            size="large"
+            block
+            plain
+            open-type="getPhoneNumber"
+            @getphonenumber="handleWechatLogin"
+            class="wechat-login-btn"
+          >
+            微信一键登录
+          </wd-button>
+          <!-- #endif -->
         </view>
       </view>
-      <!-- 登录按钮组 -->
-      <view class="login-buttons">
-        <!-- 手机号+验证码登录按钮 -->
-        <wd-button
-          type="primary"
-          size="large"
-          block
-          @click="handlePhoneSmsLogin"
-          class="account-login-btn"
+      <!-- 隐私协议勾选 -->
+      <view class="privacy-agreement">
+        <wd-checkbox
+          v-model="agreePrivacy"
+          shape="square"
+          class="privacy-checkbox"
+          active-color="var(--wot-color-theme, #1989fa)"
         >
-          <wd-icon name="right" size="18px" class="login-icon"></wd-icon>
-          登录
-        </wd-button>
-        <!-- 微信小程序一键登录按钮 -->
-        <!-- #ifdef MP-WEIXIN -->
-        <view class="divider">
-          <view class="divider-line"></view>
-          <view class="divider-text">或</view>
-          <view class="divider-line"></view>
-        </view>
-        <wd-button
-          type="info"
-          size="large"
-          block
-          plain
-          open-type="getPhoneNumber"
-          @getphonenumber="handleWechatLogin"
-          class="wechat-login-btn"
-        >
-          微信一键登录
-        </wd-button>
-        <!-- #endif -->
+          <view class="agreement-text">
+            我已阅读并同意
+            <text class="agreement-link" @click.stop="handleAgreement('user')">《用户协议》</text>
+            和
+            <text class="agreement-link" @click.stop="handleAgreement('privacy')">
+              《隐私政策》
+            </text>
+          </view>
+        </wd-checkbox>
       </view>
+      <view class="login-footer"></view>
     </view>
-    <!-- 隐私协议勾选 -->
-    <view class="privacy-agreement">
-      <wd-checkbox
-        v-model="agreePrivacy"
-        shape="square"
-        class="privacy-checkbox"
-        active-color="var(--wot-color-theme, #1989fa)"
-      >
-        <view class="agreement-text">
-          我已阅读并同意
-          <text class="agreement-link" @click.stop="handleAgreement('user')">《用户协议》</text>
-          和
-          <text class="agreement-link" @click.stop="handleAgreement('privacy')">《隐私政策》</text>
-        </view>
-      </wd-checkbox>
-    </view>
-    <view class="login-footer"></view>
   </view>
 </template>
 
