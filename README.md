@@ -98,7 +98,7 @@
 
 [MIT](https://opensource.org/license/mit/)
 
-Copyright (c) 2025 菲鸽
+Copyright (c) 2025 阿尤
 
 ## 捐赠
 

@@ -31,7 +31,7 @@ export default defineConfig({
       'meta',
       {
         name: 'author',
-        content: '菲鸽, 菲哥, 鸽鸽, feige996, feige996, 1020103647@qq.com',
+        content: '阿尤, 菲哥, 鸽鸽, feige996, feige996, 1020103647@qq.com',
       },
     ],
     [
@@ -187,7 +187,7 @@ export default defineConfig({
     ],
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright (c) 2024 菲鸽',
+      copyright: 'Copyright (c) 2024 阿尤',
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/feige996/unibest' },
@@ -218,7 +218,7 @@ export default defineConfig({
           </svg>`,
         },
         link: 'https://juejin.cn/user/3263006241460792/posts',
-        ariaLabel: '菲鸽的掘金主页',
+        ariaLabel: '阿尤的掘金主页',
       },
     ],
     search: {
