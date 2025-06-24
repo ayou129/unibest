@@ -18,10 +18,7 @@
           <text class="welcome-title">Hey！friend</text>
           <text class="welcome-subtitle">欢迎来到密语商店</text>
         </view>
-        <image
-          class="avatar-image"
-          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=a376530fc392f56eba1b70da0b8c764c.png"
-        />
+        <image class="avatar-image" src="@/static/images/avatar.jpg" />
       </view>
 
       <!-- 商品卡片 -->
@@ -86,6 +83,9 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
+page {
+  background-color: $mall-bg-primary;
+}
 .page-content {
   background-color: $mall-bg-primary;
 }

@@ -282,8 +282,8 @@ onPullDownRefresh(() => {
   padding: 16rpx 0;
   background-color: $mall-color-primary;
   border-radius: 30rpx 30rpx 30rpx 4rpx;
-  width: 132rpx;
-  height: 56rpx;
+  width: 120rpx;
+  height: 25rpx;
   display: flex;
   justify-content: center;
   align-items: center;
