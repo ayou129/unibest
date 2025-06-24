@@ -74,6 +74,7 @@
     {
       "path": "pages/address/list",
       "type": "page",
+      "needLogin": true,
       "style": {
         "enablePullDownRefresh": true,
         "navigationStyle": "custom",
@@ -145,7 +146,6 @@
     {
       "path": "pages/mine/info/index",
       "type": "page",
-      "needLogin": true,
       "style": {
         "navigationBarTitleText": "个人资料"
       }

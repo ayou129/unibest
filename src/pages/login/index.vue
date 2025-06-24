@@ -180,7 +180,7 @@ onLoad((option) => {
   captcha.value.captchaEnabled && refreshCaptcha()
   // 获取跳转路由
   if (option.redirect) {
-    redirectRoute.value = option.redirect
+    redirectRoute.value = decodeURIComponent(option.redirect)
   }
 })
 

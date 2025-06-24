@@ -1,6 +1,6 @@
 <route lang="json5" type="page">
 {
-  // needLogin: true,
+  needLogin: true,
   style: {
     enablePullDownRefresh: true,
     navigationStyle: 'custom',
@@ -11,11 +11,19 @@
 
 <template>
   <view class="page-container">
+    <!-- 添加导航栏 -->
+    <fg-navbar>收货地址</fg-navbar>
+
     <view class="page-content">
+      <!-- 加载状态 -->
+      <view v-if="addressStore.loading" class="loading-state">
+        <text class="loading-text">加载中...</text>
+      </view>
+
       <!-- 地址列表 -->
-      <view class="address-list">
+      <view v-else class="address-list">
         <view
-          v-for="(address, index) in addressList"
+          v-for="(address, index) in addressStore.addressList"
           :key="address.id"
           class="address-card"
           @click="selectAddress(address)"
@@ -28,7 +36,12 @@
                 <text class="user-phone">{{ address.phone }}</text>
               </view>
               <view class="address-tags">
-                <text v-if="address.isDefault" class="default-tag">默认</text>
+                <text
+                  v-if="address.is_default === AddressDefaultStatus.DEFAULT"
+                  class="default-tag"
+                >
+                  默认
+                </text>
               </view>
             </view>
 
@@ -37,7 +50,10 @@
                 class="location-icon"
                 src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
               />
-              <text class="address-text">{{ address.fullAddress }}</text>
+              <text class="address-text">
+                {{ address.province }} {{ address.city }} {{ address.district }}
+                {{ address.detail_address }}
+              </text>
             </view>
           </view>
 
@@ -56,7 +72,7 @@
               <text class="mall-btn-text">删除</text>
             </view>
             <view
-              v-if="!address.isDefault"
+              v-if="address.is_default !== AddressDefaultStatus.DEFAULT"
               class="mall-btn-sm mall-btn-outline action-btn"
               @click.stop="setDefault(address)"
             >
@@ -66,7 +82,10 @@
         </view>
 
         <!-- 空状态 -->
-        <view v-if="addressList.length === 0" class="empty-state">
+        <view
+          v-if="addressStore.addressList.length === 0 && !addressStore.loading"
+          class="empty-state"
+        >
           <image
             class="empty-icon"
             src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
@@ -87,29 +106,25 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
-import {
-  getAddressList,
-  deleteAddress as deleteAddressFromStorage,
-  setDefaultAddress,
-  type AddressInfo,
-} from '@/utils/addressStorage'
+import { useAddressStore } from '@/store'
+import type { IAddressInfo } from '@/api/address.typings'
+import { AddressDefaultStatus } from '@/api/address.typings'
 
 defineOptions({
   name: 'AddressList',
 })
 
-// 地址列表数据
-const addressList = ref<AddressInfo[]>([])
+// 使用地址Store
+const addressStore = useAddressStore()
 
 // 加载地址列表
-const loadAddressList = () => {
-  addressList.value = getAddressList()
+const loadAddressList = async () => {
+  await addressStore.getAddressList()
 }
 
 // 选择地址（用于确认订单页面）
-const selectAddress = (address: AddressInfo) => {
+const selectAddress = (address: IAddressInfo) => {
   console.log('选择地址:', address)
 
   // 获取页面参数，判断是否是选择地址模式
@@ -129,14 +144,14 @@ const selectAddress = (address: AddressInfo) => {
     // 普通查看模式，显示地址详情
     uni.showModal({
       title: '地址详情',
-      content: `${address.name} ${address.phone}\n${address.fullAddress}`,
+      content: `${address.name} ${address.phone}\n${address.province} ${address.city} ${address.district} ${address.detail_address}`,
       showCancel: false,
     })
   }
 }
 
 // 编辑地址
-const editAddress = (address: AddressInfo) => {
+const editAddress = (address: IAddressInfo) => {
   console.log('编辑地址:', address)
   uni.navigateTo({
     url: `/pages/address/edit?id=${address.id}`,
@@ -144,49 +159,23 @@ const editAddress = (address: AddressInfo) => {
 }
 
 // 删除地址
-const deleteAddress = (address: AddressInfo) => {
+const deleteAddress = (address: IAddressInfo) => {
   console.log('删除地址:', address)
   uni.showModal({
     title: '确认删除',
     content: `确定要删除地址"${address.name}"吗？`,
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm) {
-        // 执行删除操作
-        const success = deleteAddressFromStorage(address.id)
-        if (success) {
-          loadAddressList() // 重新加载列表
-          uni.showToast({
-            title: '删除成功',
-            icon: 'success',
-          })
-        } else {
-          uni.showToast({
-            title: '删除失败',
-            icon: 'error',
-          })
-        }
+        await addressStore.deleteAddress(address.id)
       }
     },
   })
 }
 
 // 设为默认地址
-const setDefault = (address: AddressInfo) => {
+const setDefault = async (address: IAddressInfo) => {
   console.log('设为默认:', address)
-
-  const success = setDefaultAddress(address.id)
-  if (success) {
-    loadAddressList() // 重新加载列表
-    uni.showToast({
-      title: '设置成功',
-      icon: 'success',
-    })
-  } else {
-    uni.showToast({
-      title: '设置失败',
-      icon: 'error',
-    })
-  }
+  await addressStore.setDefaultAddress(address.id)
 }
 
 // 添加新地址
@@ -198,37 +187,26 @@ const addAddress = () => {
 }
 
 // 生命周期
-onLoad((options) => {
-  console.log('地址列表页面加载完成', options)
-  loadAddressList()
+onLoad(async () => {
+  console.log('地址列表页面加载完成')
+  await loadAddressList()
 })
 
-onShow(() => {
-  // 页面显示时刷新地址列表（从编辑页面返回时）
-  console.log('地址列表页面显示')
-  loadAddressList()
+onShow(async () => {
+  // 页面显示时重新加载地址列表（可能从编辑页返回）
+  await loadAddressList()
 })
 
-onPullDownRefresh(() => {
-  console.log('下拉刷新地址列表')
-  loadAddressList()
-  setTimeout(() => {
-    uni.stopPullDownRefresh()
-    uni.showToast({
-      title: '刷新成功',
-      icon: 'success',
-    })
-  }, 500)
+onPullDownRefresh(async () => {
+  console.log('下拉刷新')
+  await loadAddressList()
+  uni.stopPullDownRefresh()
 })
 </script>
 
 <style lang="scss" scoped>
-.page-content {
-  padding-bottom: 120rpx; // 为底部按钮留出空间
-}
-
 .address-list {
-  padding: 24rpx 32rpx;
+  padding: 24rpx 24rpx;
 }
 
 .address-card {

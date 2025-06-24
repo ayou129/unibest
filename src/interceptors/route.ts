@@ -6,6 +6,7 @@ import { useTokenStore } from '@/store/token'
 import { needLoginPages as _needLoginPages, getNeedLoginPages, getLastPage } from '@/utils'
 
 const loginRoute = import.meta.env.VITE_LOGIN_URL
+console.log('🔍 loginRoute:', loginRoute)
 const isDev = import.meta.env.DEV
 
 const isLogined = () => {
