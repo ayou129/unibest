@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import areaData from '@/data/area_format_array.json'
 
 interface AreaItem {
@@ -172,17 +172,39 @@ const loadDistricts = (cityIndex: number) => {
 const showPicker = () => {
   // 初始化临时选择值
   if (props.modelValue && provinces.value.length > 0) {
-    const provinceIndex = provinces.value.findIndex((p) => p.i === props.modelValue!.provinceId)
+    let provinceIndex = -1
+    let cityIndex = -1
+    let districtIndex = -1
+
+    // 优先通过ID查找，如果ID为0或找不到，则通过名称查找
+    if (props.modelValue.provinceId && props.modelValue.provinceId > 0) {
+      provinceIndex = provinces.value.findIndex((p) => p.i === props.modelValue!.provinceId)
+    } else if (props.modelValue.province) {
+      provinceIndex = provinces.value.findIndex((p) => p.n === props.modelValue!.province)
+    }
+
     if (provinceIndex >= 0) {
       tempSelection.value.provinceIndex = provinceIndex
       loadCities(provinceIndex)
 
-      const cityIndex = cities.value.findIndex((c) => c.i === props.modelValue!.cityId)
+      // 查找城市
+      if (props.modelValue.cityId && props.modelValue.cityId > 0) {
+        cityIndex = cities.value.findIndex((c) => c.i === props.modelValue!.cityId)
+      } else if (props.modelValue.city) {
+        cityIndex = cities.value.findIndex((c) => c.n === props.modelValue!.city)
+      }
+
       if (cityIndex >= 0) {
         tempSelection.value.cityIndex = cityIndex
         loadDistricts(cityIndex)
 
-        const districtIndex = districts.value.findIndex((d) => d.i === props.modelValue!.districtId)
+        // 查找区县
+        if (props.modelValue.districtId && props.modelValue.districtId > 0) {
+          districtIndex = districts.value.findIndex((d) => d.i === props.modelValue!.districtId)
+        } else if (props.modelValue.district) {
+          districtIndex = districts.value.findIndex((d) => d.n === props.modelValue!.district)
+        }
+
         if (districtIndex >= 0) {
           tempSelection.value.districtIndex = districtIndex
         }
@@ -255,9 +277,69 @@ const confirmPicker = () => {
   showPopup.value = false
 }
 
+// 监听modelValue变化，当外部数据更新时重新初始化选择状态
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue && newValue.province && provinces.value.length > 0) {
+      // 重新设置初始选择状态
+      initSelectionFromProps()
+    }
+  },
+  { deep: true },
+)
+
+// 根据props初始化选择状态
+const initSelectionFromProps = () => {
+  if (!props.modelValue || provinces.value.length === 0) return
+
+  let provinceIndex = -1
+  let cityIndex = -1
+  let districtIndex = -1
+
+  // 查找省份
+  if (props.modelValue.provinceId && props.modelValue.provinceId > 0) {
+    provinceIndex = provinces.value.findIndex((p) => p.i === props.modelValue!.provinceId)
+  } else if (props.modelValue.province) {
+    provinceIndex = provinces.value.findIndex((p) => p.n === props.modelValue!.province)
+  }
+
+  if (provinceIndex >= 0) {
+    tempSelection.value.provinceIndex = provinceIndex
+    loadCities(provinceIndex)
+
+    // 查找城市
+    if (props.modelValue.cityId && props.modelValue.cityId > 0) {
+      cityIndex = cities.value.findIndex((c) => c.i === props.modelValue!.cityId)
+    } else if (props.modelValue.city) {
+      cityIndex = cities.value.findIndex((c) => c.n === props.modelValue!.city)
+    }
+
+    if (cityIndex >= 0) {
+      tempSelection.value.cityIndex = cityIndex
+      loadDistricts(cityIndex)
+
+      // 查找区县
+      if (props.modelValue.districtId && props.modelValue.districtId > 0) {
+        districtIndex = districts.value.findIndex((d) => d.i === props.modelValue!.districtId)
+      } else if (props.modelValue.district) {
+        districtIndex = districts.value.findIndex((d) => d.n === props.modelValue!.district)
+      }
+
+      if (districtIndex >= 0) {
+        tempSelection.value.districtIndex = districtIndex
+      }
+    }
+  }
+}
+
 // 组件挂载时初始化
 onMounted(() => {
   initAddressData()
+  // 数据加载完成后初始化选择状态
+  setTimeout(() => {
+    initSelectionFromProps()
+  }, 100)
 })
 
 // 暴露方法给父组件

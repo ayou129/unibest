@@ -66,6 +66,7 @@
     {
       "path": "pages/address/edit",
       "type": "page",
+      "needLogin": true,
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "编辑地址"

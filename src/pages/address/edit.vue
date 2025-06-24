@@ -1,6 +1,6 @@
 <route lang="json5" type="page">
 {
-  //   needLogin: true,
+  needLogin: true,
   style: {
     navigationStyle: 'custom',
     navigationBarTitleText: '编辑地址',
@@ -10,6 +10,7 @@
 
 <template>
   <view class="page-container">
+    <fg-navbar>{{ isEditMode ? '编辑地址' : '新增地址' }}</fg-navbar>
     <view class="page-content">
       <!-- 表单内容 -->
       <view class="form-container">
@@ -60,7 +61,7 @@
             <view class="form-item">
               <view class="form-label">详细地址</view>
               <textarea
-                v-model="formData.detail"
+                v-model="formData.detail_address"
                 class="form-textarea"
                 placeholder="请输入详细地址（街道、门牌号等）"
                 :maxlength="100"
@@ -68,6 +69,27 @@
                 :auto-height="true"
                 :min-height="80"
                 :max-height="200"
+              />
+            </view>
+
+            <view class="form-item">
+              <view class="form-label">邮政编码</view>
+              <input
+                v-model="formData.postal_code"
+                class="form-input"
+                placeholder="请输入邮政编码（可选）"
+                type="number"
+                :maxlength="6"
+              />
+            </view>
+
+            <view class="form-item">
+              <view class="form-label">地址标签</view>
+              <input
+                v-model="formData.label"
+                class="form-input"
+                placeholder="如：家、公司（可选）"
+                :maxlength="10"
               />
             </view>
           </view>
@@ -79,8 +101,8 @@
             <view class="form-item form-item-switch">
               <view class="form-label">设为默认地址</view>
               <switch
-                :checked="formData.isDefault"
-                @change="(e) => (formData.isDefault = e.detail.value)"
+                :checked="formData.is_default === 1"
+                @change="(e) => (formData.is_default = e.detail.value ? 1 : 0)"
                 class="form-switch"
                 color="#08aa4e"
               />
@@ -92,19 +114,26 @@
 
     <!-- 底部保存按钮 -->
     <view class="bottom-panel">
-      <view class="mall-btn-lg mall-btn-primary mall-btn-block save-button" @click="saveAddress">
-        <text class="mall-btn-text">保存地址</text>
+      <view
+        class="mall-btn-lg mall-btn-primary mall-btn-block save-button"
+        @click="saveAddress"
+        :class="{ disabled: addressStore.loading }"
+      >
+        <text class="mall-btn-text">{{ addressStore.loading ? '保存中...' : '保存地址' }}</text>
       </view>
     </view>
 
     <!-- 地址选择器组件 -->
-    <AddressPicker ref="addressPickerRef" v-model="addressData" @change="onAddressChange" />
+    <AddressPicker ref="addressPickerRef" :model-value="addressData" @change="onAddressChange" />
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import { useAddressStore } from '@/store/address'
+import type { IAddressCreateRequest, IAddressUpdateRequest } from '@/api/address.typings'
+import { AddressDefaultStatus } from '@/api/address.typings'
 
 defineOptions({
   name: 'AddressEdit',
@@ -112,29 +141,28 @@ defineOptions({
 
 // 引入组件
 import AddressPicker from '@/components/AddressPicker.vue'
-// 引入地址存储工具
-import {
-  saveAddress as saveAddressToStorage,
-  getAddressById,
-  type AddressInfo,
-} from '@/utils/addressStorage'
+
+// 使用地址Store
+const addressStore = useAddressStore()
 
 // 地址选择器引用
 const addressPickerRef = ref()
 
+// 是否为编辑模式
+const isEditMode = ref(false)
+
 // 表单数据
 const formData = ref({
-  id: '',
+  id: 0,
   name: '',
   phone: '',
-  provinceId: 0,
-  cityId: 0,
-  districtId: 0,
   province: '',
   city: '',
   district: '',
-  detail: '',
-  isDefault: false,
+  detail_address: '',
+  postal_code: '',
+  is_default: AddressDefaultStatus.NOT_DEFAULT,
+  label: '',
 })
 
 // 地址选择数据
@@ -166,9 +194,6 @@ const showAddressPicker = () => {
 const onAddressChange = (address: any) => {
   console.log('地址选择变化:', address)
   // 更新表单数据
-  formData.value.provinceId = address.provinceId
-  formData.value.cityId = address.cityId
-  formData.value.districtId = address.districtId
   formData.value.province = address.province
   formData.value.city = address.city
   formData.value.district = address.district
@@ -178,41 +203,66 @@ const onAddressChange = (address: any) => {
 }
 
 // 页面加载
-onLoad((options) => {
+onLoad(async (options) => {
   if (options?.id) {
-    formData.value.id = options.id
-    // 这里可以根据ID加载地址数据
-    loadAddressData(options.id)
+    isEditMode.value = true
+    formData.value.id = parseInt(options.id)
+    // 加载地址数据
+    await loadAddressData(parseInt(options.id))
   }
 })
 
 // 加载地址数据（编辑模式）
-const loadAddressData = (addressId: string) => {
-  const address = getAddressById(addressId)
+const loadAddressData = async (addressId: number) => {
+  // 从Store中获取地址数据
+  const address = addressStore.getAddressById(addressId)
   if (address) {
-    Object.assign(formData.value, address)
+    // 填充表单数据
+    formData.value = {
+      id: address.id,
+      name: address.name,
+      phone: address.phone,
+      province: address.province,
+      city: address.city,
+      district: address.district,
+      detail_address: address.detail_address,
+      postal_code: address.postal_code || '',
+      is_default: address.is_default,
+      label: address.label || '',
+    }
+
     // 同步地址选择数据
     addressData.value = {
-      provinceId: address.provinceId,
-      cityId: address.cityId,
-      districtId: address.districtId,
+      provinceId: 0, // 这里可能需要根据地址名称反推ID
+      cityId: 0,
+      districtId: 0,
       province: address.province,
       city: address.city,
       district: address.district,
     }
   } else {
-    uni.showToast({
-      title: '地址数据不存在',
-      icon: 'error',
-    })
-    setTimeout(() => {
-      uni.navigateBack()
-    }, 1500)
+    // 如果Store中没有数据，先加载地址列表
+    await addressStore.getAddressList()
+    const updatedAddress = addressStore.getAddressById(addressId)
+    if (updatedAddress) {
+      await loadAddressData(addressId) // 递归调用
+    } else {
+      uni.showToast({
+        title: '地址数据不存在',
+        icon: 'error',
+      })
+      setTimeout(() => {
+        uni.navigateBack()
+      }, 1500)
+    }
   }
 }
 
 // 保存地址
-const saveAddress = () => {
+const saveAddress = async () => {
+  // 防止重复提交
+  if (addressStore.loading) return
+
   // 表单验证
   if (!formData.value.name.trim()) {
     uni.showToast({
@@ -248,7 +298,7 @@ const saveAddress = () => {
     return
   }
 
-  if (!formData.value.detail.trim()) {
+  if (!formData.value.detail_address.trim()) {
     uni.showToast({
       title: '请输入详细地址',
       icon: 'error',
@@ -256,36 +306,51 @@ const saveAddress = () => {
     return
   }
 
-  // 保存地址数据
-  uni.showLoading({
-    title: '保存中...',
-  })
+  let result = false
 
-  const success = saveAddressToStorage(formData.value)
+  if (isEditMode.value) {
+    // 更新地址
+    const updateData: IAddressUpdateRequest = {
+      id: formData.value.id,
+      name: formData.value.name.trim(),
+      phone: formData.value.phone.trim(),
+      province: formData.value.province,
+      city: formData.value.city,
+      district: formData.value.district,
+      detail_address: formData.value.detail_address.trim(),
+      postal_code: formData.value.postal_code.trim() || undefined,
+      is_default: formData.value.is_default,
+      label: formData.value.label.trim() || undefined,
+    }
+    result = (await addressStore.updateAddress(updateData)) !== null
+  } else {
+    // 创建地址
+    const createData: IAddressCreateRequest = {
+      name: formData.value.name.trim(),
+      phone: formData.value.phone.trim(),
+      province: formData.value.province,
+      city: formData.value.city,
+      district: formData.value.district,
+      detail_address: formData.value.detail_address.trim(),
+      postal_code: formData.value.postal_code.trim() || undefined,
+      is_default: formData.value.is_default,
+      label: formData.value.label.trim() || undefined,
+    }
+    result = (await addressStore.createAddress(createData)) !== null
+  }
 
-  uni.hideLoading()
-
-  if (success) {
-    uni.showToast({
-      title: '保存成功',
-      icon: 'success',
-    })
-
+  if (result) {
     // 返回上一页
     setTimeout(() => {
       uni.navigateBack()
-    }, 1500)
-  } else {
-    uni.showToast({
-      title: '保存失败，请重试',
-      icon: 'error',
-    })
+    }, 1000)
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .page-content {
+  padding-top: $page-top-padding;
 }
 
 .form-container {
@@ -397,26 +462,24 @@ const saveAddress = () => {
 }
 
 .form-switch {
-  transform: scale(0.8);
+  transform: scale(0.9);
+}
+
+.bottom-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12rpx 32rpx 30rpx 32rpx;
+  background-color: $mall-bg-card;
+  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
 }
 
 .save-button {
-  width: 100%;
-  height: 88rpx;
-  border-radius: 25rpx;
-  background: $mall-color-primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .mall-btn-text {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  &:active {
-    background: darken($mall-color-primary, 10%);
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
   }
 }
 </style>
