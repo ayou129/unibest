@@ -207,6 +207,7 @@ onPullDownRefresh(async () => {
 <style lang="scss" scoped>
 .address-list {
   padding: 24rpx 24rpx;
+  margin-bottom: 120rpx;
 }
 
 .address-card {

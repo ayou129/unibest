@@ -5,7 +5,6 @@ import type {
   IAddressCreateRequest,
   IAddressUpdateRequest,
   IAddressDeleteRequest,
-  IAddressSetDefaultRequest,
 } from './address.typings'
 
 /**
@@ -36,13 +35,4 @@ export const deleteUserAddress = (id: number) => {
   return http.delete<void>(`${ApiPrefix}/user/address`, {
     ids: [id],
   } as IAddressDeleteRequest)
-}
-
-/**
- * 设置默认地址
- */
-export const setDefaultAddress = (id: number) => {
-  return http.put<void>(`${ApiPrefix}/user/address/default`, {
-    id,
-  } as IAddressSetDefaultRequest)
 }

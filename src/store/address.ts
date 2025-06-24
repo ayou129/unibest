@@ -12,7 +12,6 @@ import {
   createUserAddress,
   updateUserAddress,
   deleteUserAddress,
-  setDefaultAddress as setDefaultAddressAPI,
 } from '@/api/address'
 
 export const useAddressStore = defineStore('address', () => {
@@ -125,7 +124,29 @@ export const useAddressStore = defineStore('address', () => {
   const setDefaultAddress = async (id: number) => {
     try {
       loading.value = true
-      const res = await setDefaultAddressAPI(id)
+
+      // 找到要设置为默认的地址
+      const targetAddress = addressList.value.find((addr) => addr.id === id)
+      if (!targetAddress) {
+        toast.error('地址不存在')
+        return false
+      }
+
+      // 构造更新请求参数，传递完整字段
+      const updateData: IAddressUpdateRequest = {
+        id: targetAddress.id,
+        name: targetAddress.name,
+        phone: targetAddress.phone,
+        province: targetAddress.province,
+        city: targetAddress.city,
+        district: targetAddress.district,
+        detail_address: targetAddress.detail_address,
+        postal_code: targetAddress.postal_code,
+        is_default: AddressDefaultStatus.DEFAULT, // 设置为默认地址
+        label: targetAddress.label,
+      }
+
+      const res = await updateUserAddress(updateData)
       if (res.code === 0) {
         toast.success('设置默认地址成功')
         // 重新获取地址列表

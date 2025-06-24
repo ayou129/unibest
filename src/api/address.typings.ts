@@ -62,10 +62,3 @@ export interface IAddressUpdateRequest {
 export interface IAddressDeleteRequest {
   ids: number[]
 }
-
-/**
- * 设置默认地址的请求参数
- */
-export interface IAddressSetDefaultRequest {
-  id: number
-}
