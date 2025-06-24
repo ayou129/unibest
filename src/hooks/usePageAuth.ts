@@ -1,25 +1,8 @@
 import { onLoad } from '@dcloudio/uni-app'
 import { needLoginPages as _needLoginPages, getNeedLoginPages } from '@/utils'
-import { useUserStore } from '@/store/user'
-import { useTokenStore } from '@/store/token'
+import { isLoggedIn, buildLoginUrl } from '@/utils/auth'
 
-const loginRoute = import.meta.env.VITE_LOGIN_URL
 const isDev = import.meta.env.DEV
-
-export const isLogined = () => {
-  const token = useTokenStore().getUserToken()
-  const profile = useUserStore().userProfile
-  const hasProfile = profile.id > 0
-
-  console.log('登录状态检查:', {
-    hasToken: !!(token && token.access_token),
-    hasProfile,
-    userProfile: profile,
-  })
-
-  // 必须同时满足：有 token 且有用户信息
-  return !!(token && token.access_token && hasProfile)
-}
 // 检查当前页面是否需要登录
 export function usePageAuth() {
   onLoad((options) => {
@@ -44,7 +27,7 @@ export function usePageAuth() {
       return
     }
 
-    const hasLogin = isLogined()
+    const hasLogin = isLoggedIn()
     console.log('hasLogin', hasLogin)
     if (hasLogin) {
       return true
@@ -56,7 +39,7 @@ export function usePageAuth() {
       .join('&')
 
     const currentFullPath = queryString ? `${currentPath}?${queryString}` : currentPath
-    const redirectRoute = `${loginRoute}?redirect=${encodeURIComponent(currentFullPath)}`
+    const redirectRoute = buildLoginUrl(currentFullPath)
 
     // 重定向到登录页
     console.log('重定向到登录页', redirectRoute)

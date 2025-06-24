@@ -1,5 +1,6 @@
 <route lang="json5" type="page">
 {
+  needLogin: false,
   style: {
     enablePullDownRefresh: true,
     navigationStyle: 'custom',
@@ -23,7 +24,7 @@
             </view>
           </view>
           <view class="auth-button" @click="handleAuth">
-            <text class="auth-text">去认证</text>
+            <text class="auth-text">{{ isLoggedIn ? '去认证' : '去登录' }}</text>
           </view>
         </view>
       </view>
@@ -45,7 +46,7 @@
               v-for="(status, index) in orderStatuses"
               :key="index"
               class="status-item"
-              @click="navigateToOrders(status.type)"
+              @click="handleNavigateToOrders(status.type)"
             >
               <image class="status-icon" :src="status.icon" />
               <text class="status-text">{{ status.name }}</text>
@@ -63,7 +64,7 @@
 
         <!-- 设置菜单 -->
         <view class="settings-section">
-          <view class="menu-item" @click="navigateToSettings">
+          <view class="menu-item" @click="handleNavigateToSettings">
             <view class="menu-left">
               <image class="menu-icon" src="@/static/icons/setting.png" />
               <text class="menu-text">基本设置</text>
@@ -71,7 +72,7 @@
             <image class="arrow-icon" src="@/static/icons/arrow-right.png" />
           </view>
 
-          <view class="menu-item" @click="navigateToCoupons">
+          <view class="menu-item" @click="handleNavigateToCoupons">
             <view class="menu-left">
               <image class="menu-icon" src="@/static/icons/money_collect.png" />
               <text class="menu-text">优惠券</text>
@@ -96,17 +97,47 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { onLoad, onShow, onPullDownRefresh } from '@dcloudio/uni-app'
+import { storeToRefs } from 'pinia'
 import BottomSection from '@/components/bottom-section/bottom-section.vue'
+import { useUserStore } from '@/store/user'
+import { useTokenStore } from '@/store/token'
+import {
+  navigateToOrders,
+  navigateToCoupons,
+  navigateToSettings,
+  handleUserAuth,
+} from '@/utils/navigation'
 
 defineOptions({
   name: 'MinePage',
 })
 
-// 用户信息
-const userInfo = ref({
-  nickname: '阿尤',
-  authStatus: '未认证身份',
+// Store
+const userStore = useUserStore()
+const tokenStore = useTokenStore()
+const { userProfile } = storeToRefs(userStore)
+
+// 计算属性：检查登录状态
+const isLoggedIn = computed(() => {
+  const token = tokenStore.getUserToken()
+  return !!(token && token.access_token && userProfile.value.id > 0)
+})
+
+// 计算属性：用户信息显示
+const userInfo = computed(() => {
+  if (isLoggedIn.value) {
+    return {
+      nickname: userProfile.value.name || userProfile.value.username || '用户',
+      authStatus: userProfile.value.status === 1 ? '已认证身份' : '未认证身份',
+    }
+  } else {
+    return {
+      nickname: '未登录',
+      authStatus: '请先登录',
+    }
+  }
 })
 
 // 订单状态
@@ -134,26 +165,16 @@ const orderStatuses = ref([
 ])
 
 // 方法
-const handleAuth = () => {
-  console.log('去认证')
-  uni.showToast({
-    title: '跳转认证页面',
-    icon: 'none',
-  })
-}
+const handleAuth = handleUserAuth
 
 const viewAllOrders = () => {
   console.log('查看全部订单')
-  uni.navigateTo({
-    url: '/pages/order/index',
-  })
+  navigateToOrders()
 }
 
-const navigateToOrders = (type: string) => {
+const handleNavigateToOrders = (type: string) => {
   console.log('查看订单:', type)
-  uni.navigateTo({
-    url: `/pages/order/index?status=${type}`,
-  })
+  navigateToOrders(type)
 }
 
 const handleShare = () => {
@@ -179,18 +200,14 @@ const handleShare = () => {
   })
 }
 
-const navigateToSettings = () => {
+const handleNavigateToSettings = () => {
   console.log('基本设置')
-  uni.navigateTo({
-    url: '/pages/settings/index',
-  })
+  navigateToSettings()
 }
 
-const navigateToCoupons = () => {
+const handleNavigateToCoupons = () => {
   console.log('优惠券')
-  uni.navigateTo({
-    url: '/pages/coupons/index',
-  })
+  navigateToCoupons()
 }
 
 const contactService = () => {
@@ -208,17 +225,42 @@ const contactService = () => {
   })
 }
 
+// 初始化用户信息
+const initUserInfo = async () => {
+  const token = tokenStore.getUserToken()
+  if (token && token.access_token) {
+    console.log('🔑 检测到token，尝试获取用户信息')
+    try {
+      // 如果有token但没有用户信息，尝试获取
+      if (!userProfile.value.id) {
+        await userStore.getUserProfile()
+      }
+    } catch (error) {
+      console.log('❌ 获取用户信息失败:', error)
+      // HTTP拦截器会自动处理token刷新或跳转登录
+    }
+  } else {
+    console.log('🔑 无token，跳过获取用户信息')
+  }
+}
+
 // 生命周期
 onLoad(() => {
   console.log('个人中心页面加载完成')
+  initUserInfo()
+})
+
+onShow(() => {
+  console.log('个人中心页面显示')
+  // 每次显示时检查并刷新用户信息
+  initUserInfo()
 })
 
 onPullDownRefresh(() => {
   console.log('下拉刷新')
-  // 刷新用户信息
-  setTimeout(() => {
+  initUserInfo().finally(() => {
     uni.stopPullDownRefresh()
-  }, 1000)
+  })
 })
 </script>
 

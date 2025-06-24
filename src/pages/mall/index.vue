@@ -47,6 +47,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { navigateToProductDetail, navigateToOrderConfirm } from '@/utils/navigation'
 // import BottomSection from '@/components/bottom-section/bottom-section.vue'
 
 defineOptions({
@@ -56,17 +57,13 @@ defineOptions({
 // 方法
 const navigateToDetail = () => {
   console.log('跳转到产品详情')
-  uni.navigateTo({
-    url: '/pages/product/detail',
-  })
+  navigateToProductDetail('1') // 传入商品ID
 }
 
 const handleBuyClick = () => {
   console.log('点击购买')
   // 跳转到确认订单页面
-  uni.navigateTo({
-    url: '/pages/order/confirm?quantity=1&productId=1',
-  })
+  navigateToOrderConfirm({ quantity: 1, productId: '1' })
 }
 
 // 生命周期

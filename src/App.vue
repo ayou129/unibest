@@ -2,13 +2,22 @@
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'
 import { usePageAuth } from '@/hooks/usePageAuth'
-
+import { useUserStore } from '@/store/user'
 usePageAuth()
-
+const userStore = useUserStore()
+const getUserProfile = async () => {
+  const res = await userStore.getUserProfile()
+  // if (res.code === 200) {
+  //   console.log(res)
+  // } else {
+  //   console.log(res)
+  // }
+}
 onLaunch(() => {
   console.log('App Launch')
 })
 onShow(() => {
+  getUserProfile()
   console.log('App Show')
 })
 onHide(() => {

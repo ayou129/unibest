@@ -2,6 +2,7 @@ import { CustomRequestOptions } from '@/interceptors/request'
 import { REFRESH_TOKEN_CODE } from '@/api/api'
 import { useUserStore } from '@/store'
 import { useTokenStore } from '@/store/token'
+import { navigateToLogin } from '@/utils/navigation'
 
 // 刷新token的API路径
 const REFRESH_TOKEN_API = '/user/auth/wx/token/refresh'
@@ -83,7 +84,7 @@ export const http = <T>(options: CustomRequestOptions) => {
               .catch((error) => {
                 console.log('❌ token刷新失败')
                 useUserStore().logout()
-                uni.navigateTo({ url: '/pages/login/index' })
+                navigateToLogin()
                 reject(error)
               })
             return

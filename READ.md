@@ -53,7 +53,8 @@ yarn run dev:mp-weixin
   - src/pages下
     - 创建或修改 核心页面文件内容
     - 页面涉及到的API遵循：创建和更新API都是要传递完整的参数
-- icon 颜色 #515151
+- icon 未选中的颜色 #515151
+- icon 已选中的颜色 #edefe6
 - 页面布局模板如下
 
 ```vue
@@ -116,3 +117,4 @@ page{
 
 - 地址区域数据源 <https://xiangyuecn.github.io/AreaCity-JsSpider-StatsGov/>
   - 选择 json数组 使用即可
+- src/utils/navigation.ts 文件封装了所有的跳转逻辑，每个文件涉及到页面跳转均要使用该文件的方法

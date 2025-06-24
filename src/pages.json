@@ -20,7 +20,6 @@
     "selectedColor": "#018d71",
     "backgroundColor": "#F8F8F8",
     "borderStyle": "black",
-    "blurEffect": "none",
     "height": "50px",
     "fontSize": "10px",
     "iconWidth": "24px",
@@ -97,6 +96,7 @@
     {
       "path": "pages/mine/index",
       "type": "page",
+      "needLogin": false,
       "style": {
         "enablePullDownRefresh": true,
         "navigationStyle": "custom",

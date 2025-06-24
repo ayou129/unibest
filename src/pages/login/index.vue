@@ -141,7 +141,8 @@ import {
   userLoginByPhoneSms,
 } from '@/api/login'
 import { toast } from '@/utils/toast'
-import { isTableBar } from '@/utils/index'
+import { isTableBar } from '@/utils'
+import { smartNavigate } from '@/utils/navigation'
 import { ICaptcha } from '@/api/login.typings'
 const redirectRoute = ref('')
 
@@ -174,15 +175,47 @@ const wxPhoneData = ref<IWxPhoneDataLoginForm>({
 // 隐私协议勾选状态
 const agreePrivacy = ref(true)
 
+// 微信code缓存
+const wxCodeCache = ref<{
+  code: string
+  timestamp: number
+} | null>(null)
+
 // 页面加载完毕时触发
 onLoad((option) => {
   // 一进来就刷新验证码
   captcha.value.captchaEnabled && refreshCaptcha()
+  // 预获取微信code
+  preloadWxCode()
   // 获取跳转路由
   if (option.redirect) {
     redirectRoute.value = decodeURIComponent(option.redirect)
   }
 })
+
+// 预获取微信code
+const preloadWxCode = async () => {
+  if (!isMpWeixin) return
+
+  try {
+    const codeRes = await userStore.wxLogin()
+    if (codeRes?.code) {
+      wxCodeCache.value = {
+        code: codeRes.code,
+        timestamp: Date.now(),
+      }
+    }
+  } catch (error) {
+    console.log('预获取微信code失败:', error)
+  }
+}
+
+// 检查code是否有效（4分钟内）
+const isWxCodeValid = () => {
+  if (!wxCodeCache.value) return false
+  const elapsed = Date.now() - wxCodeCache.value.timestamp
+  return elapsed < 4 * 60 * 1000 // 4分钟
+}
 
 // 手机号+验证码登录
 const handlePhoneSmsLogin = async () => {
@@ -204,11 +237,7 @@ const handlePhoneSmsLogin = async () => {
   if (res.code === 200) {
     // 跳转到首页或重定向页面
     const targetUrl = redirectRoute.value || '/pages/index/index'
-    if (isTableBar(targetUrl)) {
-      uni.switchTab({ url: targetUrl })
-    } else {
-      uni.redirectTo({ url: targetUrl })
-    }
+    smartNavigate(targetUrl)
   } else {
     toast.error(res.msg)
   }
@@ -228,10 +257,24 @@ const handleWechatLogin = async (e) => {
   }
 
   console.log('phoneData', e)
-  if (e.code && e.encryptedData && e.iv) {
-    const codeRes = await userStore.wxLogin()
-    wxPhoneData.value.code = codeRes.code
-    wxPhoneData.value.open_id = e.code
+  if (e.encryptedData && e.iv) {
+    // 检查预获取的code是否有效
+    let currentCode = ''
+    if (isWxCodeValid()) {
+      currentCode = wxCodeCache.value!.code
+    } else {
+      // code已过期，重新获取
+      const codeRes = await userStore.wxLogin()
+      currentCode = codeRes?.code || ''
+    }
+
+    if (!currentCode) {
+      toast.error('获取微信登录凭证失败')
+      return
+    }
+
+    wxPhoneData.value.code = currentCode
+    wxPhoneData.value.open_id = e.code || ''
     wxPhoneData.value.encrypted_data = e.encryptedData
     wxPhoneData.value.iv = e.iv
 
@@ -240,11 +283,7 @@ const handleWechatLogin = async (e) => {
       // 跳转到首页或重定向页面
       const targetUrl = redirectRoute.value || '/pages/index/index'
       console.log('targetUrl', targetUrl)
-      if (isTableBar(targetUrl)) {
-        uni.switchTab({ url: targetUrl })
-      } else {
-        uni.redirectTo({ url: targetUrl })
-      }
+      smartNavigate(targetUrl)
     } else {
       toast.error(res.msg)
     }

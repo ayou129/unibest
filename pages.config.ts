@@ -24,7 +24,7 @@ export default defineUniPages({
     selectedColor: '#018d71', // tab 上的文字选中时的颜色
     backgroundColor: '#F8F8F8', // tab 的背景色
     borderStyle: 'black', // tabBar 上边框的颜色
-    blurEffect: 'none', // iOS 高斯模糊效果，参考 [使用说明](https://ask.dcloud.net.cn/article/36617)
+    // blurEffect: 'none', // iOS 高斯模糊效果，参考 [使用说明](https://ask.dcloud.net.cn/article/36617)
     height: '50px',
     fontSize: '10px',
     iconWidth: '24px',
