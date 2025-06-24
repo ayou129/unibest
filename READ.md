@@ -53,6 +53,7 @@ yarn run dev:mp-weixin
   - src/pages下
     - 创建或修改 核心页面文件内容
     - 页面涉及到的API遵循：创建和更新API都是要传递完整的参数
+- icon 颜色 #515151
 - 页面布局模板如下
 
 ```vue

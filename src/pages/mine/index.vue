@@ -16,7 +16,7 @@
         <!-- 用户信息 -->
         <view class="user-info">
           <view class="user-details">
-            <image class="avatar" :src="userInfo.avatar" />
+            <image class="avatar" src="@/static/images/avatar.jpg" />
             <view class="user-text">
               <text class="username">{{ userInfo.nickname }}</text>
               <text class="auth-status">{{ userInfo.authStatus }}</text>
@@ -36,10 +36,7 @@
             <text class="section-title">我的订单</text>
             <view class="view-all" @click="viewAllOrders">
               <text class="view-all-text">全部</text>
-              <image
-                class="arrow-icon"
-                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
-              />
+              <image class="arrow-icon" src="@/static/icons/arrow-right.png" />
             </view>
           </view>
 
@@ -68,44 +65,26 @@
         <view class="settings-section">
           <view class="menu-item" @click="navigateToSettings">
             <view class="menu-left">
-              <image
-                class="menu-icon"
-                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=84f8c4181ebe063f6c1fde4df4f5ddfd.png"
-              />
+              <image class="menu-icon" src="@/static/icons/setting.png" />
               <text class="menu-text">基本设置</text>
             </view>
-            <image
-              class="arrow-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
-            />
+            <image class="arrow-icon" src="@/static/icons/arrow-right.png" />
           </view>
 
           <view class="menu-item" @click="navigateToCoupons">
             <view class="menu-left">
-              <image
-                class="menu-icon"
-                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=33915e4282968100c1cc2e5fecbe4b20.png"
-              />
+              <image class="menu-icon" src="@/static/icons/money_collect.png" />
               <text class="menu-text">优惠券</text>
             </view>
-            <image
-              class="arrow-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
-            />
+            <image class="arrow-icon" src="@/static/icons/arrow-right.png" />
           </view>
 
           <view class="menu-item" @click="contactService">
             <view class="menu-left">
-              <image
-                class="menu-icon"
-                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=fa66353d43746c18cce7c73797fcd11b.png"
-              />
+              <image class="menu-icon" src="@/static/icons/customerservice.png" />
               <text class="menu-text">联系客服</text>
             </view>
-            <image
-              class="arrow-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cae624345e94628d87b88840a8e46219.png"
-            />
+            <image class="arrow-icon" src="@/static/icons/arrow-right.png" />
           </view>
         </view>
       </view>
@@ -126,10 +105,8 @@ defineOptions({
 
 // 用户信息
 const userInfo = ref({
-  nickname: '薛定谔的猫',
+  nickname: '阿尤',
   authStatus: '未认证身份',
-  avatar:
-    'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=ee06fa1d4e484fa77188818ebfb741ac.png',
 })
 
 // 订单状态
@@ -137,22 +114,22 @@ const orderStatuses = ref([
   {
     name: '待支付',
     type: 'pending',
-    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=9df1b88cc1a7ea3bf174665965d041d5.png',
+    icon: '/static/icons/order-pending.png',
   },
   {
     name: '待发货',
     type: 'paid',
-    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cfa65065bf76db2dd56a8ba8cdcae0ab.png',
+    icon: '/static/icons/order-paid.png',
   },
   {
     name: '待收货',
     type: 'shipped',
-    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=3c7349736cc5bc5b9193ef985ad022fb.png',
+    icon: '/static/icons/order-shipped.png',
   },
   {
     name: '退款/售后',
     type: 'refund',
-    icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=1cdbba553fd61f86a6d93229236fdc9d.png',
+    icon: '/static/icons/order-refund.png',
   },
 ])
 
@@ -248,7 +225,7 @@ onPullDownRefresh(() => {
 <style lang="scss" scoped>
 .page-content {
   // 将背景图设置在核心内容区域，覆盖整个可视区域包括padding-top
-  background-image: url('https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=7dc6d93c6d8dc7f3b79183da245fcfd8.png');
+  background-image: url('@/static/images/user-profile-bgimg.png');
   background-repeat: no-repeat;
   background-position: 0 0; // 从最顶部开始
   background-size: 100% 600rpx; // 设置合适的高度，覆盖头部区域
@@ -393,9 +370,9 @@ onPullDownRefresh(() => {
 .share-section {
   margin-top: 24rpx;
   padding: 40rpx 32rpx 28rpx;
-  background-image: url('https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=8457a337cde39979da63f8d50051f33f.png');
+  background-image: url('@/static/images/share-bg.png');
   background-position: 0% 0%;
-  background-size: 686rpx 180rpx;
+  background-size: cover;
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
@@ -454,18 +431,13 @@ onPullDownRefresh(() => {
 .menu-icon {
   width: 32rpx;
   height: 32rpx;
-
-  &:first-child {
-    width: 28rpx;
-    height: 28rpx;
-  }
+  padding-top: 4rpx;
 }
 
 .menu-text {
   margin-left: 12rpx;
   font-size: 28rpx;
-  font-family: PingFang;
-  line-height: 26rpx;
+  line-height: 28rpx;
   color: #1a1a1a;
 }
 </style>
