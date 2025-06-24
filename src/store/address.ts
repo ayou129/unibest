@@ -21,6 +21,9 @@ export const useAddressStore = defineStore('address', () => {
   // 加载状态
   const loading = ref(false)
 
+  // 当前选中的地址（用于订单确认等场景）
+  const selectedAddress = ref<IAddressInfo | null>(null)
+
   /**
    * 获取地址列表
    */
@@ -189,10 +192,25 @@ export const useAddressStore = defineStore('address', () => {
     addressList.value = []
   }
 
+  /**
+   * 设置选中的地址
+   */
+  const setSelectedAddress = (address: IAddressInfo | null) => {
+    selectedAddress.value = address
+  }
+
+  /**
+   * 清空选中的地址
+   */
+  const clearSelectedAddress = () => {
+    selectedAddress.value = null
+  }
+
   return {
     // 状态
     addressList,
     loading,
+    selectedAddress,
 
     // 方法
     getAddressList,
@@ -203,5 +221,7 @@ export const useAddressStore = defineStore('address', () => {
     getDefaultAddress,
     getAddressById,
     clearAddressList,
+    setSelectedAddress,
+    clearSelectedAddress,
   }
 })

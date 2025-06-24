@@ -11,20 +11,21 @@
 
 <template>
   <view class="page-container">
+    <fg-navbar>确认订单</fg-navbar>
     <view class="page-content">
       <!-- 收货地址 -->
       <view class="address-section">
         <view class="address-item" @click="selectAddress">
           <view class="address-info">
             <image class="address-icon" src="/static/icons/location.png" />
-            <view v-if="selectedAddress" class="address-content">
+            <view v-if="currentAddress" class="address-content">
               <view class="address-header">
-                <text class="address-name">{{ selectedAddress.name }}</text>
-                <text class="address-phone">{{ selectedAddress.phone }}</text>
+                <text class="address-name">{{ currentAddress.name }}</text>
+                <text class="address-phone">{{ currentAddress.phone }}</text>
               </view>
               <text class="address-detail">
-                {{ selectedAddress.province }} {{ selectedAddress.city }}
-                {{ selectedAddress.district }} {{ selectedAddress.detail }}
+                {{ currentAddress.province }} {{ currentAddress.city }}
+                {{ currentAddress.district }} {{ currentAddress.detail_address }}
               </text>
             </view>
             <view v-else class="address-content">
@@ -113,19 +114,25 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { ref, computed } from 'vue'
+import { onLoad, onShow } from '@dcloudio/uni-app'
+import { useAddressStore } from '@/store/address'
 import CouponPicker from '@/components/CouponPicker.vue'
 
 defineOptions({
   name: 'OrderConfirm',
 })
 
+// 使用地址Store
+const addressStore = useAddressStore()
+
 // 优惠券选择器引用
 const couponPickerRef = ref()
 
-// 收货地址
-const selectedAddress = ref(null)
+// 当前选中的地址（来自Store或默认地址）
+const currentAddress = computed(() => {
+  return addressStore.selectedAddress || addressStore.getDefaultAddress()
+})
 
 // 选中的优惠券
 const selectedCoupon = ref(null)
@@ -210,7 +217,7 @@ const finalTotal = computed(() => {
 // 选择收货地址
 const selectAddress = () => {
   uni.navigateTo({
-    url: '/pages/address/list',
+    url: '/pages/address/list?mode=select',
   })
 }
 
@@ -228,7 +235,7 @@ const onCouponChange = (coupon) => {
 
 // 提交订单
 const submitOrder = () => {
-  if (!selectedAddress.value) {
+  if (!currentAddress.value) {
     uni.showToast({
       title: '请选择收货地址',
       icon: 'none',
@@ -258,16 +265,30 @@ const submitOrder = () => {
 }
 
 // 页面加载
-onLoad((options) => {
+onLoad(async (options) => {
   // 可以从参数中获取商品信息
   console.log('订单确认页面参数:', options)
+
+  // 加载地址列表，确保有默认地址可显示
+  await addressStore.getAddressList()
+})
+
+// 页面显示时处理地址选择返回
+onShow(() => {
+  // 清空之前的选中状态，让页面重新计算当前地址
+  // 如果用户从地址列表页面返回且选择了地址，Store中会有selectedAddress
+  console.log('订单确认页面显示，当前地址:', currentAddress.value)
 })
 </script>
 
 <style lang="scss" scoped>
+.page-content {
+  padding-top: $page-top-padding;
+}
+
 // 收货地址部分
 .address-section {
-  margin-bottom: 24rpx;
+  margin: 24rpx 0;
 }
 
 .address-item {

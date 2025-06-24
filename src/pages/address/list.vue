@@ -12,7 +12,7 @@
 <template>
   <view class="page-container">
     <!-- 添加导航栏 -->
-    <fg-navbar>收货地址</fg-navbar>
+    <fg-navbar>{{ isSelectMode ? '选择收货地址' : '收货地址' }}</fg-navbar>
 
     <view class="page-content">
       <!-- 加载状态 -->
@@ -26,6 +26,7 @@
           v-for="(address, index) in addressStore.addressList"
           :key="address.id"
           class="address-card"
+          :class="{ 'select-mode': isSelectMode }"
           @click="selectAddress(address)"
         >
           <!-- 地址信息 -->
@@ -58,7 +59,7 @@
           </view>
 
           <!-- 操作按钮 -->
-          <view class="address-actions">
+          <view v-if="!isSelectMode" class="address-actions">
             <view
               class="mall-btn-sm mall-btn-secondary action-btn"
               @click.stop="editAddress(address)"
@@ -79,6 +80,15 @@
               <text class="mall-btn-text">设为默认</text>
             </view>
           </view>
+
+          <!-- 选择模式下的选中标识 -->
+          <view v-if="isSelectMode" class="select-indicator">
+            <view class="select-text">点击选择</view>
+            <image
+              class="select-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
+            />
+          </view>
         </view>
 
         <!-- 空状态 -->
@@ -97,7 +107,7 @@
     </view>
 
     <!-- 底部添加按钮 -->
-    <view class="bottom-actions">
+    <view v-if="!isSelectMode" class="bottom-actions">
       <view class="mall-btn-lg mall-btn-primary mall-btn-block add-button" @click="addAddress">
         <text class="mall-btn-text">新增收货地址</text>
       </view>
@@ -123,23 +133,17 @@ const loadAddressList = async () => {
   await addressStore.getAddressList()
 }
 
+// 是否为选择地址模式
+const isSelectMode = ref(false)
+
 // 选择地址（用于确认订单页面）
 const selectAddress = (address: IAddressInfo) => {
   console.log('选择地址:', address)
 
-  // 获取页面参数，判断是否是选择地址模式
-  const pages = getCurrentPages()
-  const currentPage = pages[pages.length - 1] as any
-  const options = currentPage?.options
-
-  if (options?.mode === 'select') {
-    // 选择地址模式，返回到上一页并传递地址信息
-    uni.navigateBack({
-      success: () => {
-        // 通过事件总线或其他方式传递地址信息
-        uni.$emit('selectAddress', address)
-      },
-    })
+  if (isSelectMode.value) {
+    // 选择地址模式，设置选中地址并返回上一页
+    addressStore.setSelectedAddress(address)
+    uni.navigateBack()
   } else {
     // 普通查看模式，显示地址详情
     uni.showModal({
@@ -187,8 +191,14 @@ const addAddress = () => {
 }
 
 // 生命周期
-onLoad(async () => {
-  console.log('地址列表页面加载完成')
+onLoad(async (options) => {
+  console.log('地址列表页面加载完成', options)
+
+  // 检查是否为选择地址模式
+  if (options?.mode === 'select') {
+    isSelectMode.value = true
+  }
+
   await loadAddressList()
 })
 
@@ -339,5 +349,37 @@ onPullDownRefresh(async () => {
 
 .add-button {
   // 继承全局按钮样式
+}
+
+// 选择模式样式
+.select-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.select-text {
+  font-size: 28rpx;
+  color: $mall-color-primary;
+  font-weight: 500;
+}
+
+.select-icon {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.8;
+}
+
+// 选择模式下的地址卡片样式
+.address-card {
+  &.select-mode {
+    border: 2rpx solid transparent;
+    transition: border-color 0.3s ease;
+
+    &:active {
+      border-color: $mall-color-primary;
+      background-color: rgba($mall-color-primary, 0.05);
+    }
+  }
 }
 </style>
