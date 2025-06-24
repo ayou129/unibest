@@ -41,10 +41,10 @@
           </view>
         </view>
       </view>
-    </view>
 
-    <!-- 底部导航 -->
-    <BottomSection />
+      <!-- 底部导航 -->
+      <BottomSection />
+    </view>
   </view>
 </template>
 
@@ -86,12 +86,17 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-content {
-  padding-top: 170rpx;
+page {
+  // 修改页面背景色
   background-color: $mall-bg-primary;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+}
+
+.page-content {
+  // padding-top: 170rpx;
+  // background-color: $mall-bg-primary;
+  // width: 718rpx;
+  // overflow-y: auto;
+  // overflow-x: hidden;
 }
 
 .welcome-section {
@@ -139,8 +144,8 @@ onPullDownRefresh(() => {
 }
 
 .product-image {
-  width: 93.6vw;
-  height: 136.2667vw;
+  width: 670rpx;
+  height: 85%;
   flex-shrink: 0;
 }
 

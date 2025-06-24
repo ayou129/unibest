@@ -12,7 +12,7 @@
   padding: 20rpx;
   margin-top: 60rpx;
   margin-bottom: 40rpx;
-  background-color: $page-bg-color;
+  // background-color: $page-bg-color;
 }
 
 .bottom-text {
@@ -28,7 +28,7 @@
     top: 50%;
     width: 60rpx;
     height: 1rpx;
-    background-color: $page-bg-color;
+    // background-color: $page-bg-color;
   }
 
   &::before {

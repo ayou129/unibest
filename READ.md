@@ -82,14 +82,22 @@ onPullDownRefresh(() => {
 </script>
 
 <style lang="scss" scoped>
+page{
+  // 这里特殊情况会单独重写 bgcolor，例如首页中，因为设计图纸顶部就是另外的颜色，所以要重写
+}
 .page-content {
-  // width: 100%;
-  // padding-top: $page-top-padding;
-  // background-color: $page-bg-color;
-  // 上面三个属性已经由 index.scss 文件书写，如果需要拓展，就在这个基础上增加
+  padding: 20rpx 16rpx;
+  padding-top: $page-top-padding;
+  width: 718rpx; // 减去左右padding 750rpx - 32rpx
+  background-color: $page-bg-color;
+  // 上面几个属性已经由 index.scss 文件书写，如果需要拓展，就在这个基础上增加
   // 并且额外的属性中不允许有 关 padding-bottom 的样式
 }
 
+...{
+  // 1.其他所有样式涉及到的宽度 都只能通过 具体的 rpx值 去指定宽度，并且初始宽度 应该是 750-32rpx=718rpx
+  // 2.并且如果某个 xxx-section 如果设置了 padding 或者 margin 的话，则容器的width需要根据初始宽度 扣去其他占用的数值 满足所有加起来=750rpx就是对的
+}
 ...
 </style>
 ```
