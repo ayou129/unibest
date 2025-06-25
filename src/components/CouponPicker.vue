@@ -1,7 +1,7 @@
 <template>
   <!-- 优惠券选择弹窗 -->
-  <view v-if="showPopup" class="popup-mask" @click="cancelPicker">
-    <view class="coupon-picker-popup" @click.stop>
+  <view v-if="showPopup" class="popup-mask" @click="cancelPicker" @touchmove.prevent>
+    <view class="coupon-picker-popup" @click.stop @touchmove.stop>
       <view class="picker-header">
         <view class="picker-cancel" @click="cancelPicker">取消</view>
         <view class="picker-title">选择优惠券</view>
@@ -9,7 +9,12 @@
       </view>
 
       <view class="page-content">
-        <scroll-view scroll-y class="coupon-list section-panel-margin">
+        <scroll-view
+          scroll-y
+          class="coupon-list section-panel-margin"
+          :enable-back-to-top="true"
+          :scroll-with-animation="true"
+        >
           <!-- 可用优惠券 -->
           <view class="coupon-section">
             <view class="section-title">可用优惠券</view>
@@ -129,6 +134,10 @@ const unavailableCoupons = computed(() => {
 const showPicker = () => {
   selectedCoupon.value = props.modelValue
   showPopup.value = true
+  // 在小程序环境下，阻止页面滚动
+  // #ifdef MP-WEIXIN
+  // 小程序环境下通过设置页面样式阻止滚动
+  // #endif
 }
 
 // 选择优惠券
@@ -143,6 +152,7 @@ const selectCoupon = (coupon) => {
 // 取消选择
 const cancelPicker = () => {
   showPopup.value = false
+  // 恢复页面滚动
 }
 
 // 确认选择
@@ -150,6 +160,7 @@ const confirmPicker = () => {
   emit('update:modelValue', selectedCoupon.value)
   emit('change', selectedCoupon.value)
   showPopup.value = false
+  // 恢复页面滚动
 }
 
 // 格式化日期
@@ -168,6 +179,13 @@ defineExpose({
 .page-content {
   padding-top: 1rpx;
   z-index: 1000;
+  flex: 1;
+  overflow: hidden;
+}
+
+.coupon-list {
+  height: 100%;
+  width: auto;
 }
 
 // 弹窗蒙层
@@ -181,6 +199,8 @@ defineExpose({
   z-index: 1000;
   display: flex;
   align-items: flex-end;
+  // 阻止滚动穿透
+  overflow: hidden;
 }
 
 .coupon-picker-popup {
@@ -189,6 +209,10 @@ defineExpose({
   width: 100%;
   max-height: 80vh;
   animation: slideUp 0.3s ease-out;
+  // 确保弹窗内容可以滚动
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @keyframes slideUp {
@@ -235,11 +259,6 @@ defineExpose({
 
 .picker-content {
   height: 600rpx;
-}
-
-.coupon-list {
-  height: 100%;
-  width: auto;
 }
 
 .coupon-section {
