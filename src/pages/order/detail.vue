@@ -461,20 +461,6 @@ onPullDownRefresh(async () => {
   }
 }
 
-// 底部操作区域
-.bottom-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12rpx 32rpx 30rpx 32rpx;
-  background-color: $mall-bg-card;
-  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
-  z-index: 100;
-  display: flex;
-  gap: 16rpx;
-}
-
 .secondary-action {
   height: 76rpx;
   border: 2rpx solid $mall-border-medium;
