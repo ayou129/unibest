@@ -153,7 +153,9 @@
       "path": "pages/mine/info/index",
       "type": "page",
       "style": {
-        "navigationBarTitleText": "个人资料"
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "基础设置"
       }
     },
     {

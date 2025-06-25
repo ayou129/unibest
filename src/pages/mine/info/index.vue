@@ -2,194 +2,314 @@
 {
   // needLogin: true,
   style: {
-    navigationBarTitleText: '个人资料',
+    enablePullDownRefresh: true,
+    navigationStyle: 'custom',
+    navigationBarTitleText: '基础设置',
   },
 }
 </route>
 
 <template>
-  <view class="profile-info-container">
-    <view class="profile-card">
-      <view class="form-wrapper">
-        <wd-form ref="formRef" :model="formData" label-width="160rpx" class="profile-form">
-          <wd-cell-group class="form-group">
-            <!-- 昵称 -->
-            <view class="sex-field">
-              <text class="field-label">昵称</text>
-              <wd-input
-                prop="name"
-                clearable
-                v-model="formData.name"
-                placeholder="请输入昵称"
-                :rules="[{ required: true, message: '请填写昵称' }]"
-                class="form-input"
+  <view class="page-container">
+    <fg-navbar>基础设置</fg-navbar>
+    <view class="page-content">
+      <view class="section-panel-margin">
+        <!-- 头像设置 -->
+        <view class="avatar-section">
+          <view class="avatar-item">
+            <text class="avatar-label">头像设置</text>
+            <view class="avatar-container" @click="handleAvatarUpload">
+              <image
+                :src="formData.avatar || '/static/images/default-avatar.png'"
+                class="avatar-image"
+                mode="aspectFill"
               />
             </view>
-
-            <!-- 性别 -->
-            <view class="sex-field">
-              <text class="field-label">性别</text>
-              <wd-radio-group
-                v-model="formData.sex"
-                shape="button"
-                :rules="[{ required: true, message: '请选择性别' }]"
-              >
-                <wd-radio :value="'1'">男</wd-radio>
-                <wd-radio :value="'0'">女</wd-radio>
-              </wd-radio-group>
-            </view>
-          </wd-cell-group>
-        </wd-form>
-
-        <!-- 操作按钮 -->
-        <view class="form-actions">
-          <wd-button type="primary" size="large" @click="handleSubmit">保存修改</wd-button>
+          </view>
         </view>
+
+        <!-- 个人信息表单 -->
+        <view class="form-section">
+          <view class="form-item">
+            <text class="form-label">修改昵称</text>
+            <input v-model="formData.name" class="form-input" placeholder="阿尤" :maxlength="20" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 保存按钮 - 只有当有变化时才显示 -->
+    <view v-if="hasChanges" class="bottom-panel">
+      <view
+        class="mall-btn-lg mall-btn-primary mall-btn-block save-button"
+        @click="handleSave"
+        :class="{ disabled: loading }"
+      >
+        <text class="mall-btn-text">{{ loading ? '保存中...' : '保存' }}</text>
       </view>
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import { toast } from '@/utils/toast'
 import { updateUserProfile } from '@/api/login'
-
-// 表单引用
-const formRef = ref()
+import useUpload from '@/hooks/useUpload'
 
 // 用户信息
 const userStore = useUserStore()
 const { userProfile } = storeToRefs(userStore)
 
+// 加载状态
+const loading = ref(false)
+
 // 表单数据
 const formData = ref({
-  id: userProfile.value.id,
-  name: userProfile.value.name,
-  sex: userProfile.value.sex,
-  avatar: userProfile.value.avatar,
-  email: userProfile.value.email,
-  phone: userProfile.value.phone,
-  remark: userProfile.value.remark,
+  name: userProfile.value.name || '',
+  avatar: userProfile.value.avatar || '/static/images/avatar.jpg',
+  sex: userProfile.value.sex || '',
+  email: userProfile.value.email || '',
+  phone: userProfile.value.phone || '',
+  remark: userProfile.value.remark || '',
 })
 
-// 提交表单
-const handleSubmit = async () => {
+// 初始数据备份，用于检测变化
+const initialData = ref({
+  name: userProfile.value.name || '',
+  avatar: userProfile.value.avatar || '',
+  sex: userProfile.value.sex || '',
+  email: userProfile.value.email || '',
+  phone: userProfile.value.phone || '',
+  remark: userProfile.value.remark || '',
+})
+
+// 检测是否有变化
+const hasChanges = computed(() => {
+  return (
+    formData.value.name !== initialData.value.name ||
+    formData.value.avatar !== initialData.value.avatar ||
+    formData.value.sex !== initialData.value.sex ||
+    formData.value.email !== initialData.value.email ||
+    formData.value.phone !== initialData.value.phone ||
+    formData.value.remark !== initialData.value.remark
+  )
+})
+
+// 头像上传
+const { loading: uploadLoading, run: uploadAvatar } = useUpload({
+  fileType: 'image',
+  maxSize: 5 * 1024 * 1024, // 5MB
+  success: (url) => {
+    formData.value.avatar = url
+    toast.success('头像上传成功')
+  },
+  error: (error) => {
+    console.error('头像上传失败:', error)
+    toast.error('头像上传失败，请重试')
+  },
+})
+
+// 处理头像上传
+const handleAvatarUpload = () => {
+  if (uploadLoading.value) return
+  uploadAvatar()
+}
+
+// 保存修改
+const handleSave = async () => {
+  if (loading.value) return
+
   // 表单验证
-  const valid = await formRef.value.validate()
-  if (!valid) return
-  const res = await updateUserProfile(formData.value)
-  await userStore.getUserProfile()
-  toast.success(res.msg)
-}
-</script>
+  if (!formData.value.name.trim()) {
+    toast.error('请输入昵称')
+    return
+  }
 
-<style lang="scss" scoped>
-.profile-info-container {
-  min-height: 100vh;
-  background-color: #f5f7fa;
-  padding: 30rpx;
-}
+  if (formData.value.name.trim().length < 2) {
+    toast.error('昵称至少需要2个字符')
+    return
+  }
 
-.profile-card {
-  background-color: #ffffff;
-  border-radius: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-  overflow: hidden;
-}
+  loading.value = true
 
-.card-header {
-  padding: 40rpx 30rpx 20rpx;
-  border-bottom: 2rpx solid #f0f0f0;
-}
+  try {
+    const res = await updateUserProfile({
+      name: formData.value.name.trim(),
+      avatar: formData.value.avatar,
+      sex: formData.value.sex,
+      email: formData.value.email,
+      phone: formData.value.phone,
+      remark: formData.value.remark,
+    })
 
-.card-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #333;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 16rpx;
+    // 更新本地用户信息
+    await userStore.getUserProfile()
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60rpx;
-    height: 6rpx;
-    background: linear-gradient(90deg, #4a7bff, #6a5acd);
-    border-radius: 6rpx;
+    // 更新初始数据
+    initialData.value = {
+      name: formData.value.name,
+      avatar: formData.value.avatar,
+      sex: formData.value.sex,
+      email: formData.value.email,
+      phone: formData.value.phone,
+      remark: formData.value.remark,
+    }
+
+    toast.success(res.msg || '保存成功')
+  } catch (error) {
+    console.error('保存失败:', error)
+    toast.error('保存失败，请重试')
+  } finally {
+    loading.value = false
   }
 }
 
-.form-wrapper {
-  padding: 30rpx;
+// 监听用户信息变化，更新表单数据
+watch(
+  userProfile,
+  (newProfile) => {
+    if (newProfile) {
+      formData.value = {
+        name: newProfile.name || '',
+        avatar: newProfile.avatar || '',
+        sex: newProfile.sex || '',
+        email: newProfile.email || '',
+        phone: newProfile.phone || '',
+        remark: newProfile.remark || '',
+      }
+      initialData.value = {
+        name: newProfile.name || '',
+        avatar: newProfile.avatar || '',
+        sex: newProfile.sex || '',
+        email: newProfile.email || '',
+        phone: newProfile.phone || '',
+        remark: newProfile.remark || '',
+      }
+    }
+  },
+  { deep: true },
+)
+
+// 页面加载
+onLoad(() => {
+  console.log('个人信息修改页面加载完成')
+})
+
+// 下拉刷新
+onPullDownRefresh(async () => {
+  try {
+    await userStore.getUserProfile()
+    toast.success('刷新成功')
+  } catch (error) {
+    console.error('刷新失败:', error)
+    toast.error('刷新失败')
+  } finally {
+    uni.stopPullDownRefresh()
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+.page-content {
+  // padding-top: $page-top-padding;
+  // background-color: $page-bg-color;
 }
 
-.form-group {
-  border-radius: 16rpx;
-  overflow: hidden;
-  margin-bottom: 40rpx;
+.avatar-section {
+  width: auto;
+  background: #fff;
+  border-radius: 20rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $mall-shadow-sm;
 }
 
-.form-input {
-  font-size: 30rpx;
-}
-
-.sex-field {
+.avatar-item {
   display: flex;
   align-items: center;
-  padding: 24rpx 30rpx;
-  background-color: #ffffff;
+  justify-content: space-between;
+  padding: 32rpx 24rpx;
 }
 
-.field-label {
-  width: 160rpx;
-  font-size: 30rpx;
-  color: #333;
+.avatar-label {
+  font-size: $mall-font-base;
+  color: $mall-text-primary;
+  font-weight: 500;
 }
 
-.radio-group {
-  flex: 1;
-  display: flex;
-  gap: 20rpx;
-}
-
-.radio-btn {
-  flex: 1;
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  font-size: 30rpx;
-  border-radius: 12rpx;
-  background-color: #f5f7fa;
+.avatar-container {
+  cursor: pointer;
 
   &:active {
     opacity: 0.8;
   }
 }
 
-.form-actions {
-  display: flex;
-  flex-direction: row;
-  gap: 20rpx;
+.avatar-image {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 30rpx;
+  border: 2rpx solid #f0f0f0;
 }
 
-.submit-btn {
-  height: 90rpx;
-  border-radius: 45rpx;
-  font-size: 32rpx;
-  font-weight: 500;
-  background: linear-gradient(135deg, #4a7bff, #6a5acd);
-  box-shadow: 0 8rpx 16rpx rgba(74, 123, 255, 0.2);
-  transition: all 0.3s ease;
+.form-section {
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: $mall-shadow-sm;
+}
 
-  &:active {
-    transform: translateY(2rpx);
-    box-shadow: 0 4rpx 8rpx rgba(74, 123, 255, 0.15);
+.form-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 24rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.form-label {
+  font-size: $mall-font-base;
+  color: $mall-text-primary;
+  font-weight: 500;
+  width: 160rpx;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: $mall-font-base;
+  color: $mall-text-primary;
+  text-align: right;
+  padding: 0;
+  height: auto;
+  line-height: 1.4;
+
+  &::placeholder {
+    color: $mall-text-placeholder;
+  }
+}
+
+.bottom-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12rpx 32rpx 30rpx 32rpx;
+  background-color: $mall-bg-card;
+  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.save-button {
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
   }
 }
 </style>

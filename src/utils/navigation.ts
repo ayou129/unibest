@@ -89,7 +89,7 @@ export const navigateToCoupons = () => {
  * 跳转到设置页面
  */
 export const navigateToSettings = () => {
-  smartNavigate('/pages/settings/index')
+  smartNavigate('/pages/mine/info/index')
 }
 
 /**

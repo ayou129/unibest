@@ -70,6 +70,7 @@ yarn run dev:mp-weixin
 
 <template>
   <view class="page-container[这里默认，由公共样式实现]">
+    <fg-navbar>页面标题[这个组件只有非tabbar页面固定有的组件]</fg-navbar>
     <view class="page-content[这里每个页面都强制使用这个类名，只不过由本页面去实现具体的样式]">
       这里是每个页面的具体内容
     </view>
