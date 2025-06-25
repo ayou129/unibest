@@ -22,22 +22,48 @@
 
       <!-- 订单详情内容 -->
       <view v-else class="order-detail">
-        <!-- 订单状态区域 -->
-        <view class="status-section">
-          <text class="status-text">{{ orderDetail.statusText }}</text>
+        <!-- 收货地址信息 -->
+        <view class="section-panel address-section">
+          <view class="address-icon">
+            <image class="image" src="/static/icons/location.png" />
+          </view>
+          <view>
+            <text class="receiver-address">{{ orderDetail.address.fullAddress }}</text>
+            <view class="receiver-info">
+              <text class="receiver-name">{{ orderDetail.address.name }}</text>
+              <text class="receiver-phone">{{ orderDetail.address.phone }}</text>
+            </view>
+          </view>
         </view>
 
         <!-- 商品信息 -->
         <view class="goods-section">
           <view v-for="(item, index) in orderDetail.items" :key="index" class="goods-item">
-            <image class="goods-image" :src="item.image" />
+            <image class="goods-image" :src="item.image" mode="aspectFill" />
             <view class="goods-info">
               <text class="goods-name">{{ item.name }}</text>
-              <view class="goods-price-quantity">
+              <text class="goods-spec">{{ item.spec }}</text>
+              <view class="goods-price-row">
                 <text class="goods-price">¥{{ item.price }}</text>
                 <text class="goods-quantity">×{{ item.quantity }}</text>
               </view>
             </view>
+          </view>
+          <view class="price-item">
+            <text class="price-label">运费</text>
+            <text class="price-value">¥{{ orderDetail.shipping }}</text>
+          </view>
+          <view class="price-item">
+            <text class="price-label">商品小计</text>
+            <text class="price-value">¥{{ orderDetail.goodsTotal }}</text>
+          </view>
+          <view class="price-item">
+            <text class="price-label">优惠券</text>
+            <text class="price-value discount">-¥{{ orderDetail.couponDiscount }}</text>
+          </view>
+          <view class="price-item total-row">
+            <text class="price-label total-label">合计：</text>
+            <text class="price-value total-price">¥{{ orderDetail.totalAmount }}</text>
           </view>
         </view>
 
@@ -45,29 +71,34 @@
         <view class="order-info-section">
           <view class="info-item">
             <text class="info-label">订单编号</text>
-            <text class="info-value">{{ orderDetail.orderNo }}</text>
+            <view class="info-value-row">
+              <text class="info-value">{{ orderDetail.orderNo }}</text>
+              <text class="copy-btn" @click="copyOrderNo">复制</text>
+            </view>
           </view>
           <view class="info-item">
-            <text class="info-label">下单时间</text>
+            <text class="info-label">支付渠道</text>
+            <text class="info-value">{{ orderDetail.paymentMethod }}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">创建时间</text>
             <text class="info-value">{{ orderDetail.createTime }}</text>
           </view>
           <view class="info-item">
-            <text class="info-label">实付金额</text>
-            <text class="info-value total-amount">¥{{ orderDetail.totalAmount }}</text>
+            <text class="info-label">支付时间</text>
+            <text class="info-value">{{ orderDetail.payTime }}</text>
           </view>
         </view>
       </view>
     </view>
 
     <!-- 底部操作按钮 -->
-    <view v-if="orderDetail.actions.length > 0" class="bottom-actions">
-      <view
-        v-for="(action, index) in orderDetail.actions"
-        :key="index"
-        class="action-button"
-        @click="handleAction(action.type)"
-      >
-        <text class="action-text">{{ action.text }}</text>
+    <view class="bottom-panel">
+      <view v-if="orderDetail.showAfterSales" class="secondary-action" @click="handleAfterSales">
+        <text class="secondary-text">撤回售后</text>
+      </view>
+      <view class="primary-action" @click="handleConfirm">
+        <text class="primary-text">确定</text>
       </view>
     </view>
   </view>
@@ -88,11 +119,20 @@ const orderId = ref('')
 // 订单详情数据
 const orderDetail = ref({
   orderNo: '',
-  statusText: '待收货',
+  paymentMethod: '',
   createTime: '',
+  payTime: '',
+  shipping: '0.0',
+  goodsTotal: '0.00',
+  couponDiscount: '0.0',
   totalAmount: '0.00',
+  showAfterSales: false,
+  address: {
+    name: '',
+    phone: '',
+    fullAddress: '',
+  },
   items: [] as any[],
-  actions: [] as any[],
 })
 
 // 加载订单详情
@@ -103,24 +143,31 @@ const loadOrderDetail = async () => {
     // 模拟API调用
     await new Promise((resolve) => setTimeout(resolve, 500))
 
-    // 模拟数据
+    // 模拟数据 - 根据设计图的内容
     orderDetail.value = {
-      orderNo: `SO${Date.now()}`,
-      statusText: '待收货',
-      createTime: '2024-01-15 14:30:25',
-      totalAmount: '189.90',
+      orderNo: '2365325212',
+      paymentMethod: '微信支付',
+      createTime: '2022-12-14 25:35:28',
+      payTime: '2022-12-14 25:35:28',
+      shipping: '0.0',
+      goodsTotal: '199.9',
+      couponDiscount: '60.0',
+      totalAmount: '139.0',
+      showAfterSales: false,
+      address: {
+        name: '七层',
+        phone: '1320253202',
+        fullAddress: '广东广州天河区黄埔大道',
+      },
       items: [
         {
           name: '敬修堂防脱滋养育发洗发露',
+          spec: '控油防脱不伤 调理手膏泡沫',
           image:
             'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
-          price: '199.90',
+          price: '199.9',
           quantity: 1,
         },
-      ],
-      actions: [
-        { type: 'contact', text: '联系客服' },
-        { type: 'confirm', text: '确认收货' },
       ],
     }
   } catch (error) {
@@ -134,34 +181,38 @@ const loadOrderDetail = async () => {
   }
 }
 
-// 处理操作按钮点击
-const handleAction = (actionType: string) => {
-  console.log('订单操作:', actionType)
-
-  switch (actionType) {
-    case 'confirm':
-      uni.showModal({
-        title: '确认收货',
-        content: '确认已收到商品吗？',
-        success: (res) => {
-          if (res.confirm) {
-            uni.showToast({
-              title: '确认收货成功',
-              icon: 'success',
-            })
-          }
-        },
-      })
-      break
-    case 'contact':
+// 复制订单号
+const copyOrderNo = () => {
+  uni.setClipboardData({
+    data: orderDetail.value.orderNo,
+    success: () => {
       uni.showToast({
-        title: '联系客服',
-        icon: 'none',
+        title: '订单号已复制',
+        icon: 'success',
       })
-      break
-    default:
-      break
-  }
+    },
+  })
+}
+
+// 处理售后操作
+const handleAfterSales = () => {
+  uni.showModal({
+    title: '撤回售后',
+    content: '确定要撤回售后申请吗？',
+    success: (res) => {
+      if (res.confirm) {
+        uni.showToast({
+          title: '撤回成功',
+          icon: 'success',
+        })
+      }
+    },
+  })
+}
+
+// 处理确定按钮
+const handleConfirm = () => {
+  uni.navigateBack()
 }
 
 // 生命周期
@@ -201,126 +252,265 @@ onPullDownRefresh(async () => {
   color: $mall-text-secondary;
 }
 
-.status-section {
-  background-color: $mall-bg-card;
-  border-radius: $mall-radius-base;
-  padding: 40rpx 32rpx;
-  margin-bottom: 24rpx;
-  text-align: center;
+// 收货地址区域
+.address-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.status-text {
-  font-size: $mall-font-lg;
-  font-weight: 600;
+.address-icon {
+  display: flex;
+  align-items: center;
+
+  .image {
+    width: 60rpx;
+    height: 60rpx;
+    margin-right: 12rpx;
+  }
+}
+
+.receiver-info {
+  padding-top: 10rpx;
+  width: 580rpx;
+  display: flex;
+  align-items: center;
+}
+
+.receiver-address {
+  font-size: $mall-font-base;
   color: $mall-text-primary;
+  font-weight: $mall-text-title-weight;
 }
 
+.receiver-name {
+  font-size: $mall-font-sm;
+  color: $mall-text-secondary;
+}
+
+.receiver-phone {
+  font-size: $mall-font-sm;
+  color: $mall-text-secondary;
+  margin-left: 10rpx;
+}
+
+// 商品信息区域
 .goods-section {
-  background-color: $mall-bg-card;
-  border-radius: $mall-radius-base;
+  background: #fff;
+  border-radius: 20rpx;
   padding: 24rpx;
   margin-bottom: 24rpx;
+  box-shadow: $mall-shadow-sm;
 }
 
 .goods-item {
   display: flex;
+  align-items: flex-start;
+  margin-bottom: 50rpx;
 }
 
 .goods-image {
-  width: 160rpx;
-  height: 160rpx;
+  width: 140rpx;
+  height: 140rpx;
   border-radius: $mall-radius-sm;
   margin-right: 24rpx;
+  flex-shrink: 0;
 }
 
 .goods-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .goods-name {
   font-size: $mall-font-base;
   color: $mall-text-primary;
-  line-height: 1.4;
+  font-weight: $mall-text-title-weight;
+  margin-bottom: 8rpx;
 }
 
-.goods-price-quantity {
+.goods-spec {
+  font-size: $mall-font-sm;
+  color: $mall-text-secondary;
+  line-height: 1.3;
+  margin-bottom: 16rpx;
+}
+
+.goods-price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .goods-price {
-  font-size: $mall-font-lg;
-  font-weight: 600;
+  font-size: $mall-font-md;
   color: $mall-color-primary;
+  font-weight: 600;
 }
 
 .goods-quantity {
-  font-size: $mall-font-base;
+  font-size: $mall-font-sm;
   color: $mall-text-secondary;
 }
 
-.order-info-section {
-  background-color: $mall-bg-card;
-  border-radius: $mall-radius-base;
+// 价格明细区域
+.price-section {
+  background: #fff;
+  border-radius: 20rpx;
   padding: 32rpx 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $mall-shadow-sm;
+}
+
+.price-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.total-row {
+    border-top: 2rpx solid #f5f5f5;
+    padding-top: 20rpx;
+    margin-top: 20rpx;
+  }
+}
+
+.price-label {
+  font-size: $mall-font-base;
+  color: $mall-text-secondary;
+
+  &.total-label {
+    font-size: $mall-font-md;
+    color: $mall-text-primary;
+    font-weight: 600;
+  }
+}
+
+.price-value {
+  font-size: $mall-font-base;
+  color: $mall-text-primary;
+
+  &.discount {
+    color: $mall-color-primary;
+  }
+
+  &.total-price {
+    font-size: $mall-font-lg;
+    color: $mall-color-primary;
+    font-weight: 700;
+  }
+}
+
+// 订单信息区域
+.order-info-section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 24rpx;
+  box-shadow: $mall-shadow-sm;
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 30rpx;
 
   &:last-child {
     margin-bottom: 0;
-    border-top: 2rpx solid $uni-border-color;
-    padding-top: 20rpx;
   }
 }
 
 .info-label {
   font-size: $mall-font-base;
   color: $mall-text-secondary;
+  width: 160rpx;
+  flex-shrink: 0;
 }
 
 .info-value {
   font-size: $mall-font-base;
   color: $mall-text-primary;
+  font-weight: $mall-text-primary-weight;
+  flex: 1;
+  text-align: left;
+  padding-left: 60rpx;
+}
 
-  &.total-amount {
-    font-size: $mall-font-lg;
-    font-weight: 600;
-    color: $mall-color-primary;
+.info-value-row {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.copy-btn {
+  font-size: $mall-font-sm;
+  color: $mall-color-primary;
+  margin-left: 16rpx;
+  padding: 8rpx 16rpx;
+  border: 2rpx solid $mall-color-primary;
+  border-radius: 8rpx;
+
+  &:active {
+    opacity: 0.7;
   }
 }
 
-.bottom-actions {
+// 底部操作区域
+.bottom-panel {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12rpx 32rpx 30rpx;
+  padding: 12rpx 32rpx 30rpx 32rpx;
   background-color: $mall-bg-card;
+  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
   display: flex;
   gap: 16rpx;
 }
 
-.action-button {
-  flex: 1;
-  height: 88rpx;
-  background-color: $mall-color-primary;
-  border-radius: $mall-radius-base;
+.secondary-action {
+  height: 76rpx;
+  border: 2rpx solid $mall-border-medium;
+  border-radius: 16rpx;
+  padding: 0 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
-.action-text {
+.secondary-text {
   font-size: $mall-font-base;
+  color: $mall-text-primary;
+}
+
+.primary-action {
+  flex: 1;
+  height: 76rpx;
+  background-color: $mall-color-primary;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background-color: $mall-color-primary-dark;
+  }
+}
+
+.primary-text {
+  font-size: $mall-font-md;
   color: $mall-text-white;
+  font-weight: 600;
 }
 </style>

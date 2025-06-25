@@ -1,5 +1,5 @@
 {
-  "entryPagePath": "pages/mall/index",
+  "entryPagePath": "pages/order/detail",
   "globalStyle": {
     "navigationStyle": "default",
     "navigationBarTitleText": "unibest",

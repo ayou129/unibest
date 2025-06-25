@@ -94,8 +94,10 @@ $mall-bg-section: rgba(255, 255, 255, 0.3); // 搜索栏背景（半透明白色
 $mall-bg-overlay: rgba(0, 0, 0, 0.4); // 遮罩背景
 
 /* 商城文字颜色 */
-$mall-text-primary: #333333; // 主要文字
-$mall-text-secondary: #666666; // 次要文字
+$mall-text-title-weight: 700; // 标题文字加粗
+$mall-text-primary: #1a1a1a; // 主要文字
+$mall-text-primary-weight: 500; // 主要文字加粗
+$mall-text-secondary: #666666; // 次要文字 rgba(102, 102, 102, 1);
 $mall-text-placeholder: #999999; // 占位文字
 $mall-text-white: #ffffff; // 白色文字
 $mall-text-price: #ff6b35; // 价格文字
@@ -108,11 +110,11 @@ $mall-border-dark: #a8a8a8; // 深边框
 
 /* 商城字体大小 */
 $mall-font-xs: 20rpx; // 极小字体
-$mall-font-sm: 24rpx; // 小字体
-$mall-font-base: 28rpx; // 基础字体
-$mall-font-md: 32rpx; // 中等字体
-$mall-font-lg: 36rpx; // 大字体
-$mall-font-xl: 40rpx; // 特大字体
+$mall-font-sm: 28rpx; // 小字体
+$mall-font-base: 30rpx; // 基础字体
+$mall-font-md: 34rpx; // 中等字体
+$mall-font-lg: 38rpx; // 大字体
+$mall-font-xl: 44rpx; // 特大字体
 $mall-font-xxl: 48rpx; // 超大字体
 
 /* 商城圆角 */
