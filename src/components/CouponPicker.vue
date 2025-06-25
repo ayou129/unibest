@@ -9,7 +9,7 @@
       </view>
 
       <view class="page-content">
-        <scroll-view scroll-y class="coupon-list">
+        <scroll-view scroll-y class="coupon-list section-panel-margin">
           <!-- 可用优惠券 -->
           <view class="coupon-section">
             <view class="section-title">可用优惠券</view>
@@ -166,7 +166,8 @@ defineExpose({
 
 <style lang="scss" scoped>
 .page-content {
-  padding-top: 0;
+  padding-top: 1rpx;
+  z-index: 1000;
 }
 
 // 弹窗蒙层
@@ -203,7 +204,7 @@ defineExpose({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 32rpx;
+  padding: 24rpx;
   border-bottom: 2rpx solid #f0f0f0;
   position: relative;
 }
@@ -238,6 +239,7 @@ defineExpose({
 
 .coupon-list {
   height: 100%;
+  width: auto;
 }
 
 .coupon-section {

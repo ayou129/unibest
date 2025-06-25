@@ -13,79 +13,81 @@
   <view class="page-container">
     <fg-navbar>确认订单</fg-navbar>
     <view class="page-content">
-      <!-- 收货地址 -->
-      <view class="address-section">
-        <view class="address-item" @click="selectAddress">
-          <view class="address-info">
-            <image class="address-icon" src="/static/icons/location.png" />
-            <view v-if="currentAddress" class="address-content">
-              <view class="address-header">
-                <text class="address-name">{{ currentAddress.name }}</text>
-                <text class="address-phone">{{ currentAddress.phone }}</text>
+      <view class="section-panel-margin">
+        <!-- 收货地址 -->
+        <view class="section-panel-card">
+          <view class="address-item" @click="selectAddress">
+            <view class="address-info">
+              <image class="address-icon" src="/static/icons/location.png" />
+              <view v-if="currentAddress" class="address-content">
+                <view class="address-header">
+                  <text class="address-name">{{ currentAddress.name }}</text>
+                  <text class="address-phone">{{ currentAddress.phone }}</text>
+                </view>
+                <text class="address-detail">
+                  {{ currentAddress.province }} {{ currentAddress.city }}
+                  {{ currentAddress.district }} {{ currentAddress.detail_address }}
+                </text>
               </view>
-              <text class="address-detail">
-                {{ currentAddress.province }} {{ currentAddress.city }}
-                {{ currentAddress.district }} {{ currentAddress.detail_address }}
-              </text>
+              <view v-else class="address-content">
+                <text class="address-placeholder">点击添加收货地址</text>
+              </view>
             </view>
-            <view v-else class="address-content">
-              <text class="address-placeholder">点击添加收货地址</text>
-            </view>
-          </view>
-          <image class="arrow-icon" src="/static/icons/arrow-right.png" />
-        </view>
-      </view>
-
-      <!-- 商品信息 -->
-      <view class="goods-section">
-        <view v-for="item in orderItems" :key="item.id" class="goods-item">
-          <image class="goods-image" :src="item.image" />
-          <view class="goods-info">
-            <text class="goods-name">{{ item.name }}</text>
-            <text class="goods-desc">{{ item.description }}</text>
-            <text class="goods-price">￥{{ item.price }}</text>
-          </view>
-          <text class="goods-quantity">×{{ item.quantity }}</text>
-        </view>
-
-        <!-- 费用明细 -->
-        <view class="cost-detail">
-          <view class="cost-item">
-            <text class="cost-label">运费</text>
-            <text class="cost-value">￥{{ shippingFee }}</text>
-          </view>
-          <view class="cost-item">
-            <text class="cost-label">商品小计</text>
-            <text class="cost-value">￥{{ goodsTotal }}</text>
-          </view>
-
-          <!-- 优惠券选择 -->
-          <view class="cost-item coupon-item" @click="showCouponPicker">
-            <text class="cost-label">优惠券</text>
-            <view class="coupon-info">
-              <text v-if="selectedCoupon" class="coupon-discount">
-                -￥{{ selectedCoupon.amount }}
-              </text>
-              <text v-else class="coupon-text">{{ availableCouponCount }}张可用</text>
-              <image class="arrow-icon2" src="/static/icons/arrow-right.png" />
-            </view>
-          </view>
-
-          <!-- 合计 -->
-          <view class="cost-total">
-            <text class="total-label">合计：</text>
-            <text class="total-price">￥{{ finalTotal }}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 支付方式 -->
-      <view class="payment-section">
-        <view class="payment-item">
-          <text class="payment-label">支付方式</text>
-          <view class="payment-info">
-            <text class="payment-method">微信支付</text>
             <image class="arrow-icon" src="/static/icons/arrow-right.png" />
+          </view>
+        </view>
+
+        <!-- 商品信息 -->
+        <view class="goods-section">
+          <view v-for="item in orderItems" :key="item.id" class="goods-item">
+            <image class="goods-image" :src="item.image" />
+            <view class="goods-info">
+              <text class="goods-name">{{ item.name }}</text>
+              <text class="goods-desc">{{ item.description }}</text>
+              <text class="goods-price">￥{{ item.price }}</text>
+            </view>
+            <text class="goods-quantity">×{{ item.quantity }}</text>
+          </view>
+
+          <!-- 费用明细 -->
+          <view class="cost-detail">
+            <view class="cost-item">
+              <text class="cost-label">运费</text>
+              <text class="cost-value">￥{{ shippingFee }}</text>
+            </view>
+            <view class="cost-item">
+              <text class="cost-label">商品小计</text>
+              <text class="cost-value">￥{{ goodsTotal }}</text>
+            </view>
+
+            <!-- 优惠券选择 -->
+            <view class="cost-item coupon-item" @click="showCouponPicker">
+              <text class="cost-label">优惠券</text>
+              <view class="coupon-info">
+                <text v-if="selectedCoupon" class="coupon-discount">
+                  -￥{{ selectedCoupon.amount }}
+                </text>
+                <text v-else class="coupon-text">{{ availableCouponCount }}张可用</text>
+                <image class="arrow-icon2" src="/static/icons/arrow-right.png" />
+              </view>
+            </view>
+
+            <!-- 合计 -->
+            <view class="cost-total">
+              <text class="total-label">合计：</text>
+              <text class="total-price">￥{{ finalTotal }}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 支付方式 -->
+        <view class="payment-section">
+          <view class="payment-item">
+            <text class="payment-label">支付方式</text>
+            <view class="payment-info">
+              <text class="payment-method">微信支付</text>
+              <image class="arrow-icon" src="/static/icons/arrow-right.png" />
+            </view>
           </view>
         </view>
       </view>
@@ -282,10 +284,6 @@ onShow(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-content {
-  padding-top: $page-top-padding;
-}
-
 // 收货地址部分
 .address-section {
   margin: 24rpx 0;

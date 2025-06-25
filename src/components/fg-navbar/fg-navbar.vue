@@ -30,7 +30,7 @@ function handleClickLeft() {
   uni.navigateBack({
     fail() {
       uni.reLaunch({
-        url: '/pages/index/index',
+        url: '/pages/mall/index',
       })
     },
   })

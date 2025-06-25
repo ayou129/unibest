@@ -10,65 +10,73 @@
 </route>
 
 <template>
-  <view class="page-container">
-    <view class="page-content">
-      <!-- 订单状态筛选区域 -->
-      <view class="filter-section">
-        <view
-          v-for="(filter, index) in orderFilters"
-          :key="index"
-          class="filter-item"
-          :class="{ active: activeFilter === filter.type }"
-          @click="switchFilter(filter.type)"
-        >
-          <text class="filter-text">{{ filter.name }}</text>
+  <view>
+    <fg-navbar>我的订单</fg-navbar>
+    <view class="page-container">
+      <view class="page-content">
+        <!-- 订单状态筛选区域 -->
+        <view class="filter-section">
+          <view
+            v-for="(filter, index) in orderFilters"
+            :key="index"
+            class="filter-item"
+            :class="{ active: activeFilter === filter.type }"
+            @click="switchFilter(filter.type)"
+          >
+            <text class="filter-text">{{ filter.name }}</text>
+          </view>
         </view>
-      </view>
 
-      <!-- 订单列表区域 -->
-      <scroll-view class="order-list" scroll-y enhanced :show-scrollbar="false">
-        <view v-for="(order, index) in filteredOrders" :key="index" class="order-card">
-          <!-- 订单商品信息 -->
-          <view class="order-content">
-            <image class="product-image" :src="order.productImage" />
-            <view class="product-info">
-              <view class="product-details">
-                <text class="product-name">{{ order.productName }}</text>
-                <text class="product-desc">{{ order.productDesc }}</text>
-                <view class="price-quantity">
-                  <text class="product-price">{{ order.price }}</text>
-                  <text class="product-quantity">×{{ order.quantity }}</text>
+        <!-- 订单列表区域 -->
+        <scroll-view
+          class="order-list section-panel-margin"
+          scroll-y
+          enhanced
+          :show-scrollbar="false"
+        >
+          <view v-for="(order, index) in filteredOrders" :key="index" class="order-card">
+            <!-- 订单商品信息 -->
+            <view class="order-content">
+              <image class="product-image" :src="order.productImage" />
+              <view class="product-info">
+                <view class="product-details">
+                  <text class="product-name">{{ order.productName }}</text>
+                  <text class="product-desc">{{ order.productDesc }}</text>
+                  <view class="price-quantity">
+                    <text class="product-price">{{ order.price }}</text>
+                    <text class="product-quantity">×{{ order.quantity }}</text>
+                  </view>
                 </view>
               </view>
+              <view class="order-meta">
+                <text class="order-status">{{ order.statusText }}</text>
+              </view>
             </view>
-            <view class="order-meta">
-              <text class="order-status">{{ order.statusText }}</text>
+
+            <!-- 订单操作按钮 -->
+            <view class="order-actions">
+              <view
+                v-for="(action, actionIndex) in order.actions"
+                :key="actionIndex"
+                class="mall-btn-sm action-button"
+                :class="
+                  action.type === 'pay' || action.type === 'confirm' || action.type === 'rebuy'
+                    ? 'mall-btn-primary'
+                    : 'mall-btn-secondary'
+                "
+                @click="handleAction(action.type, order)"
+              >
+                <text class="mall-btn-text">{{ action.text }}</text>
+              </view>
             </view>
           </view>
 
-          <!-- 订单操作按钮 -->
-          <view class="order-actions">
-            <view
-              v-for="(action, actionIndex) in order.actions"
-              :key="actionIndex"
-              class="mall-btn-sm action-button"
-              :class="
-                action.type === 'pay' || action.type === 'confirm' || action.type === 'rebuy'
-                  ? 'mall-btn-primary'
-                  : 'mall-btn-secondary'
-              "
-              @click="handleAction(action.type, order)"
-            >
-              <text class="mall-btn-text">{{ action.text }}</text>
-            </view>
+          <!-- 当没有数据时显示空状态 -->
+          <view v-if="filteredOrders.length === 0" class="empty-state">
+            <text class="empty-text">暂无订单数据</text>
           </view>
-        </view>
-
-        <!-- 当没有数据时显示空状态 -->
-        <view v-if="filteredOrders.length === 0" class="empty-state">
-          <text class="empty-text">暂无订单数据</text>
-        </view>
-      </scroll-view>
+        </scroll-view>
+      </view>
     </view>
   </view>
 </template>
@@ -262,7 +270,6 @@ page {
 }
 .page-content {
   // 全局样式已设置基础属性，这里添加页面特有样式
-  background-color: white;
   display: flex;
   flex-direction: column;
   height: calc(100vh - $page-top-padding); // 减去顶部padding
@@ -303,8 +310,7 @@ page {
 }
 
 .order-list {
-  width: 686rpx;
-  padding: 24rpx 32rpx; // 按原设计：左右各32rpx
+  width: auto;
   background-color: $page-bg-color;
 }
 

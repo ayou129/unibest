@@ -310,10 +310,23 @@ page {
 
 /* 页面内容区域样式 */
 .page-content {
-  padding: 20rpx 16rpx;
   padding-top: $page-top-padding;
-  width: 718rpx; // 减去左右padding 750rpx - 32rpx
+  width: 750rpx; // 减去左右padding 750rpx - 32rpx
   background-color: $page-bg-color;
+}
+
+.section-panel-margin {
+  margin: 24rpx 28rpx;
+}
+
+.section-panel-padding {
+  padding: 32rpx 24rpx;
+}
+
+.section-panel-card {
+  margin: 24rpx 0;
+  background: #fff;
+  border-radius: 20rpx;
 }
 
 .bottom-panel {

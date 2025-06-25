@@ -107,7 +107,7 @@
     </view>
 
     <!-- 底部添加按钮 -->
-    <view v-if="!isSelectMode" class="bottom-actions">
+    <view class="bottom-actions">
       <view class="mall-btn-lg mall-btn-primary mall-btn-block add-button" @click="addAddress">
         <text class="mall-btn-text">新增收货地址</text>
       </view>
@@ -120,6 +120,7 @@ import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
 import { useAddressStore } from '@/store'
 import type { IAddressInfo } from '@/api/address.typings'
 import { AddressDefaultStatus } from '@/api/address.typings'
+import { navigateToAddressEdit } from '@/utils/navigation'
 
 defineOptions({
   name: 'AddressList',
@@ -157,9 +158,7 @@ const selectAddress = (address: IAddressInfo) => {
 // 编辑地址
 const editAddress = (address: IAddressInfo) => {
   console.log('编辑地址:', address)
-  uni.navigateTo({
-    url: `/pages/address/edit?id=${address.id}`,
-  })
+  navigateToAddressEdit(address.id)
 }
 
 // 删除地址
@@ -185,9 +184,7 @@ const setDefault = async (address: IAddressInfo) => {
 // 添加新地址
 const addAddress = () => {
   console.log('添加新地址')
-  uni.navigateTo({
-    url: '/pages/address/edit',
-  })
+  navigateToAddressEdit()
 }
 
 // 生命周期

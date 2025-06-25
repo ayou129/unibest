@@ -184,7 +184,7 @@ const handleShare = () => {
     scene: 'WXSceneSession',
     type: 5,
     imageUrl: '',
-    title: '密语商店',
+    title: '敬修堂商店',
     miniProgram: {
       id: '',
       path: '/pages/mall/index',

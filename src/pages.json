@@ -114,6 +114,16 @@
       }
     },
     {
+      "path": "pages/order/detail",
+      "type": "page",
+      "needLogin": true,
+      "style": {
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "订单详情"
+      }
+    },
+    {
       "path": "pages/order/list",
       "type": "page",
       "style": {

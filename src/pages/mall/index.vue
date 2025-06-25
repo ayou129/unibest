@@ -16,7 +16,7 @@
       <view class="welcome-section">
         <view class="welcome-text">
           <text class="welcome-title">Hey！friend</text>
-          <text class="welcome-subtitle">欢迎来到密语商店</text>
+          <text class="welcome-subtitle">欢迎来到敬修堂商城</text>
         </view>
         <image class="avatar-image" src="@/static/images/avatar.jpg" />
       </view>
@@ -124,17 +124,15 @@ page {
 }
 
 .product-section {
+  width: auto;
   margin-top: 40rpx;
   padding: 0 24rpx;
   height: 1174rpx;
-  display: flex;
-  flex-direction: column;
 }
 
 .product-image {
-  width: 670rpx;
+  width: 100%;
   height: 85%;
-  flex-shrink: 0;
 }
 
 .product-info {

@@ -9,97 +9,100 @@
 </route>
 
 <template>
-  <view class="page-container">
-    <view class="product-detail-page">
-      <!-- 产品图片区域 -->
-      <view class="product-gallery-section">
-        <!-- 产品主图 -->
-        <image
-          class="main-product-image"
-          :src="currentImage"
-          mode="aspectFit"
-          @click="previewImage"
-        />
+  <view>
+    <fg-navbar>产品详情</fg-navbar>
+    <view class="page-container">
+      <view class="product-detail-page">
+        <!-- 产品图片区域 -->
+        <view class="product-gallery-section">
+          <!-- 产品主图 -->
+          <image
+            class="main-product-image"
+            :src="currentImage"
+            mode="aspectFit"
+            @click="previewImage"
+          />
 
-        <!-- 图片指示器 -->
-        <view class="image-indicators">
-          <view
-            v-for="(image, index) in productImages"
-            :key="index"
-            class="indicator"
-            :class="{ active: currentImageIndex === index }"
-            @click="switchImage(index)"
-          ></view>
-        </view>
-      </view>
-
-      <!-- 产品信息区域 -->
-      <view class="product-info-section">
-        <!-- 基本信息 -->
-        <view class="basic-info">
-          <view class="title-price">
-            <view class="title-desc">
-              <text class="product-title">{{ productInfo.title }}</text>
-              <text class="product-description">{{ productInfo.description }}</text>
-            </view>
-            <text class="product-price">￥{{ productInfo.price }}</text>
-          </view>
-
-          <!-- 产品特性 -->
-          <view class="features-section">
+          <!-- 图片指示器 -->
+          <view class="image-indicators">
             <view
-              v-for="(feature, index) in productInfo.features"
+              v-for="(image, index) in productImages"
               :key="index"
-              class="feature-item"
-            >
-              <image class="feature-icon" :src="feature.icon" />
-              <text class="feature-text">{{ feature.name }}</text>
-            </view>
+              class="indicator"
+              :class="{ active: currentImageIndex === index }"
+              @click="switchImage(index)"
+            ></view>
           </view>
         </view>
 
-        <!-- 商品详情标题 -->
-        <text class="detail-title">商品详情</text>
+        <!-- 产品信息区域 -->
+        <view class="product-info-section">
+          <!-- 基本信息 -->
+          <view class="basic-info">
+            <view class="title-price">
+              <view class="title-desc">
+                <text class="product-title">{{ productInfo.title }}</text>
+                <text class="product-description">{{ productInfo.description }}</text>
+              </view>
+              <text class="product-price">￥{{ productInfo.price }}</text>
+            </view>
+
+            <!-- 产品特性 -->
+            <view class="features-section">
+              <view
+                v-for="(feature, index) in productInfo.features"
+                :key="index"
+                class="feature-item"
+              >
+                <image class="feature-icon" :src="feature.icon" />
+                <text class="feature-text">{{ feature.name }}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 商品详情标题 -->
+          <text class="detail-title">商品详情</text>
+        </view>
+
+        <!-- 详情图片展示 -->
+        <view class="detail-images">
+          <image
+            v-for="(image, index) in detailImages"
+            :key="index"
+            class="detail-image"
+            :src="image"
+            mode="widthFix"
+          />
+        </view>
       </view>
 
-      <!-- 详情图片展示 -->
-      <view class="detail-images">
+      <!-- 底部操作栏 -->
+      <view class="bottom-actions">
         <image
-          v-for="(image, index) in detailImages"
-          :key="index"
-          class="detail-image"
-          :src="image"
-          mode="widthFix"
+          class="service-icon"
+          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cf187a2b852540069ad88487afaaebec.png"
         />
-      </view>
-    </view>
 
-    <!-- 底部操作栏 -->
-    <view class="bottom-actions">
-      <image
-        class="service-icon"
-        src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cf187a2b852540069ad88487afaaebec.png"
-      />
-
-      <view class="mall-btn-lg mall-btn-primary buy-button" @click="handleBuyNow">
-        <text class="mall-btn-text">立即购买</text>
-      </view>
-
-      <view class="quantity-control">
-        <view class="quantity-btn" @click="decreaseQuantity">
-          <image
-            class="control-icon"
-            src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=6238ad04e46428020e93e7e97c977596.png"
-          />
+        <view class="mall-btn-lg mall-btn-primary buy-button" @click="handleBuyNow">
+          <text class="mall-btn-text">立即购买</text>
         </view>
-        <view class="quantity-display">
-          <text class="quantity-text">{{ quantity }}</text>
-        </view>
-        <view class="quantity-btn" @click="increaseQuantity">
-          <image
-            class="control-icon"
-            src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=92c87cf56f2ca8b77f111d924666e117.png"
-          />
+
+        <view class="quantity-control">
+          <view class="quantity-btn" @click="decreaseQuantity">
+            <image
+              class="control-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=6238ad04e46428020e93e7e97c977596.png"
+            />
+          </view>
+          <view class="quantity-display">
+            <text class="quantity-text">{{ quantity }}</text>
+          </view>
+          <view class="quantity-btn" @click="increaseQuantity">
+            <image
+              class="control-icon"
+              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=92c87cf56f2ca8b77f111d924666e117.png"
+            />
+          </view>
         </view>
       </view>
     </view>
@@ -195,7 +198,7 @@ const onLoad = (options: any) => {
 <style lang="scss" scoped>
 .product-detail-page {
   padding-top: 170rpx;
-  background-color: $mall-bg-primary;
+  background-color: white;
   min-height: 100vh;
   padding-bottom: 120rpx;
 }
@@ -234,7 +237,7 @@ const onLoad = (options: any) => {
 
 .product-info-section {
   margin-top: -38rpx;
-  padding: 52rpx 40rpx 304rpx 40rpx;
+  padding: 52rpx 40rpx 30rpx 40rpx;
   background-color: #ffffff;
   border-radius: 60rpx 60rpx 0 0;
   position: relative;
@@ -335,7 +338,6 @@ const onLoad = (options: any) => {
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: -284rpx;
 }
 
 .detail-image {

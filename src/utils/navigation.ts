@@ -63,11 +63,11 @@ export const smartNavigate = (
 }
 
 /**
- * 跳转到订单页面
+ * 跳转到订单列表页面
  * @param status 订单状态筛选
  */
 export const navigateToOrders = (status?: string) => {
-  const url = status ? `/pages/order/index?status=${status}` : '/pages/order/index'
+  const url = status ? `/pages/order/list?status=${status}` : '/pages/order/list'
   smartNavigate(url, {
     requireLogin: true,
     redirect: url,
@@ -96,7 +96,19 @@ export const navigateToSettings = () => {
  * 跳转到地址管理页面
  */
 export const navigateToAddressList = (selectMode = false) => {
-  const url = selectMode ? '/pages/address/list?select=true' : '/pages/address/list'
+  const url = selectMode ? '/pages/address/list?mode=select' : '/pages/address/list'
+  smartNavigate(url, {
+    requireLogin: true,
+    redirect: url,
+  })
+}
+
+/**
+ * 跳转到地址编辑页面
+ * @param addressId 地址ID，不传则为新增地址
+ */
+export const navigateToAddressEdit = (addressId?: string | number) => {
+  const url = addressId ? `/pages/address/edit?id=${addressId}` : '/pages/address/edit'
   smartNavigate(url, {
     requireLogin: true,
     redirect: url,
@@ -184,5 +196,17 @@ export const navigateToMall = () => {
 export const navigateToMine = () => {
   smartNavigate('/pages/mine/index', {
     navigateType: 'switchTab',
+  })
+}
+
+/**
+ * 跳转到订单详情页面
+ * @param orderId 订单ID
+ */
+export const navigateToOrderDetail = (orderId: string | number) => {
+  const url = `/pages/order/detail?id=${orderId}`
+  smartNavigate(url, {
+    requireLogin: true,
+    redirect: url,
   })
 }
