@@ -78,10 +78,7 @@
 
       <!-- 底部操作栏 -->
       <view class="bottom-actions">
-        <image
-          class="service-icon"
-          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=cf187a2b852540069ad88487afaaebec.png"
-        />
+        <image class="service-icon" src="@/static/images/p_export.png" />
 
         <view class="mall-btn-lg mall-btn-primary buy-button" @click="handleBuyNow">
           <text class="mall-btn-text">立即购买</text>
@@ -89,19 +86,13 @@
 
         <view class="quantity-control">
           <view class="quantity-btn" @click="decreaseQuantity">
-            <image
-              class="control-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=6238ad04e46428020e93e7e97c977596.png"
-            />
+            <image class="control-icon" src="@/static/images/-.png" />
           </view>
           <view class="quantity-display">
             <text class="quantity-text">{{ quantity }}</text>
           </view>
           <view class="quantity-btn" @click="increaseQuantity">
-            <image
-              class="control-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=92c87cf56f2ca8b77f111d924666e117.png"
-            />
+            <image class="control-icon" src="@/static/images/+.png" />
           </view>
         </view>
       </view>
@@ -121,15 +112,13 @@ const currentImageIndex = ref(0)
 const quantity = ref(1)
 
 // 产品图片
-const productImages = ref([
-  'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=80c316ba7e70b2e7f3632fd9291706e7.png',
-])
+const productImages = ref(['/static/images/p_main.png'])
 
 // 详情图片
 const detailImages = ref([
-  'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=080dffaeb3d63639eb04ca4b612a312f.png',
-  'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=9a0dd0c81a55f9bdb28a613bd84b7817.png',
-  'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=b70fbeb6480d7b5c5fad47c90340fa46.png',
+  '/static/images/p_01.png',
+  '/static/images/p_02.png',
+  '/static/images/p_03.png',
 ])
 
 // 产品信息
@@ -140,15 +129,15 @@ const productInfo = ref({
   features: [
     {
       name: '滋养头皮',
-      icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=5bddc4905a650dfc58850e819c385bb0.png',
+      icon: '/static/images/p_icon01.png',
     },
     {
       name: '防脱育发',
-      icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=72e8f2e77ab28e6bd3c470f97077390c.png',
+      icon: '/static/images/p_icon02.png',
     },
     {
       name: '控油防脱',
-      icon: 'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=df209b36a9b91e9ccd61066eb3ccc981.png',
+      icon: '/static/images/p_icon03.png',
     },
   ],
 })

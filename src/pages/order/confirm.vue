@@ -147,8 +147,7 @@ const orderItems = ref([
     description: '控油防脱两不误 细腻丰富泡沫',
     price: 199.9,
     quantity: 1,
-    image:
-      'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+    image: '/static/images/order_detail_main.png',
   },
 ])
 

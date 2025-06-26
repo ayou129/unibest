@@ -111,8 +111,7 @@ const orders = ref([
     quantity: 1,
     status: 'pending',
     statusText: '待付款',
-    productImage:
-      'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+    productImage: '/static/images/order_detail_main.png',
     actions: [
       { type: 'cancel', text: '取消订单' },
       { type: 'pay', text: '继续付款' },
@@ -126,8 +125,7 @@ const orders = ref([
     quantity: 1,
     status: 'paid',
     statusText: '待发货',
-    productImage:
-      'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+    productImage: '/static/images/order_detail_main.png',
     actions: [{ type: 'contact', text: '联系客服' }],
   },
   {
@@ -138,8 +136,7 @@ const orders = ref([
     quantity: 1,
     status: 'shipped',
     statusText: '待收货',
-    productImage:
-      'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+    productImage: '/static/images/order_detail_main.png',
     actions: [{ type: 'confirm', text: '确认收货' }],
   },
   {
@@ -150,8 +147,7 @@ const orders = ref([
     quantity: 1,
     status: 'completed',
     statusText: '已完成',
-    productImage:
-      'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+    productImage: '/static/images/order_detail_main.png',
     actions: [
       { type: 'review', text: '评价' },
       { type: 'rebuy', text: '再次购买' },

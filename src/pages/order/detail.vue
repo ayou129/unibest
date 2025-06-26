@@ -163,8 +163,7 @@ const loadOrderDetail = async () => {
         {
           name: '敬修堂防脱滋养育发洗发露',
           spec: '控油防脱不伤 调理手膏泡沫',
-          image:
-            'https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=08c09a0031671ca614ae7437782aac77.png',
+          image: '/static/images/order_detail_main.png',
           price: '199.9',
           quantity: 1,
         },

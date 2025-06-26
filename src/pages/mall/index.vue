@@ -23,10 +23,7 @@
 
       <!-- 商品卡片 -->
       <view class="product-section" @click="navigateToDetail">
-        <image
-          class="product-image"
-          src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=9d47699edc59f6f85e8a9d0d4ce22b02.png"
-        />
+        <image class="product-image" src="@/static/images/index_product.png" />
         <view class="product-info">
           <view class="product-text">
             <text class="product-title">敬修堂防脱滋养育发洗发露</text>

@@ -47,10 +47,7 @@
             </view>
 
             <view class="address-detail">
-              <image
-                class="location-icon"
-                src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
-              />
+              <image class="location-icon" src="/static/icons/location.png" />
               <text class="address-text">
                 {{ address.province }} {{ address.city }} {{ address.district }}
                 {{ address.detail_address }}
@@ -84,10 +81,7 @@
           <!-- 选择模式下的选中标识 -->
           <view v-if="isSelectMode" class="select-indicator">
             <view class="select-text">点击选择</view>
-            <image
-              class="select-icon"
-              src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
-            />
+            <image class="select-icon" src="/static/icons/location.png" />
           </view>
         </view>
 
@@ -96,10 +90,7 @@
           v-if="addressStore.addressList.length === 0 && !addressStore.loading"
           class="empty-state"
         >
-          <image
-            class="empty-icon"
-            src="https://ide.code.fun/api/image?token=685946ee797f8500110639d5&name=82b239ff86b8a3b5ddc84b81c06f11e4.png"
-          />
+          <image class="empty-icon" src="/static/icons/location.png" />
           <text class="empty-text">暂无收货地址</text>
           <text class="empty-tips">点击下方按钮添加地址</text>
         </view>
