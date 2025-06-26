@@ -392,7 +392,7 @@ onPullDownRefresh(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12rpx 20rpx;
+  padding: 12rpx 16rpx;
   flex: 1;
 }
 
@@ -404,8 +404,6 @@ onPullDownRefresh(() => {
 .status-text {
   margin-top: 20rpx;
   font-size: $mall-font-sm;
-  font-family: PingFang;
-  line-height: 22.4rpx;
   color: #1a1a1a;
 }
 
