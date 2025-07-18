@@ -105,7 +105,6 @@
 import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
 import { useAddressStore } from '@/store'
 import type { IAddressInfo } from '@/api/address.typings'
-import { AddressDefaultStatus } from '@/api/address.typings'
 import { navigateToAddressEdit } from '@/utils/navigation'
 
 defineOptions({

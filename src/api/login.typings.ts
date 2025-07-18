@@ -16,6 +16,13 @@ export type IUserProfileVo = {
 }
 
 /**
+ * 检查session_key 返回的信息
+ */
+export type ICheckSessionKeyVo = {
+  is_expired: boolean
+}
+
+/**
  * 登录返回的信息
  */
 export type IUserPlatformVo = {

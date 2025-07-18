@@ -28,6 +28,13 @@ export interface IMpLoginSmsLoginForm {
 }
 
 /**
+ * 检查session_key
+ */
+export const checkSessionKey = () => {
+  return http.post<IApiResponse<void>>(`${ApiPrefix}/user/checkSessionKey`)
+}
+
+/**
  * 获取验证码
  * @returns ICaptcha 验证码
  */

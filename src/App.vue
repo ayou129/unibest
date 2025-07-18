@@ -3,15 +3,53 @@ import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'
 import { usePageAuth } from '@/hooks/usePageAuth'
 import { useUserStore } from '@/store/user'
+import { toast } from '@/utils/toast'
 usePageAuth()
 const userStore = useUserStore()
 const getUserProfile = async () => {
   const res = await userStore.getUserProfile()
-  // if (res.code === 200) {
-  //   console.log(res)
-  // } else {
-  //   console.log(res)
-  // }
+  if (res.code === 0) {
+    // 检查session_key 是否过期
+    await checkSessionKey()
+  } else {
+    console.log(res)
+  }
+}
+const checkSessionKey = async () => {
+  // 前提条件： 用户已经登录
+  // 两步走，第一，先在小程序中 使用 wx.checkSession 检查 session_key 是否过期
+  const res = await uni.checkSession()
+  console.log(res)
+  if (res.errMsg === 'checkSession:ok') {
+    // // 第二，如果没过期，则请求服务端 再次检查是否过期
+    // const res = await userStore.checkSessionKey()
+    // if (res.is_expired) {
+    //   // 说明过期了，执行 wx.login 重新获取code 并且获取新的 session_key
+    //   const codeRes = await userStore.wxLogin()
+    //   if (!codeRes?.code) {
+    //     toast.error('获取微信登录凭证失败')
+    //     return
+    //   }
+    //   const c2sDataRes = await userStore.userLoginByCode2Session({ code: codeRes.code })
+    //   if (!c2sDataRes.open_id) {
+    //     toast.error('登录失败')
+    //     return
+    //   }
+    // }
+  } else {
+    console.log('session_key 已过期')
+    // 说明过期了，执行 wx.login 重新获取code 并且获取新的 session_key
+    const codeRes = await userStore.wxLogin()
+    if (!codeRes?.code) {
+      toast.error('获取微信登录凭证失败')
+      return
+    }
+    const c2sDataRes = await userStore.userLoginByCode2Session({ code: codeRes.code })
+    if (!c2sDataRes.open_id) {
+      toast.error('登录失败')
+      return
+    }
+  }
 }
 onLaunch(() => {
   console.log('App Launch')

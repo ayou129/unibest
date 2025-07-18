@@ -15,7 +15,7 @@
       <!-- 欢迎区域 -->
       <view class="welcome-section">
         <view class="welcome-text">
-          <text class="welcome-title">Hey！friend</text>
+          <text class="welcome-title" @click="test">Hey！friend</text>
           <text class="welcome-subtitle">欢迎来到敬修堂商城</text>
         </view>
         <image class="avatar-image" src="@/static/images/avatar.jpg" />
@@ -61,6 +61,19 @@ const handleBuyClick = () => {
   console.log('点击购买')
   // 跳转到确认订单页面
   navigateToOrderConfirm({ quantity: 1, productId: '1' })
+}
+
+const test = () => {
+  // 打印 wx.login 的返回值
+  const res = uni.login({
+    success: (res) => {
+      console.log('login success', res)
+    },
+    fail: (err) => {
+      console.log('login fail', err)
+    },
+  })
+  console.log('login', res)
 }
 
 // 生命周期

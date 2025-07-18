@@ -4,13 +4,19 @@ import {
   userLoginByPhoneSms as _userLoginByPhoneSms,
   getUserProfile as _getUserProfile,
   refreshToken as _refreshToken,
+  checkSessionKey as _checkSessionKey,
   logout as _logout,
   getWxCode,
 } from '@/api/login'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { toast } from '@/utils/toast'
-import { IUserProfileVo, IUserTokenVo, IUserPlatformVo } from '@/api/login.typings'
+import {
+  IUserProfileVo,
+  IUserTokenVo,
+  IUserPlatformVo,
+  ICheckSessionKeyVo,
+} from '@/api/login.typings'
 import { useTokenStore } from './token'
 
 // 初始化状态
@@ -58,6 +64,14 @@ export const useUserStore = defineStore(
     const removeUserAllData = () => {
       userProfile.value = { ...UserProfileState }
       useTokenStore().deleteUserToken()
+    }
+
+    /**
+     * 检查session_key
+     */
+    const checkSessionKey = async () => {
+      const res = await _checkSessionKey()
+      return res.data as unknown as ICheckSessionKeyVo
     }
 
     /**
@@ -147,6 +161,7 @@ export const useUserStore = defineStore(
 
     return {
       userProfile,
+      checkSessionKey,
       userLoginByCode2Session,
       userLoginByQuickPhone,
       userLoginByPhoneSms,
