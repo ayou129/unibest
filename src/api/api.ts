@@ -36,7 +36,8 @@ export interface IPageParams {
 }
 
 export const ApiCommonPrefix = '/api/v1/common'
-export const ApiPrefix = '/api/v1/business/gytown/mp'
+
+export const ApiPrefix = '/api/v1'
 
 // WX_SESSION_KEY_EXPIRED_CODE 微信登录会话过期code
 export const WX_SESSION_KEY_EXPIRED_CODE = -951

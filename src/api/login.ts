@@ -4,24 +4,24 @@ import {
   IUpdatePassword,
   IUserProfileVo,
   IUserTokenVo,
+  IUserPlatformVo,
 } from './login.typings'
 import { http } from '@/utils/http'
 import { IApiResponse, ApiPrefix, ApiCommonPrefix } from './api'
 
-/**
- * 手机号数据登录(微信小程序需要，例如抖音小程序不需要)
- */
-export interface IWxPhoneDataLoginForm {
+export interface IMpLoginCode2SessionDTO {
+  code: string
+}
+
+export interface IMpLoginQuickPhoneDTO {
   code: string
   open_id: string
-  encrypted_data: string
-  iv: string
 }
 
 /**
  * 手机号+sms验证码登录
  */
-export interface IPhoneSmsLoginForm {
+export interface IMpLoginSmsLoginForm {
   phone: string
   graphic_verify_code: string
   sms_code: string
@@ -36,60 +36,54 @@ export const getUserLoginGrapicVerifyCode = () => {
 }
 
 /**
- * 微信小程序用户code登录
- * @param loginForm 登录表单
+ * 微信小程序用户code
+ * @param form
  */
-export const userLoginByCode2Session = (loginForm: IWxPhoneDataLoginForm) => {
-  return http.post<IApiResponse<IUserTokenVo>>(
-    `${ApiPrefix}/user/auth/wx/login/code2Session`,
-    loginForm,
-  )
+export const userLoginByCode2Session = (form: IMpLoginCode2SessionDTO) => {
+  return http.post<IApiResponse<IUserPlatformVo>>(`${ApiPrefix}/user/login/code2session`, form)
 }
 
 /**
  * 微信小程序手机数据登录（实际登录），后端会生成真正的用户id，并且返回token
- * @param loginForm 登录表单
+ * @param form
  */
-export const userLoginByPhoneData = (loginForm: IWxPhoneDataLoginForm) => {
-  return http.post<IApiResponse<IUserTokenVo>>(
-    `${ApiPrefix}/user/auth/wx/login/phoneData`,
-    loginForm,
-  )
+export const userLoginByQuickPhone = (form: IMpLoginQuickPhoneDTO) => {
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/login/quick-phone`, form)
 }
 
 /**
  * 手机号+sms验证码登录
  */
-export const userLoginByPhoneSms = (loginForm: IPhoneSmsLoginForm) => {
-  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/auth/phone/login/sms`, loginForm)
+export const userLoginByPhoneSms = (loginForm: IMpLoginSmsLoginForm) => {
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/phone/login/sms`, loginForm)
 }
 
 /**
  * 获取用户信息
  */
 export const getUserProfile = () => {
-  return http.get<IApiResponse<IUserProfileVo>>(`${ApiPrefix}/user/auth/profile`)
+  return http.get<IApiResponse<IUserProfileVo>>(`${ApiPrefix}/user/profile`)
 }
 
 /**
  * 刷新token
  */
 export const refreshToken = () => {
-  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/auth/wx/token/refresh`)
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/token/refresh`)
 }
 
 /**
  * 退出登录
  */
 export const logout = () => {
-  return http.get<IApiResponse<void>>(`${ApiPrefix}/user/auth/logout`)
+  return http.get<IApiResponse<void>>(`${ApiPrefix}/user/logout`)
 }
 
 /**
  * 修改用户信息
  */
 export const updateUserProfile = (data: IUpdateInfo) => {
-  return http.put<IApiResponse<void>>(`${ApiPrefix}/user/auth/profile`, data)
+  return http.put<IApiResponse<void>>(`${ApiPrefix}/user/profile`, data)
 }
 
 /**

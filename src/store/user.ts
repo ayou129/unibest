@@ -1,6 +1,6 @@
 import {
   userLoginByCode2Session as _userLoginByCode2Session,
-  userLoginByPhoneData as _userLoginByPhoneData,
+  userLoginByQuickPhone as _userLoginByQuickPhone,
   userLoginByPhoneSms as _userLoginByPhoneSms,
   getUserProfile as _getUserProfile,
   refreshToken as _refreshToken,
@@ -10,7 +10,7 @@ import {
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { toast } from '@/utils/toast'
-import { IUserProfileVo, IUserTokenVo } from '@/api/login.typings'
+import { IUserProfileVo, IUserTokenVo, IUserPlatformVo } from '@/api/login.typings'
 import { useTokenStore } from './token'
 
 // 初始化状态
@@ -76,15 +76,18 @@ export const useUserStore = defineStore(
     }
 
     /**
-     * 登录方式2：用户phoneData登录
+     * 登录方式2-1 用户真正登录之前的 code2Session
      */
-    const userLoginByPhoneData = async (data: {
-      code: string
-      open_id: string
-      encrypted_data: string
-      iv: string
-    }) => {
-      const res = await _userLoginByPhoneData(data)
+    const userLoginByCode2Session = async (data: { code: string }) => {
+      const res = await _userLoginByCode2Session(data)
+      return res.data as unknown as IUserPlatformVo
+    }
+
+    /**
+     * 登录方式2-2：用户quickPhone登录
+     */
+    const userLoginByQuickPhone = async (data: { code: string; open_id: string }) => {
+      const res = await _userLoginByQuickPhone(data)
       const tokens = res.data as unknown as IUserTokenVo
       await useTokenStore().setUserToken(tokens)
       await getUserProfile()
@@ -144,7 +147,8 @@ export const useUserStore = defineStore(
 
     return {
       userProfile,
-      userLoginByPhoneData,
+      userLoginByCode2Session,
+      userLoginByQuickPhone,
       userLoginByPhoneSms,
       wxLogin,
       getUserProfile,

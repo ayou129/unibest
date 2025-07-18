@@ -136,8 +136,9 @@ import { useUserStore } from '@/store/user'
 import { isMpWeixin } from '@/utils/platform'
 import {
   getUserLoginGrapicVerifyCode,
-  IPhoneSmsLoginForm,
-  IWxPhoneDataLoginForm,
+  IMpLoginSmsLoginForm,
+  IMpLoginCode2SessionDTO,
+  IMpLoginQuickPhoneDTO,
   userLoginByPhoneSms,
 } from '@/api/login'
 import { toast } from '@/utils/toast'
@@ -160,17 +161,15 @@ const captcha = ref<ICaptcha>({
   image: '',
 })
 // 登录表单数据
-const loginForm = ref<IPhoneSmsLoginForm>({
+const loginForm = ref<IMpLoginSmsLoginForm>({
   phone: '',
   graphic_verify_code: '',
   sms_code: '',
 })
 // 微信手机phoneData表单
-const wxPhoneData = ref<IWxPhoneDataLoginForm>({
+const mpQuickPhoneData = ref<IMpLoginQuickPhoneDTO>({
   code: '',
   open_id: '',
-  encrypted_data: '',
-  iv: '',
 })
 // 隐私协议勾选状态
 const agreePrivacy = ref(true)
@@ -185,37 +184,12 @@ const wxCodeCache = ref<{
 onLoad((option) => {
   // 一进来就刷新验证码
   captcha.value.captchaEnabled && refreshCaptcha()
-  // 预获取微信code
-  preloadWxCode()
+
   // 获取跳转路由
   if (option.redirect) {
     redirectRoute.value = decodeURIComponent(option.redirect)
   }
 })
-
-// 预获取微信code
-const preloadWxCode = async () => {
-  if (!isMpWeixin) return
-
-  try {
-    const codeRes = await userStore.wxLogin()
-    if (codeRes?.code) {
-      wxCodeCache.value = {
-        code: codeRes.code,
-        timestamp: Date.now(),
-      }
-    }
-  } catch (error) {
-    console.log('预获取微信code失败:', error)
-  }
-}
-
-// 检查code是否有效（4分钟内）
-const isWxCodeValid = () => {
-  if (!wxCodeCache.value) return false
-  const elapsed = Date.now() - wxCodeCache.value.timestamp
-  return elapsed < 4 * 60 * 1000 // 4分钟
-}
 
 // 手机号+验证码登录
 const handlePhoneSmsLogin = async () => {
@@ -257,28 +231,29 @@ const handleWechatLogin = async (e) => {
   }
 
   console.log('phoneData', e)
-  if (e.encryptedData && e.iv) {
-    // 检查预获取的code是否有效
-    let currentCode = ''
-    if (isWxCodeValid()) {
-      currentCode = wxCodeCache.value!.code
-    } else {
-      // code已过期，重新获取
+  // if (e.encryptedData && e.iv) {
+  if (e.code) {
+    try {
       const codeRes = await userStore.wxLogin()
-      currentCode = codeRes?.code || ''
+      if (!codeRes?.code) {
+        toast.error('获取微信登录凭证失败')
+        return
+      }
+
+      // 请求 code2Session 拿到 用户平台对象
+      const c2sDataRes = await userStore.userLoginByCode2Session({ code: codeRes.code })
+      if (!c2sDataRes.open_id) {
+        toast.error('获取微信登录凭证失败')
+        return
+      }
+      mpQuickPhoneData.value.open_id = c2sDataRes.open_id
+    } catch (error) {
+      console.log('预获取微信code失败:', error)
     }
 
-    if (!currentCode) {
-      toast.error('获取微信登录凭证失败')
-      return
-    }
+    mpQuickPhoneData.value.code = e.code
 
-    wxPhoneData.value.code = currentCode
-    wxPhoneData.value.open_id = e.code || ''
-    wxPhoneData.value.encrypted_data = e.encryptedData
-    wxPhoneData.value.iv = e.iv
-
-    const res = await userStore.userLoginByPhoneData(wxPhoneData.value)
+    const res = await userStore.userLoginByQuickPhone(mpQuickPhoneData.value)
     if (res.code >= 0) {
       // 跳转到首页或重定向页面
       const targetUrl = redirectRoute.value || '/pages/index/index'

@@ -18,6 +18,14 @@ export type IUserProfileVo = {
 /**
  * 登录返回的信息
  */
+export type IUserPlatformVo = {
+  open_id: string
+  union_id: string
+}
+
+/**
+ * 登录返回的信息
+ */
 export type IUserTokenVo = {
   access_token: string
   refresh_token: string

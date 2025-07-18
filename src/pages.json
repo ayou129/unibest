@@ -41,15 +41,6 @@
   },
   "pages": [
     {
-      "path": "pages/index/index",
-      "type": "home",
-      "style": {
-        "enablePullDownRefresh": true,
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "首页"
-      }
-    },
-    {
       "path": "pages/about/about",
       "type": "page",
       "style": {
