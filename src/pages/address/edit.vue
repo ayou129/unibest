@@ -101,8 +101,8 @@
             <view class="form-item form-item-switch">
               <view class="form-label">设为默认地址</view>
               <switch
-                :checked="formData.is_default === 1"
-                @change="(e) => (formData.is_default = e.detail.value ? 1 : 0)"
+                :checked="formData.is_default"
+                @change="(e) => (formData.is_default = e.detail.value)"
                 class="form-switch"
                 color="#08aa4e"
               />
@@ -133,7 +133,6 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useAddressStore } from '@/store/address'
 import type { IAddressCreateRequest, IAddressUpdateRequest } from '@/api/address.typings'
-import { AddressDefaultStatus } from '@/api/address.typings'
 
 defineOptions({
   name: 'AddressEdit',
@@ -161,7 +160,7 @@ const formData = ref({
   district: '',
   detail_address: '',
   postal_code: '',
-  is_default: AddressDefaultStatus.NOT_DEFAULT,
+  is_default: false,
   label: '',
 })
 

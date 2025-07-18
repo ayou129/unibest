@@ -69,7 +69,7 @@ export const getUserProfile = () => {
  * 刷新token
  */
 export const refreshToken = () => {
-  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/token/refresh`)
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/refresh`)
 }
 
 /**

@@ -6,7 +6,6 @@ import type {
   IAddressCreateRequest,
   IAddressUpdateRequest,
 } from '@/api/address.typings'
-import { AddressDefaultStatus } from '@/api/address.typings'
 import {
   getUserAddressList,
   createUserAddress,
@@ -145,7 +144,7 @@ export const useAddressStore = defineStore('address', () => {
         district: targetAddress.district,
         detail_address: targetAddress.detail_address,
         postal_code: targetAddress.postal_code,
-        is_default: AddressDefaultStatus.DEFAULT, // 设置为默认地址
+        is_default: true, // 设置为默认地址
         label: targetAddress.label,
       }
 
@@ -172,10 +171,7 @@ export const useAddressStore = defineStore('address', () => {
    * 获取默认地址
    */
   const getDefaultAddress = () => {
-    return (
-      addressList.value.find((address) => address.is_default === AddressDefaultStatus.DEFAULT) ||
-      null
-    )
+    return addressList.value.find((address) => address.is_default === true) || null
   }
 
   /**

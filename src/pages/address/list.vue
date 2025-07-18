@@ -37,12 +37,7 @@
                 <text class="user-phone">{{ address.phone }}</text>
               </view>
               <view class="address-tags">
-                <text
-                  v-if="address.is_default === AddressDefaultStatus.DEFAULT"
-                  class="default-tag"
-                >
-                  默认
-                </text>
+                <text v-if="address.is_default" class="default-tag">默认</text>
               </view>
             </view>
 
@@ -70,7 +65,7 @@
               <text class="mall-btn-text">删除</text>
             </view>
             <view
-              v-if="address.is_default !== AddressDefaultStatus.DEFAULT"
+              v-if="!address.is_default"
               class="mall-btn-sm mall-btn-outline action-btn"
               @click.stop="setDefault(address)"
             >
