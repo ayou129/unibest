@@ -1,11 +1,11 @@
+import { buildLoginUrl, isLoggedIn } from '@/utils/auth'
 import { isTableBar } from '@/utils/index'
-import { isLoggedIn, buildLoginUrl } from '@/utils/auth'
 
 /**
  * 跳转到登录页面
  * @param redirect 登录成功后的重定向地址
  */
-export const navigateToLogin = (redirect?: string) => {
+export function navigateToLogin(redirect?: string) {
   const url = buildLoginUrl(redirect)
   console.log('🔄 跳转到登录页:', url)
   uni.navigateTo({ url })
@@ -17,14 +17,11 @@ export const navigateToLogin = (redirect?: string) => {
  * @param redirect 当前页面路径，用于登录后重定向
  * @param requireLogin 是否需要登录
  */
-export const smartNavigate = (
-  url: string,
-  options?: {
-    redirect?: string
-    requireLogin?: boolean
-    navigateType?: 'navigateTo' | 'redirectTo' | 'reLaunch' | 'switchTab'
-  },
-) => {
+export function smartNavigate(url: string, options?: {
+  redirect?: string
+  requireLogin?: boolean
+  navigateType?: 'navigateTo' | 'redirectTo' | 'reLaunch' | 'switchTab'
+}) {
   const { redirect, requireLogin = false, navigateType } = options || {}
 
   // 如果需要登录但用户未登录，跳转到登录页
@@ -38,7 +35,8 @@ export const smartNavigate = (
   if (!method) {
     if (isTableBar(url)) {
       method = 'switchTab'
-    } else {
+    }
+    else {
       method = 'navigateTo'
     }
   }
@@ -66,7 +64,7 @@ export const smartNavigate = (
  * 跳转到订单列表页面
  * @param status 订单状态筛选
  */
-export const navigateToOrders = (status?: string) => {
+export function navigateToOrders(status?: string) {
   const url = status ? `/pages/order/list?status=${status}` : '/pages/order/list'
   smartNavigate(url, {
     requireLogin: true,
@@ -77,7 +75,7 @@ export const navigateToOrders = (status?: string) => {
 /**
  * 跳转到优惠券页面
  */
-export const navigateToCoupons = () => {
+export function navigateToCoupons() {
   const url = '/pages/coupons/index'
   smartNavigate(url, {
     requireLogin: true,
@@ -88,14 +86,14 @@ export const navigateToCoupons = () => {
 /**
  * 跳转到设置页面
  */
-export const navigateToSettings = () => {
+export function navigateToSettings() {
   smartNavigate('/pages/mine/info/index')
 }
 
 /**
  * 跳转到地址管理页面
  */
-export const navigateToAddressList = (selectMode = false) => {
+export function navigateToAddressList(selectMode = false) {
   const url = selectMode ? '/pages/address/list?mode=select' : '/pages/address/list'
   smartNavigate(url, {
     requireLogin: true,
@@ -107,7 +105,7 @@ export const navigateToAddressList = (selectMode = false) => {
  * 跳转到地址编辑页面
  * @param addressId 地址ID，不传则为新增地址
  */
-export const navigateToAddressEdit = (addressId?: string | number) => {
+export function navigateToAddressEdit(addressId?: string | number) {
   const url = addressId ? `/pages/address/edit?id=${addressId}` : '/pages/address/edit'
   smartNavigate(url, {
     requireLogin: true,
@@ -119,7 +117,7 @@ export const navigateToAddressEdit = (addressId?: string | number) => {
  * 跳转到商品详情页面
  * @param productId 商品ID
  */
-export const navigateToProductDetail = (productId: string | number) => {
+export function navigateToProductDetail(productId: string | number) {
   smartNavigate(`/pages/product/detail?id=${productId}`)
 }
 
@@ -127,7 +125,7 @@ export const navigateToProductDetail = (productId: string | number) => {
  * 跳转到确认订单页面
  * @param params 订单参数
  */
-export const navigateToOrderConfirm = (params?: Record<string, any>) => {
+export function navigateToOrderConfirm(params?: Record<string, any>) {
   let url = '/pages/order/confirm'
   if (params) {
     const query = Object.entries(params)
@@ -145,7 +143,7 @@ export const navigateToOrderConfirm = (params?: Record<string, any>) => {
  * 跳转到支付页面
  * @param orderId 订单ID
  */
-export const navigateToPayment = (orderId: string | number) => {
+export function navigateToPayment(orderId: string | number) {
   const url = `/pages/payment/index?orderId=${orderId}`
   smartNavigate(url, {
     requireLogin: true,
@@ -156,7 +154,7 @@ export const navigateToPayment = (orderId: string | number) => {
 /**
  * 用户认证相关跳转
  */
-export const handleUserAuth = () => {
+export function handleUserAuth() {
   if (isLoggedIn()) {
     // 已登录，跳转到认证页面
     console.log('🔐 跳转到认证页面')
@@ -166,7 +164,8 @@ export const handleUserAuth = () => {
     })
     // TODO: 这里可以跳转到具体的认证页面
     // smartNavigate('/pages/auth/index')
-  } else {
+  }
+  else {
     // 未登录，跳转到登录页面
     navigateToLogin('/pages/mine/index')
   }
@@ -175,7 +174,7 @@ export const handleUserAuth = () => {
 /**
  * 回到首页
  */
-export const navigateToHome = () => {
+export function navigateToHome() {
   smartNavigate('/pages/index/index', {
     navigateType: 'switchTab',
   })
@@ -184,7 +183,7 @@ export const navigateToHome = () => {
 /**
  * 回到商城首页
  */
-export const navigateToMall = () => {
+export function navigateToMall() {
   smartNavigate('/pages/index/index', {
     navigateType: 'switchTab',
   })
@@ -193,7 +192,7 @@ export const navigateToMall = () => {
 /**
  * 回到个人中心
  */
-export const navigateToMine = () => {
+export function navigateToMine() {
   smartNavigate('/pages/mine/index', {
     navigateType: 'switchTab',
   })
@@ -203,7 +202,7 @@ export const navigateToMine = () => {
  * 跳转到订单详情页面
  * @param orderId 订单ID
  */
-export const navigateToOrderDetail = (orderId: string | number) => {
+export function navigateToOrderDetail(orderId: string | number) {
   const url = `/pages/order/detail?id=${orderId}`
   smartNavigate(url, {
     requireLogin: true,

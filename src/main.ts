@@ -3,7 +3,6 @@ import { createSSRApp } from 'vue'
 
 import App from './App.vue'
 import { requestInterceptor } from './http/interceptor'
-import { prototypeInterceptor, requestInterceptor, routeInterceptor } from './interceptors'
 import { routeInterceptor } from './router/interceptor'
 import store from './store'
 

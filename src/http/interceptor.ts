@@ -1,4 +1,5 @@
 import { useUserStore } from '@/store'
+import { useTokenStore } from '@/store/token'
 import { getEnvBaseUrl } from '@/utils'
 import { platform } from '@/utils/platform'
 import { stringifyQuery } from './queryString'
@@ -51,12 +52,12 @@ const httpInterceptor = {
       platform, // 可选，与 uniapp 定义的平台一致，告诉后台来源
       ...options.header,
     }
-    // 3. 添加 token 请求头标识
-    const userStore = useUserStore()
-    const { token } = userStore.userInfo as unknown as IUserInfo
-    if (token) {
-      options.header.Authorization = `Bearer ${token}`
-    }
+    // // 3. 添加 token 请求头标识
+    // const token = useTokenStore().getUserToken()
+    // if (token) {
+    //   options.header.AccessToken = `${token.access_token}`
+    //   options.header.RefreshToken = `${token.refresh_token}`
+    // }
   },
 }
 

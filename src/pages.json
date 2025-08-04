@@ -1,11 +1,10 @@
 {
-  "entryPagePath": "pages/index/index",
   "globalStyle": {
     "navigationStyle": "default",
     "navigationBarTitleText": "unibest",
-    "navigationBarBackgroundColor": "#f7f7f7",
+    "navigationBarBackgroundColor": "#f8f8f8",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f7f7f7"
+    "backgroundColor": "#FFFFFF"
   },
   "easycom": {
     "autoscan": true,
@@ -16,8 +15,8 @@
     }
   },
   "tabBar": {
-    "color": "#666666",
     "custom": false,
+    "color": "#666666",
     "selectedColor": "#018d71",
     "backgroundColor": "#F8F8F8",
     "borderStyle": "black",
@@ -31,16 +30,20 @@
         "selectedIconPath": "static/tabbar/home-active.png",
         "pagePath": "pages/index/index",
         "text": "首页",
-        "icon": "home",
-        "iconType": "uiLib"
+        // #ifndef MP-WEIXIN
+        "icon": "i-carbon-code",
+        "iconType": "unocss"
+        // #endif
       },
       {
         "iconPath": "static/tabbar/user.png",
         "selectedIconPath": "static/tabbar/user-active.png",
         "pagePath": "pages/mine/index",
         "text": "我的",
+        // #ifndef MP-WEIXIN
         "icon": "i-carbon-code",
         "iconType": "unocss"
+        // #endif
       }
     ]
   },
@@ -61,6 +64,22 @@
       "layout": "tabbar",
       "style": {
         "navigationBarTitleText": "关于"
+      }
+    },
+    {
+      "path": "pages/about/alova",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "Alova 请求演示"
+      }
+    },
+    {
+      "path": "pages/about/vue-query",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "Vue Query 请求演示"
       }
     },
     {
@@ -85,13 +104,13 @@
     {
       "path": "pages/login/index",
       "type": "page",
-      "layout": "default",
       "style": {
-        "navigationBarTitleText": "Alova 请求演示"
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/about/vue-query",
+      "path": "pages/mine/index",
       "type": "page",
       "needLogin": false,
       "style": {

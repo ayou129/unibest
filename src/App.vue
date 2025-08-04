@@ -4,9 +4,7 @@ import { usePageAuth } from '@/hooks/usePageAuth'
 import { useUserStore } from '@/store/user'
 import { toast } from '@/utils/toast'
 import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'
-</script>
 
-<script setup lang="ts">
 usePageAuth()
 const userStore = useUserStore()
 async function getUserProfile() {

@@ -1,8 +1,8 @@
 import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
 
 type FgTabBarItem = TabBar['list'][0] & {
-  icon: string
-  iconType: 'uiLib' | 'unocss' | 'iconfont'
+  icon?: string
+  iconType?: 'uiLib' | 'unocss' | 'iconfont'
 }
 
 /**
@@ -29,24 +29,50 @@ export const selectedTabbarStrategy = TABBAR_MAP.NATIVE_TABBAR
 export const tabbarList: FgTabBarItem[] = [
   {
     iconPath: 'static/tabbar/home.png',
-    selectedIconPath: 'static/tabbar/homeHL.png',
+    selectedIconPath: 'static/tabbar/home-active.png',
     pagePath: 'pages/index/index',
     text: '首页',
-    icon: 'home',
-    // 选用 UI 框架自带的 icon 时，iconType 为 uiLib
-    iconType: 'uiLib',
-  },
-  {
-    iconPath: 'static/tabbar/example.png',
-    selectedIconPath: 'static/tabbar/exampleHL.png',
-    pagePath: 'pages/about/about',
-    text: '关于',
+    // #ifndef MP-WEIXIN
     icon: 'i-carbon-code',
-    // 注意 unocss 图标需要如下处理：（二选一）
-    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见代码第三行）
-    // 2）配置到 unocss.config.ts 的 safelist 中
     iconType: 'unocss',
+    // #endif
   },
+  // {
+  //   iconPath: 'static/tabbar/example.png',
+  //   selectedIconPath: 'static/tabbar/exampleHL.png',
+  //   pagePath: 'pages/about/about',
+  //   text: '关于',
+  // },
+  {
+    iconPath: 'static/tabbar/user.png',
+    selectedIconPath: 'static/tabbar/user-active.png',
+    pagePath: 'pages/mine/index',
+    text: '我的',
+    // #ifndef MP-WEIXIN
+    icon: 'i-carbon-code',
+    iconType: 'unocss',
+    // #endif
+  },
+  // {
+  //   iconPath: 'static/tabbar/home.png',
+  //   selectedIconPath: 'static/tabbar/homeHL.png',
+  //   pagePath: 'pages/index/index',
+  //   text: '首页',
+  //   icon: 'home',
+  //   // 选用 UI 框架自带的 icon 时，iconType 为 uiLib
+  //   iconType: 'uiLib',
+  // },
+  // {
+  //   iconPath: 'static/tabbar/example.png',
+  //   selectedIconPath: 'static/tabbar/exampleHL.png',
+  //   pagePath: 'pages/about/about',
+  //   text: '关于',
+  //   icon: 'i-carbon-code',
+  //   // 注意 unocss 图标需要如下处理：（二选一）
+  //   // 1）在fg-tabbar.vue页面上引入一下并注释掉（见代码第三行）
+  //   // 2）配置到 unocss.config.ts 的 safelist 中
+  //   iconType: 'unocss',
+  // },
   // {
   //   pagePath: 'pages/my/index',
   //   text: '我的',
@@ -69,10 +95,11 @@ export const cacheTabbarEnable = selectedTabbarStrategy === TABBAR_MAP.NATIVE_TA
 const _tabbar: TabBar = {
   // 只有微信小程序支持 custom。App 和 H5 不生效
   custom: selectedTabbarStrategy === TABBAR_MAP.CUSTOM_TABBAR_WITH_CACHE,
-  color: '#999999',
+  color: '#666666',
   selectedColor: '#018d71',
   backgroundColor: '#F8F8F8',
   borderStyle: 'black',
+  // blurEffect: 'none', // iOS 高斯模糊效果，参考 [使用说明](https://ask.dcloud.net.cn/article/36617)
   height: '50px',
   fontSize: '10px',
   iconWidth: '24px',

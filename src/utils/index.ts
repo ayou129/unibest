@@ -1,5 +1,39 @@
+import { tabbarList } from '@/layouts/fg-tabbar/tabbarList'
 import { pages, subPackages } from '@/pages.json'
 import { isMpWeixin } from './platform'
+
+/** 判断当前页面是否是 tabbar 页  */
+export function getIsTabbar() {
+  try {
+    const lastPage = getLastPage()
+    const currPath = lastPage?.route
+
+    return Boolean(tabbarList?.some(item => item.pagePath === currPath))
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * 判断指定页面是否是 tabbar 页
+ * @param path 页面路径
+ * @returns true: 是 tabbar 页 false: 不是 tabbar 页
+ */
+export function isTableBar(path: string) {
+  if (!tabbarList) {
+    return false
+  }
+  if (!tabbarList.length) {
+    // 通常有 tabBar 的话，list 不能有空，且至少有2个元素，这里其实不用处理
+    return false
+  }
+  // 这里需要处理一下 path，因为 tabBar 中的 pagePath 是不带 /pages 前缀的
+  if (path.startsWith('/')) {
+    path = path.substring(1)
+  }
+  return !!tabbarList.find(e => e.pagePath === path)
+}
 
 export function getLastPage() {
   // getCurrentPages() 至少有1个元素，所以不再额外判断
@@ -112,9 +146,9 @@ export function getEnvBaseUrl() {
   let baseUrl = import.meta.env.VITE_SERVER_BASEURL
 
   // # 有些同学可能需要在微信小程序里面根据 develop、trial、release 分别设置上传地址，参考代码如下。
-  const VITE_SERVER_BASEURL__WEIXIN_DEVELOP = 'https://ukw0y1.laf.run'
-  const VITE_SERVER_BASEURL__WEIXIN_TRIAL = 'https://ukw0y1.laf.run'
-  const VITE_SERVER_BASEURL__WEIXIN_RELEASE = 'https://ukw0y1.laf.run'
+  const VITE_SERVER_BASEURL__WEIXIN_DEVELOP = ''
+  const VITE_SERVER_BASEURL__WEIXIN_TRIAL = ''
+  const VITE_SERVER_BASEURL__WEIXIN_RELEASE = ''
 
   // 微信小程序端环境区分
   if (isMpWeixin) {
@@ -145,9 +179,9 @@ export function getEnvBaseUploadUrl() {
   // 请求基准地址
   let baseUploadUrl = import.meta.env.VITE_UPLOAD_BASEURL
 
-  const VITE_UPLOAD_BASEURL__WEIXIN_DEVELOP = 'https://ukw0y1.laf.run/upload'
-  const VITE_UPLOAD_BASEURL__WEIXIN_TRIAL = 'https://ukw0y1.laf.run/upload'
-  const VITE_UPLOAD_BASEURL__WEIXIN_RELEASE = 'https://ukw0y1.laf.run/upload'
+  const VITE_UPLOAD_BASEURL__WEIXIN_DEVELOP = ''
+  const VITE_UPLOAD_BASEURL__WEIXIN_TRIAL = ''
+  const VITE_UPLOAD_BASEURL__WEIXIN_RELEASE = ''
 
   // 微信小程序端环境区分
   if (isMpWeixin) {

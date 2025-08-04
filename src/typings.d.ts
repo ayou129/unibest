@@ -1,5 +1,7 @@
 // 全局要用的类型放到这里
 
+/// <reference types="@dcloudio/types" />
+
 declare global {
   interface IResData<T> {
     code: number

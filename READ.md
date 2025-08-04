@@ -15,7 +15,7 @@ npx @dcloudio/uvm@latest
 
 # 启动
 
-yarn run dev:mp-weixin
+pnpm run dev:mp-weixin
 
 # 页面限制必须登录才能访问，需要在页面vue中增加
 

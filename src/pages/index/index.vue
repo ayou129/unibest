@@ -1,22 +1,16 @@
 <route lang="jsonc" type="home">
 {
   "layout": "tabbar",
-  style: {
-    enablePullDownRefresh: false,
-    navigationStyle: 'custom',
-    navigationBarTitleText: '商城首页',
+  "style": {
+    "enablePullDownRefresh": false,
+    "navigationStyle": "custom",
+    "navigationBarTitleText": "商城首页",
   },
 }
 </route>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script setup lang="ts">
 import { navigateToOrderConfirm, navigateToProductDetail } from '@/utils/navigation'
-// import BottomSection from '@/components/bottom-section/bottom-section.vue'
-
-defineOptions({
-  name: 'Home',
-})
 
 // 获取屏幕边界到安全区域距离
 let safeAreaInsets
@@ -40,16 +34,52 @@ safeAreaInsets = systemInfo.safeArea
 systemInfo = uni.getSystemInfoSync()
 safeAreaInsets = systemInfo.safeAreaInsets
 // #endif
-const author = ref('菲鸽')
+const author = ref('阿尤')
 const description = ref(
   'unibest 是一个集成了多种工具和技术的 uniapp 开发模板，由 uniapp + Vue3 + Ts + Vite5 + UnoCss + VSCode 构建，模板具有代码提示、自动格式化、统一配置、代码片段等功能，并内置了许多常用的基本组件和基本功能，让你编写 uniapp 拥有 best 体验。',
 )
 // 测试 uni API 自动引入
 onLoad(() => {
-  console.log('项目作者:', author.value)
 })
 
 console.log('index')
+
+// 方法
+function navigateToDetail() {
+  console.log('跳转到产品详情')
+  navigateToProductDetail('1') // 传入商品ID
+}
+
+function handleBuyClick() {
+  console.log('点击购买')
+  // 跳转到确认订单页面
+  navigateToOrderConfirm({ quantity: 1, productId: '1' })
+}
+
+function test() {
+  // 打印 wx.login 的返回值
+  const res = uni.login({
+    success: (res) => {
+      console.log('login success', res)
+    },
+    fail: (err) => {
+      console.log('login fail', err)
+    },
+  })
+  console.log('login', res)
+}
+
+// 生命周期
+onLoad(() => {
+  console.log('首页加载完成')
+})
+
+onPullDownRefresh(() => {
+  console.log('下拉刷新')
+  setTimeout(() => {
+    uni.stopPullDownRefresh()
+  }, 1000)
+})
 </script>
 
 <template>
@@ -85,44 +115,6 @@ console.log('index')
     </view>
   </view>
 </template>
-
-// 方法
-const navigateToDetail = () => {
-  console.log('跳转到产品详情')
-  navigateToProductDetail('1') // 传入商品ID
-}
-
-const handleBuyClick = () => {
-  console.log('点击购买')
-  // 跳转到确认订单页面
-  navigateToOrderConfirm({ quantity: 1, productId: '1' })
-}
-
-const test = () => {
-  // 打印 wx.login 的返回值
-  const res = uni.login({
-    success: (res) => {
-      console.log('login success', res)
-    },
-    fail: (err) => {
-      console.log('login fail', err)
-    },
-  })
-  console.log('login', res)
-}
-
-// 生命周期
-onLoad(() => {
-  console.log('商城首页加载完成')
-})
-
-onPullDownRefresh(() => {
-  console.log('下拉刷新')
-  setTimeout(() => {
-    uni.stopPullDownRefresh()
-  }, 1000)
-})
-</script>
 
 <style lang="scss" scoped>
 page {

@@ -3,7 +3,7 @@ import type {
   IUserPlatformVo,
   IUserProfileVo,
   IUserTokenVo,
-} from '@/api/login.typings'
+} from '@/api/types/login'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
@@ -76,6 +76,17 @@ export const useUserStore = defineStore(
     }
 
     /**
+     * 获取用户信息
+     */
+    const getUserProfile = async () => {
+      const res = await _getUserProfile()
+      const userProfile = res.data as unknown as IUserProfileVo
+      setUserProfile(userProfile)
+      // TODO 这里可以增加获取用户路由的方法 根据用户的角色动态生成路由
+      return res
+    }
+
+    /**
      * 登录方式1：用户手机号登录
      */
     const userLoginByPhoneSms = async (data: {
@@ -106,17 +117,6 @@ export const useUserStore = defineStore(
       const tokens = res.data as unknown as IUserTokenVo
       await useTokenStore().setUserToken(tokens)
       await getUserProfile()
-      return res
-    }
-
-    /**
-     * 获取用户信息
-     */
-    const getUserProfile = async () => {
-      const res = await _getUserProfile()
-      const userProfile = res.data as unknown as IUserProfileVo
-      setUserProfile(userProfile)
-      // TODO 这里可以增加获取用户路由的方法 根据用户的角色动态生成路由
       return res
     }
 

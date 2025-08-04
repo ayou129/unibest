@@ -1,6 +1,6 @@
-import { ref } from 'vue'
+import type { IUserTokenVo } from '@/api/types/login'
 import { defineStore } from 'pinia'
-import { IUserTokenVo } from '@/api/login.typings'
+import { ref } from 'vue'
 
 const UserTokenState: IUserTokenVo = {
   access_token: '',

@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-svg-loader" />
+/// <reference types="@dcloudio/types" />
+/// <reference types="@uni-helper/uni-types" />
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'

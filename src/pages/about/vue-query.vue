@@ -24,7 +24,7 @@ const {
   error,
   isLoading: loading,
   refetch: send,
-} = useQuery(getFooQueryOptions('菲鸽-vue-query'))
+} = useQuery(getFooQueryOptions('-vue-query'))
 </script>
 
 <template>
