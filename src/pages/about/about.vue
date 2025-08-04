@@ -1,43 +1,58 @@
-<route lang="json5">
+<route lang="jsonc" type="page">
 {
-  style: {
-    navigationBarTitleText: '关于',
-    navigationStyle: 'custom', // 开启自定义导航栏
-  },
+  "layout": "tabbar",
+  "style": {
+    "navigationBarTitleText": "关于"
+  }
 }
 </route>
 
-<template>
-  <view>
-    <fg-navbar>关于</fg-navbar>
-    <view
-      class="bg-white overflow-hidden pt-2 px-4"
-      :style="{ marginTop: safeAreaInsets?.top + 'px' }"
-    >
-      <view class="text-center text-3xl mt-8">
-        鸽友们好，我是
-        <text class="text-red-500">菲鸽</text>
-      </view>
-      <!-- <button @click="toSubPage()">去分包</button> -->
-      <view class="test-css">测试 scss 样式</view>
-      <RequestComp />
-      <UploadComp />
-    </view>
-  </view>
-</template>
-
 <script lang="ts" setup>
 import RequestComp from './components/request.vue'
-import UploadComp from './components/upload.vue'
 
-// 获取屏幕边界到安全区域距离
-const { safeAreaInsets } = uni.getSystemInfoSync()
-const toSubPage = () => {
+// 奇怪：同样的代码放在 vue 里面不会校验到错误，放在 .ts 文件里面会校验到错误
+// const testOxlint = (name: string) => {
+//   console.log('oxlint')
+// }
+// testOxlint('oxlint')
+console.log('about')
+
+function gotoAlova() {
   uni.navigateTo({
-    url: '/pages-sub/demo/index',
+    url: '/pages/about/alova',
+  })
+}
+function gotoVueQuery() {
+  uni.navigateTo({
+    url: '/pages/about/vue-query',
   })
 }
 </script>
+
+<template>
+  <view>
+    <view class="mt-8 text-center text-xl text-gray-400">
+      组件使用、请求调用、unocss
+    </view>
+    <RequestComp />
+    <view class="mb-6 h-1px bg-#eee" />
+    <view class="text-center">
+      <button type="primary" size="mini" class="w-160px" @click="gotoAlova">
+        前往 alova 示例页面
+      </button>
+    </view>
+    <view class="text-center">
+      <button type="primary" size="mini" class="w-160px" @click="gotoVueQuery">
+        vue-query 示例页面
+      </button>
+    </view>
+    <view class="mt-6 text-center text-sm">
+      <view class="inline-block w-80% text-gray-400">
+        为了方便脚手架动态生成不同UI模板，本页的按钮统一使用UI库无关的原生button
+      </view>
+    </view>
+  </view>
+</template>
 
 <style lang="scss" scoped>
 .test-css {
