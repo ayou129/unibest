@@ -89,7 +89,10 @@
       "es6": true,
       "minified": true
     },
-    "usingComponents": true
+    "usingComponents": true,
+    "optimization": {
+      "subPackages": true
+    }
   },
   "mp-alipay": {
     "usingComponents": true,
@@ -106,8 +109,6 @@
   },
   "vueVersion": "3",
   "h5": {
-    "router": {
-      "base": "/"
-    }
+    "router": {}
   }
 }

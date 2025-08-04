@@ -1,22 +1,22 @@
-import {
-  userLoginByCode2Session as _userLoginByCode2Session,
-  userLoginByQuickPhone as _userLoginByQuickPhone,
-  userLoginByPhoneSms as _userLoginByPhoneSms,
-  getUserProfile as _getUserProfile,
-  refreshToken as _refreshToken,
-  checkSessionKey as _checkSessionKey,
-  logout as _logout,
-  getWxCode,
-} from '@/api/login'
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { toast } from '@/utils/toast'
-import {
+import type {
+  ICheckSessionKeyVo,
+  IUserPlatformVo,
   IUserProfileVo,
   IUserTokenVo,
-  IUserPlatformVo,
-  ICheckSessionKeyVo,
 } from '@/api/login.typings'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import {
+  checkSessionKey as _checkSessionKey,
+  getUserProfile as _getUserProfile,
+  logout as _logout,
+  refreshToken as _refreshToken,
+  userLoginByCode2Session as _userLoginByCode2Session,
+  userLoginByPhoneSms as _userLoginByPhoneSms,
+  userLoginByQuickPhone as _userLoginByQuickPhone,
+  getWxCode,
+} from '@/api/login'
+import { toast } from '@/utils/toast'
 import { useTokenStore } from './token'
 
 // 初始化状态
@@ -49,7 +49,8 @@ export const useUserStore = defineStore(
       // 若头像为空 则使用默认头像
       if (!val.avatar) {
         val.avatar = UserProfileState.avatar
-      } else {
+      }
+      else {
         val.avatar = 'https://oss.laf.run/ukw0y1-site/avatar.jpg?feige'
       }
       userProfile.value = val
@@ -100,7 +101,7 @@ export const useUserStore = defineStore(
     /**
      * 登录方式2-2：用户quickPhone登录
      */
-    const userLoginByQuickPhone = async (data: { code: string; open_id: string }) => {
+    const userLoginByQuickPhone = async (data: { code: string, open_id: string }) => {
       const res = await _userLoginByQuickPhone(data)
       const tokens = res.data as unknown as IUserTokenVo
       await useTokenStore().setUserToken(tokens)
@@ -129,12 +130,14 @@ export const useUserStore = defineStore(
         if (tokens.access_token && tokens.refresh_token) {
           useTokenStore().setUserToken(tokens)
           console.log('✅ token刷新成功')
-        } else {
+        }
+        else {
           removeUserAllData()
           console.log('❌ token刷新失败')
         }
         return tokens
-      } catch (error) {
+      }
+      catch (error) {
         console.error('刷新token异常:', error)
         return false
       }

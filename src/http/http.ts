@@ -1,5 +1,5 @@
-import { CustomRequestOptions } from '@/interceptors/request'
-import { REFRESH_TOKEN_CODE, INVALID_TOKEN_CODE } from '@/api/api'
+import type { CustomRequestOptions } from '@/interceptors/request'
+import { INVALID_TOKEN_CODE, REFRESH_TOKEN_CODE } from '@/api/api'
 import { useUserStore } from '@/store'
 import { useTokenStore } from '@/store/token'
 import { navigateToLogin } from '@/utils/navigation'
@@ -12,7 +12,7 @@ let isRefreshing = false
 let refreshPromise: Promise<any> | null = null
 
 // 处理token刷新的函数
-const handleTokenRefresh = (): Promise<void> => {
+function handleTokenRefresh(): Promise<void> {
   if (isRefreshing && refreshPromise) {
     // 如果正在刷新，返回同一个Promise
     return refreshPromise
@@ -35,7 +35,7 @@ const handleTokenRefresh = (): Promise<void> => {
   return refreshPromise
 }
 
-export const http = <T>(options: CustomRequestOptions) => {
+export function http<T>(options: CustomRequestOptions) {
   return new Promise<IResData<T>>((resolve, reject) => {
     // 🔥 关键：每次请求都重新获取最新token
     const executeRequest = () => {
@@ -50,8 +50,8 @@ export const http = <T>(options: CustomRequestOptions) => {
 
       // 设置最新token
       if (currentToken && currentToken.access_token) {
-        requestOptions.header['AccessToken'] = currentToken.access_token
-        requestOptions.header['RefreshToken'] = currentToken.refresh_token
+        requestOptions.header.AccessToken = currentToken.access_token
+        requestOptions.header.RefreshToken = currentToken.refresh_token
         console.log('🔑 请求设置token:', currentToken.access_token)
       }
 
@@ -88,7 +88,8 @@ export const http = <T>(options: CustomRequestOptions) => {
                 reject(error)
               })
             return
-          } else if ((res.data as IResData<T>).code === INVALID_TOKEN_CODE) {
+          }
+          else if ((res.data as IResData<T>).code === INVALID_TOKEN_CODE) {
             console.log('🔄 检测到 token 过期')
             useUserStore().logout()
             navigateToLogin()
@@ -99,12 +100,13 @@ export const http = <T>(options: CustomRequestOptions) => {
           // 正常响应处理
           if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(res.data as IResData<T>)
-          } else {
-            !options.hideErrorToast &&
-              uni.showToast({
-                icon: 'none',
-                title: (res.data as IResData<T>).msg || '请求错误',
-              })
+          }
+          else {
+            !options.hideErrorToast
+            && uni.showToast({
+              icon: 'none',
+              title: (res.data as IResData<T>).msg || '请求错误',
+            })
             reject(res)
           }
         },
@@ -130,16 +132,13 @@ export const http = <T>(options: CustomRequestOptions) => {
  * @param header 请求头，默认为json格式
  * @returns
  */
-export const httpGet = <T>(
-  url: string,
-  query?: Record<string, any>,
-  header?: Record<string, any>,
-) => {
+export function httpGet<T>(url: string, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
   return http<T>({
     url,
     query,
     method: 'GET',
     header,
+    ...options,
   })
 }
 
@@ -151,51 +150,40 @@ export const httpGet = <T>(
  * @param header 请求头，默认为json格式
  * @returns
  */
-export const httpPost = <T>(
-  url: string,
-  data?: Record<string, any>,
-  query?: Record<string, any>,
-  header?: Record<string, any>,
-) => {
+export function httpPost<T>(url: string, data?: Record<string, any>, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
   return http<T>({
     url,
     query,
     data,
     method: 'POST',
     header,
+    ...options,
   })
 }
 /**
  * PUT 请求
  */
-export const httpPut = <T>(
-  url: string,
-  data?: Record<string, any>,
-  query?: Record<string, any>,
-  header?: Record<string, any>,
-) => {
+export function httpPut<T>(url: string, data?: Record<string, any>, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
   return http<T>({
     url,
     data,
     query,
     method: 'PUT',
     header,
+    ...options,
   })
 }
 
 /**
  * DELETE 请求（无请求体，仅 query）
  */
-export const httpDelete = <T>(
-  url: string,
-  query?: Record<string, any>,
-  header?: Record<string, any>,
-) => {
+export function httpDelete<T>(url: string, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
   return http<T>({
     url,
     query,
     method: 'DELETE',
     header,
+    ...options,
   })
 }
 
@@ -203,3 +191,9 @@ http.get = httpGet
 http.post = httpPost
 http.put = httpPut
 http.delete = httpDelete
+
+// 支持与 alovaJS 类似的API调用
+http.Get = httpGet
+http.Post = httpPost
+http.Put = httpPut
+http.Delete = httpDelete

@@ -1,13 +1,13 @@
 import { defineUniPages } from '@uni-helper/vite-plugin-uni-pages'
+import { tabBar } from './src/layouts/fg-tabbar/tabbarList'
 
 export default defineUniPages({
-  entryPagePath: 'pages/index/index',
   globalStyle: {
     navigationStyle: 'default',
     navigationBarTitleText: 'unibest',
-    navigationBarBackgroundColor: '#f7f7f7',
+    navigationBarBackgroundColor: '#f8f8f8',
     navigationBarTextStyle: 'black',
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#FFFFFF',
   },
   easycom: {
     autoscan: true,
@@ -18,36 +18,6 @@ export default defineUniPages({
         'z-paging/components/z-paging$1/z-paging$1.vue',
     },
   },
-  // 如果不需要tabBar，推荐使用 spa 模板。（pnpm create xxx -t spa）
-  tabBar: {
-    color: '#666666',
-    selectedColor: '#018d71', // tab 上的文字选中时的颜色
-    backgroundColor: '#F8F8F8', // tab 的背景色
-    borderStyle: 'black', // tabBar 上边框的颜色
-    // blurEffect: 'none', // iOS 高斯模糊效果，参考 [使用说明](https://ask.dcloud.net.cn/article/36617)
-    height: '50px',
-    fontSize: '10px',
-    iconWidth: '24px',
-    spacing: '3px',
-    list: [
-      {
-        iconPath: 'static/tabbar/home.png',
-        selectedIconPath: 'static/tabbar/home-active.png',
-        pagePath: 'pages/index/index',
-        text: '首页',
-      },
-      // {
-      //   iconPath: 'static/tabbar/example.png',
-      //   selectedIconPath: 'static/tabbar/exampleHL.png',
-      //   pagePath: 'pages/about/about',
-      //   text: '关于',
-      // },
-      {
-        iconPath: 'static/tabbar/user.png',
-        selectedIconPath: 'static/tabbar/user-active.png',
-        pagePath: 'pages/mine/index',
-        text: '我的',
-      },
-    ],
-  },
+  // tabbar 的配置统一在 “./src/layouts/fg-tabbar/tabbarList.ts” 文件中
+  tabBar: tabBar as any,
 })

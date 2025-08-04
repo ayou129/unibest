@@ -1,31 +1,32 @@
-import Uni from '@dcloudio/vite-plugin-uni'
-import dayjs from 'dayjs'
 import path from 'node:path'
-import { defineConfig, loadEnv } from 'vite'
-// @see https://uni-helper.js.org/vite-plugin-uni-pages
-import UniPages from '@uni-helper/vite-plugin-uni-pages'
+import process from 'node:process'
+import Uni from '@uni-helper/plugin-uni'
+import Components from '@uni-helper/vite-plugin-uni-components'
 // @see https://uni-helper.js.org/vite-plugin-uni-layouts
 import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
+// @see https://github.com/uni-helper/vite-plugin-uni-manifest
+import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
+// @see https://uni-helper.js.org/vite-plugin-uni-pages
+import UniPages from '@uni-helper/vite-plugin-uni-pages'
 // @see https://github.com/uni-helper/vite-plugin-uni-platform
 // 需要与 @uni-helper/vite-plugin-uni-pages 插件一起使用
 import UniPlatform from '@uni-helper/vite-plugin-uni-platform'
-// @see https://github.com/uni-helper/vite-plugin-uni-manifest
-import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
 /**
  * 分包优化、模块异步跨包调用、组件异步跨包引用
  * @see https://github.com/uni-ku/bundle-optimizer
  */
 import Optimization from '@uni-ku/bundle-optimizer'
+import dayjs from 'dayjs'
 import { visualizer } from 'rollup-plugin-visualizer'
+import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import { loadEnv } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
-import { copyNativeRes } from './vite-plugins/copyNativeRes'
-import Components from '@uni-helper/vite-plugin-uni-components'
 
 // https://vitejs.dev/config/
-export default async ({ command, mode }) => {
+export default ({ command, mode }) => {
   // @see https://unocss.dev/
-  const UnoCSS = (await import('unocss/vite')).default
+  // const UnoCSS = (await import('unocss/vite')).default
   // console.log(mode === process.env.NODE_ENV) // true
 
   // mode: 区分生产环境还是开发环境
@@ -47,6 +48,7 @@ export default async ({ command, mode }) => {
     VITE_SERVER_BASEURL,
     VITE_DELETE_CONSOLE,
     VITE_SHOW_SOURCEMAP,
+    VITE_APP_PUBLIC_BASE,
     VITE_APP_PROXY,
     VITE_APP_PROXY_PREFIX,
   } = env
@@ -54,14 +56,13 @@ export default async ({ command, mode }) => {
 
   return {
     envDir: './env', // 自定义env目录
-
+    base: VITE_APP_PUBLIC_BASE,
     plugins: [
       UniPages({
         exclude: ['**/components/**/**.*'],
-        routeBlockLang: 'json5', // 虽然设了默认值，但是vue文件还是要加上 lang="json5", 这样才能很好地格式化
         // homePage 通过 vue 文件的 route-block 的type="home"来设定
         // pages 目录为 src/pages，分包目录不能配置在pages目录下
-        // subPackages: ['src/pages-sub'], // 是个数组，可以配置多个，但是不能为pages里面的目录
+        subPackages: ['src/pages-sub'], // 是个数组，可以配置多个，但是不能为pages里面的目录
         dts: 'src/types/uni-pages.d.ts',
       }),
       UniLayouts(),
@@ -74,7 +75,7 @@ export default async ({ command, mode }) => {
         // 自定义插件禁用 vite:vue 插件的 devToolsEnabled，强制编译 vue 模板时 inline 为 true
         name: 'fix-vite-plugin-vue',
         configResolved(config) {
-          const plugin = config.plugins.find((p) => p.name === 'vite:vue')
+          const plugin = config.plugins.find(p => p.name === 'vite:vue')
           if (plugin && plugin.api && plugin.api.options) {
             plugin.api.options.devToolsEnabled = false
           }
@@ -90,7 +91,7 @@ export default async ({ command, mode }) => {
       // Optimization 插件需要 page.json 文件，故应在 UniPages 插件之后执行
       Optimization({
         enable: {
-          optimization: true,
+          'optimization': true,
           'async-import': true,
           'async-component': true,
         },
@@ -112,14 +113,14 @@ export default async ({ command, mode }) => {
         },
       },
       // 打包分析插件，h5 + 生产环境才弹出
-      UNI_PLATFORM === 'h5' &&
-        mode === 'production' &&
-        visualizer({
-          filename: './node_modules/.cache/visualizer/stats.html',
-          open: true,
-          gzipSize: true,
-          brotliSize: true,
-        }),
+      UNI_PLATFORM === 'h5'
+      && mode === 'production'
+      && visualizer({
+        filename: './node_modules/.cache/visualizer/stats.html',
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+      }),
       // 只有在 app 平台时才启用 copyNativeRes 插件
       // UNI_PLATFORM === 'app' && copyNativeRes(),
       Components({
@@ -161,10 +162,13 @@ export default async ({ command, mode }) => {
             [VITE_APP_PROXY_PREFIX]: {
               target: VITE_SERVER_BASEURL,
               changeOrigin: true,
-              rewrite: (path) => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
+              rewrite: path => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
             },
           }
         : undefined,
+    },
+    esbuild: {
+      drop: VITE_DELETE_CONSOLE === 'true' ? ['console', 'debugger'] : ['debugger'],
     },
     build: {
       sourcemap: false,
@@ -172,13 +176,8 @@ export default async ({ command, mode }) => {
       // sourcemap: VITE_SHOW_SOURCEMAP === 'true', // 默认是false
       target: 'es6',
       // 开发环境不用压缩
-      minify: mode === 'development' ? false : 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: VITE_DELETE_CONSOLE === 'true',
-          drop_debugger: true,
-        },
-      },
+      minify: mode === 'development' ? false : 'esbuild',
+
     },
   }
 }

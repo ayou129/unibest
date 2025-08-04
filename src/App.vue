@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
-import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'
+import { onHide, onLaunch, onShow } from '@dcloudio/uni-app'
 import { usePageAuth } from '@/hooks/usePageAuth'
 import { useUserStore } from '@/store/user'
 import { toast } from '@/utils/toast'
+import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'
+</script>
+
+<script setup lang="ts">
 usePageAuth()
 const userStore = useUserStore()
-const getUserProfile = async () => {
+async function getUserProfile() {
   const res = await userStore.getUserProfile()
   if (res.code === 0) {
     // 检查session_key 是否过期
     await checkSessionKey()
-  } else {
+  }
+  else {
     console.log(res)
   }
 }
-const checkSessionKey = async () => {
+async function checkSessionKey() {
   // 前提条件： 用户已经登录
   // 两步走，第一，先在小程序中 使用 wx.checkSession 检查 session_key 是否过期
   const res = await uni.checkSession()
@@ -36,7 +40,8 @@ const checkSessionKey = async () => {
     //     return
     //   }
     // }
-  } else {
+  }
+  else {
     console.log('session_key 已过期')
     // 说明过期了，执行 wx.login 重新获取code 并且获取新的 session_key
     const codeRes = await userStore.wxLogin()
@@ -47,7 +52,6 @@ const checkSessionKey = async () => {
     const c2sDataRes = await userStore.userLoginByCode2Session({ code: codeRes.code })
     if (!c2sDataRes.open_id) {
       toast.error('登录失败')
-      return
     }
   }
 }

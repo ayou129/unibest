@@ -17,6 +17,7 @@
   },
   "tabBar": {
     "color": "#666666",
+    "custom": false,
     "selectedColor": "#018d71",
     "backgroundColor": "#F8F8F8",
     "borderStyle": "black",
@@ -29,13 +30,17 @@
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png",
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "icon": "home",
+        "iconType": "uiLib"
       },
       {
         "iconPath": "static/tabbar/user.png",
         "selectedIconPath": "static/tabbar/user-active.png",
         "pagePath": "pages/mine/index",
-        "text": "我的"
+        "text": "我的",
+        "icon": "i-carbon-code",
+        "iconType": "unocss"
       }
     ]
   },
@@ -43,6 +48,7 @@
     {
       "path": "pages/index/index",
       "type": "home",
+      "layout": "tabbar",
       "style": {
         "enablePullDownRefresh": false,
         "navigationStyle": "custom",
@@ -52,9 +58,9 @@
     {
       "path": "pages/about/about",
       "type": "page",
+      "layout": "tabbar",
       "style": {
-        "navigationBarTitleText": "关于",
-        "navigationStyle": "custom"
+        "navigationBarTitleText": "关于"
       }
     },
     {
@@ -79,13 +85,13 @@
     {
       "path": "pages/login/index",
       "type": "page",
+      "layout": "default",
       "style": {
-        "navigationBarTitleText": "登录",
-        "navigationStyle": "custom"
+        "navigationBarTitleText": "Alova 请求演示"
       }
     },
     {
-      "path": "pages/mine/index",
+      "path": "pages/about/vue-query",
       "type": "page",
       "needLogin": false,
       "style": {
@@ -157,5 +163,19 @@
       }
     }
   ],
-  "subPackages": []
+  "subPackages": [
+    {
+      "root": "pages-sub",
+      "pages": [
+        {
+          "path": "demo/index",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": "分包页面"
+          }
+        }
+      ]
+    }
+  ]
 }

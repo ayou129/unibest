@@ -2,13 +2,12 @@
 // # 在升级完后，会自动添加很多无用依赖，这需要删除以减小依赖包体积
 // # 只需要执行下面的命令即可
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { exec } = require('child_process')
+const { exec } = require('node:child_process')
 
 // 定义要执行的命令
 const dependencies = [
   '@dcloudio/uni-app-harmony',
-  // TODO: 如果需要某个平台的小程序，请手动删除或注释掉
+  // TODO: 如果不需要某个平台的小程序，请手动删除或注释掉
   '@dcloudio/uni-mp-alipay',
   '@dcloudio/uni-mp-baidu',
   '@dcloudio/uni-mp-jd',
