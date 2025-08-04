@@ -1,5 +1,5 @@
 import { CustomRequestOptions } from '@/interceptors/request'
-import { REFRESH_TOKEN_CODE } from '@/api/api'
+import { REFRESH_TOKEN_CODE, INVALID_TOKEN_CODE } from '@/api/api'
 import { useUserStore } from '@/store'
 import { useTokenStore } from '@/store/token'
 import { navigateToLogin } from '@/utils/navigation'
@@ -87,6 +87,12 @@ export const http = <T>(options: CustomRequestOptions) => {
                 navigateToLogin()
                 reject(error)
               })
+            return
+          } else if ((res.data as IResData<T>).code === INVALID_TOKEN_CODE) {
+            console.log('🔄 检测到 token 过期')
+            useUserStore().logout()
+            navigateToLogin()
+            reject(res)
             return
           }
 

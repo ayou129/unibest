@@ -185,7 +185,7 @@ export const navigateToHome = () => {
  * 回到商城首页
  */
 export const navigateToMall = () => {
-  smartNavigate('/pages/mall/index', {
+  smartNavigate('/pages/index/index', {
     navigateType: 'switchTab',
   })
 }

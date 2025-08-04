@@ -44,3 +44,6 @@ export const WX_SESSION_KEY_EXPIRED_CODE = -951
 
 // REFRESH_TOKEN_CODE 刷新令牌的指定code
 export const REFRESH_TOKEN_CODE = -904
+
+// expire token code
+export const INVALID_TOKEN_CODE = -903

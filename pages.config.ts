@@ -1,7 +1,7 @@
 import { defineUniPages } from '@uni-helper/vite-plugin-uni-pages'
 
 export default defineUniPages({
-  entryPagePath: 'pages/mall/index',
+  entryPagePath: 'pages/index/index',
   globalStyle: {
     navigationStyle: 'default',
     navigationBarTitleText: 'unibest',
@@ -33,7 +33,7 @@ export default defineUniPages({
       {
         iconPath: 'static/tabbar/home.png',
         selectedIconPath: 'static/tabbar/home-active.png',
-        pagePath: 'pages/mall/index',
+        pagePath: 'pages/index/index',
         text: '首页',
       },
       // {

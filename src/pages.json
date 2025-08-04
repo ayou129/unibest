@@ -1,5 +1,5 @@
 {
-  "entryPagePath": "pages/mall/index",
+  "entryPagePath": "pages/index/index",
   "globalStyle": {
     "navigationStyle": "default",
     "navigationBarTitleText": "unibest",
@@ -28,7 +28,7 @@
       {
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png",
-        "pagePath": "pages/mall/index",
+        "pagePath": "pages/index/index",
         "text": "首页"
       },
       {
@@ -40,6 +40,15 @@
     ]
   },
   "pages": [
+    {
+      "path": "pages/index/index",
+      "type": "home",
+      "style": {
+        "enablePullDownRefresh": false,
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "商城首页"
+      }
+    },
     {
       "path": "pages/about/about",
       "type": "page",
@@ -73,15 +82,6 @@
       "style": {
         "navigationBarTitleText": "登录",
         "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/mall/index",
-      "type": "page",
-      "style": {
-        "enablePullDownRefresh": false,
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "商城首页"
       }
     },
     {

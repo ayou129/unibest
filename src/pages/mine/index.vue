@@ -187,7 +187,7 @@ const handleShare = () => {
     title: '敬修堂商店',
     miniProgram: {
       id: '',
-      path: '/pages/mall/index',
+      path: '/pages/index/index',
       type: 0,
       webUrl: '',
     },
