@@ -47,7 +47,7 @@ export const getUserLoginGrapicVerifyCode = () => {
  * @param form
  */
 export const userLoginByCode2Session = (form: IMpLoginCode2SessionDTO) => {
-  return http.post<IApiResponse<IUserPlatformVo>>(`${ApiPrefix}/user/login/code2session`, form)
+  return http.post<IApiResponse<IUserPlatformVo>>(`${ApiPrefix}/user/wxmp-login/code2session`, form)
 }
 
 /**
@@ -55,7 +55,7 @@ export const userLoginByCode2Session = (form: IMpLoginCode2SessionDTO) => {
  * @param form
  */
 export const userLoginByQuickPhone = (form: IMpLoginQuickPhoneDTO) => {
-  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/login/quick-phone`, form)
+  return http.post<IApiResponse<IUserTokenVo>>(`${ApiPrefix}/user/wxmp-login/quick-phone`, form)
 }
 
 /**
